@@ -21,7 +21,22 @@ A Pixel Watch / Wear OS watch face inspired by the Seiko × FINAL FANTASY XI
 
 Always-on mode switches to an outline-only dial and hides the seconds hand to save power.
 
-## Build & install
+## Install from your phone (no computer)
+
+Every push to `ffxi-watchface/` is built by GitHub Actions
+(`.github/workflows/build-watchface.yml`). The APK is published here:
+https://github.com/IRey72/SLM-Lab/releases/download/watchface-latest/vanadiel-chronograph.apk
+
+1. On the watch: Settings → System → About → Versions, tap **Build number** 7 times.
+   Then Settings → Developer options: turn on **ADB debugging** and **Wireless debugging**.
+2. On your Android phone, install an ADB-over-Wi-Fi app such as **Bugjaeger** (or Wear Installer 2).
+   The phone and watch must be on the same Wi-Fi.
+3. On the watch, open Wireless debugging → **Pair new device**. Enter the IP, port and code it
+   shows into the app's pairing screen, then connect using the port shown under *IP address & port*.
+4. Download the APK above on your phone, then use the app's install-APK action to push it to the watch.
+5. Long-press the watch face → **+ Add** → **Vana'diel Chronograph**.
+
+## Build & install from a computer
 
 You need Android Studio (or the Android SDK plus Gradle 8.7 or newer).
 
