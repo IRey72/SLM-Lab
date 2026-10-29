@@ -203,30 +203,11 @@ def applied_text(img, draw_fn, stops=GOLD_STOPS, shadow=True):
 
 # --------------------------------------------------------------------- crystals
 CRYSTAL_R = (140, 204)   # 12 o'clock crystal spans these radii
-MARKER_R = (160, 201)    # clear crystal hour markers span these radii
 
 
-def load_crystal(height, clear=False):
+def load_crystal(height):
     cr = Image.open(os.path.join(EMBLEMS, 'crystal.png')).convert('RGBA')
-    cr = cr.resize((round(height * cr.width / cr.height), round(height)), Image.LANCZOS)
-    if clear:   # rock-crystal version: desaturate, lift and cool the tone
-        a = np.asarray(cr).astype(float)
-        lum = (a[..., :3] @ [0.3, 0.45, 0.25])[..., None]
-        lum = 255 * (np.clip(lum / 255, 0, 1) ** 0.6)
-        rgb = lum * np.array([0.90, 0.95, 1.0]) * 0.85 + a[..., :3] * 0.15
-        cr = Image.fromarray(np.dstack([np.clip(rgb, 0, 255), a[..., 3]]).astype(np.uint8), 'RGBA')
-    return cr
-
-
-def place_marker(img, deg):
-    """Clear crystal hour marker, long axis radial, with a cast shadow."""
-    r0, r1 = MARKER_R
-    cr = load_crystal(s(r1 - r0), clear=True).rotate(-deg, resample=Image.BICUBIC, expand=True)
-    cx, cy = polar(s((r0 + r1) / 2), deg)
-    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
-    layer.paste(cr, (round(cx - cr.width / 2), round(cy - cr.height / 2)))
-    drop_shadow(img, layer.getchannel('A'), blur=1.2, alpha=0.65)
-    img.alpha_composite(layer)
+    return cr.resize((round(height * cr.width / cr.height), round(height)), Image.LANCZOS)
 
 
 # Gem line drawing for the outline styles: outer outline, inner table, and facet
@@ -428,11 +409,7 @@ def make_dial(ambient=False, bright=0.6):
         col = (120, 120, 120) if ambient else ((240, 240, 240) if five else (170, 176, 186))
         d.line([polar(s(222), a), polar(s(211 if five else 216), a)], fill=col, width=round(s(2.2 if five else 1)))
 
-    # hour indices: crystals; 12 = blue crystal, 11 = "XI"
-    if not ambient:   # the outline styles keep only the 12 o'clock crystal
-        for h in (1, 2, 4, 5, 7, 8, 10):
-            place_marker(img, h * 30)
-    d = ImageDraw.Draw(img)
+    # 12 = crystal, 11 = "XI"
     if not ambient:
         glow = Image.new('RGBA', size, (0, 0, 0, 0))
         ImageDraw.Draw(glow).ellipse([C - s(24), C - s(208), C + s(24), C - s(136)], fill=(60, 110, 255, 150))
@@ -447,10 +424,9 @@ def make_dial(ambient=False, bright=0.6):
     else:
         # applied (raised) gold numeral and wordmark; small print stays flat like pad printing
         applied_text(img, lambda dd, f: text_ff(dd, pos, 'XI', 34, f))
-        applied_text(img, lambda dd, f: text_ff(dd, (C, C - s(104)), "VANA'DIEL", 23, f))
+        applied_text(img, lambda dd, f: text_ff(dd, (C, C - s(99)), "VANA'DIEL", 23, f))
         d = ImageDraw.Draw(img)
-        text_c(d, (C, C - s(123)), 'WE ARE', font(FONT_LABEL, 8), (200, 206, 218))
-        text_c(d, (C, C - s(85)), 'CHRONOGRAPH', font(FONT_LABEL, 6.5), (170, 178, 192))
+        text_c(d, (C, C - s(118)), 'WE ARE', font(FONT_LABEL, 8), (200, 206, 218))
 
     for key in NATIONS:
         draw_subdial(img, key, ambient, bright)
