@@ -436,7 +436,7 @@ def make_dial(ambient=False, bright=0.6):
     if ambient:
         img = Image.new('RGBA', size, (0, 0, 0, 255))
         if bright >= 1:   # Dark style only; always-on stays plain black
-            draw_world(img, (0, 0, 0, 0), (70, 76, 90, 255), width=0.8)
+            draw_world(img, (40, 46, 60, 50), (120, 128, 146, 255), width=0.9)
     else:
         img = sunburst(size)
         draw_world(img, (200, 215, 255, 14), (200, 215, 255, 46))
