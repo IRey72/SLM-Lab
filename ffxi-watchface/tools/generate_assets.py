@@ -283,12 +283,37 @@ def emblem_lines(em, bright=1.0):
     return Image.fromarray(e.astype(np.uint8)).resize(size, Image.LANCZOS).convert('RGB')
 
 
+def sandoria_art(size, bright=1.0):
+    """San d'Oria for the outline styles: grey griffin silhouettes with a light edge,
+    crown and spears picked out. Edge-tracing turns its gold detailing into noise."""
+    from scipy import ndimage
+    a = np.asarray(Image.open(os.path.join(EMBLEMS, 'sandoria.png')).convert('RGB')).astype(int)
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+
+    def keep(m, min_size):
+        lab, n = ndimage.label(m)
+        sizes = ndimage.sum(m, lab, range(1, n + 1))
+        return np.isin(lab, [i + 1 for i, sz in enumerate(sizes) if sz >= min_size])
+
+    def soft_mask(m, sigma, thresh):
+        f = ndimage.gaussian_filter(m.astype(float), sigma)
+        f = Image.fromarray((np.clip(f, 0, 1) * 255).astype(np.uint8)).resize(size, Image.LANCZOS)
+        return np.asarray(f) > thresh * 255
+
+    black = soft_mask(keep(a.max(2) < 100, 300), 2.2, 0.5)
+    gold = soft_mask(keep(((r > 160) & (g > 100) & (b < 150) & (g > b + 30)) | (a.min(2) > 190), 40), 1.2, 0.45)
+    edge = black & ~ndimage.binary_erosion(black, iterations=3)
+    v = np.where(black, 85, 0) + np.where(edge, 120, 0) + np.where(gold, 230, 0)
+    v = np.clip(v, 0, 255) * bright
+    return Image.fromarray(v.astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.8)).convert('RGB')
+
+
 def draw_emblem(img, key, cx, cy, ambient, bright=1.0):
     """Nation crest in a round medallion at the sub-dial centre."""
     r = s(EMBLEM_R)
     em = Image.open(os.path.join(EMBLEMS, key + '.png')).convert('RGB').resize((2 * r, 2 * r), Image.LANCZOS)
     if ambient:   # engraved line art: readable on black and keeps few pixels lit
-        em = emblem_lines(em, bright)
+        em = sandoria_art(em.size, bright) if key == 'sandoria' else emblem_lines(em, bright)
     img.paste(em, (int(cx - r), int(cy - r)), circle_mask((2 * r, 2 * r), r, r, r))
     if ambient:
         ImageDraw.Draw(img).ellipse([cx - r, cy - r, cx + r, cy + r], outline=(90, 90, 90), width=round(s(1.4)))
@@ -441,7 +466,7 @@ HAND_PAD = 5   # room around each hand for its soft shadow
 
 def hand_canvas(w, tip, tail, pad=HAND_PAD):
     """Canvas for a hand whose pivot is at (w/2 + pad, tip + pad)."""
-    img = Image.new('RGBA', (s(w + 2 * pad), s(tip + tail + 2 * pad)), (0, 0, 0, 0))
+    img = Image.new('RGBA', (round(s(w + 2 * pad)), round(s(tip + tail + 2 * pad))), (0, 0, 0, 0))
     return img, s(w / 2 + pad), s(tip + pad)
 
 
@@ -498,7 +523,45 @@ def domed_cap(r, pad=HAND_PAD):
     return with_shadow(img, blur=1.4, alpha=0.7)
 
 
+def outline_hand(tip, tail, w, stroke=1.4, pad=2, color=(225, 225, 225)):
+    """Minimal Dark-style hand: a slim lance drawn as an outline, hollow (black) inside."""
+    img, px, py = hand_canvas(w, tip, tail, pad)
+    half = s(w) / 2
+    pts = [(px, py - s(tip)), (px + half, py - s(tip) * 0.2), (px + half * 0.35, py + s(tail)),
+           (px - half * 0.35, py + s(tail)), (px - half, py - s(tip) * 0.2)]
+    d = ImageDraw.Draw(img)
+    d.polygon(pts, fill=(0, 0, 0, 255))
+    d.line(pts + pts[:1], fill=color, width=round(s(stroke)), joint='curve')
+    return img
+
+
+def needle_hand(tip, tail, stroke=1.3, ring=3.2, pad=2, color=(225, 225, 225)):
+    """Minimal Dark-style sub-dial hand: a hairline with a hollow pivot ring."""
+    img, px, py = hand_canvas(8, tip, tail, pad)
+    d = ImageDraw.Draw(img)
+    d.line([(px, py - s(tip)), (px, py - s(ring))], fill=color, width=round(s(stroke)))
+    d.line([(px, py + s(ring)), (px, py + s(tail))], fill=color, width=round(s(stroke)))
+    d.ellipse([px - s(ring), py - s(ring), px + s(ring), py + s(ring)], fill=(0, 0, 0, 255),
+              outline=color, width=round(s(stroke)))
+    return img
+
+
+def outline_cap(r, pad=2, color=(225, 225, 225)):
+    size = s(2 * (r + pad))
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    c = size / 2
+    d = ImageDraw.Draw(img)
+    d.ellipse([c - s(r), c - s(r), c + s(r), c + s(r)], fill=(0, 0, 0, 255), outline=color, width=round(s(1.4)))
+    d.ellipse([c - s(1.3), c - s(1.3), c + s(1.3), c + s(1.3)], fill=color)
+    return img
+
+
 CAP_R = 10   # covers the hour hand's pivot hole
+CAPS = {
+    # name: (builder, canvas half-size in 450px units)
+    'cap': (lambda: domed_cap(CAP_R), CAP_R + HAND_PAD),
+    'cap_dark': (lambda: outline_cap(5), 5 + 2),
+}
 
 
 def _photo(name, tip, pad=HAND_PAD, **kw):
@@ -511,6 +574,10 @@ HANDS = {
     'hand_hour': _photo('hour', 118),
     'hand_minute': _photo('minute', 182),
     'hand_sub': _photo('sub', 46, pad=3, blur=1.0, alpha=0.6),
+    # Dark style: thin outline hands
+    'hand_hour_dark': (lambda: outline_hand(112, 16, 10), 10, 112, 16, 2),
+    'hand_minute_dark': (lambda: outline_hand(180, 20, 8), 8, 180, 20, 2),
+    'hand_sub_dark': (lambda: needle_hand(44, 10), 8, 44, 10, 2),
 }
 
 
@@ -540,12 +607,15 @@ def patch_xml():
         xml, n = re.subn(pattern, sub, xml)
         assert n == 1, pattern
 
-    setattrs(r'<HourHand [^>]*>', 225, 225, 'hand_hour')
-    setattrs(r'<MinuteHand [^>]*>', 225, 225, 'hand_minute')
-    for key, (cx, cy) in sub_centers().items():
-        setattrs(rf'<PartImage name="sub_{key}" [^>]*>', cx, cy, 'hand_sub')
-    cw = 2 * (CAP_R + HAND_PAD)
-    xml = re.sub(r'(<PartImage name="cap" )[^>]*>', rf'\g<1>x="{225 - cw / 2:g}" y="{225 - cw / 2:g}" width="{cw}" height="{cw}">', xml)
+    for sfx in ('', '_dark'):
+        setattrs(rf'<HourHand resource="hand_hour{sfx}" [^>]*>', 225, 225, 'hand_hour' + sfx)
+        setattrs(rf'<MinuteHand resource="hand_minute{sfx}" [^>]*>', 225, 225, 'hand_minute' + sfx)
+        for key, (cx, cy) in sub_centers().items():
+            setattrs(rf'<PartImage name="sub_{key}{sfx}" [^>]*>', cx, cy, 'hand_sub' + sfx)
+    for name, (_, half) in CAPS.items():
+        xml, n = re.subn(rf'(<PartImage name="{name}" )[^>]*>',
+                         rf'\g<1>x="{225 - half:g}" y="{225 - half:g}" width="{2 * half:g}" height="{2 * half:g}">', xml)
+        assert n == 1, name
     open(path, 'w').write(xml)
 
 
@@ -572,19 +642,21 @@ def place(canvas, hand, name, cx, cy, deg):
     canvas.alpha_composite(layer.rotate(-deg, center=(s(cx), s(cy)), resample=Image.BICUBIC))
 
 
-def preview(dial_hi, hands_hi, cap_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day=29, batt=78, ambient=False, dark=False):
+def preview(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day=29, batt=78, ambient=False, dark=False):
     img = dial_hi.copy()
-    sub = hands_hi['hand_sub']
+    sfx = '_dark' if dark else ''
+    cap_hi = caps_hi['cap' + sfx]
+    sub = hands_hi['hand_sub' + sfx]
     centers = sub_centers()
-    place(img, sub, 'hand_sub', *centers['sandoria'], (dow - 1) * 360 / 7)
-    place(img, sub, 'hand_sub', *centers['bastok'], -150 + batt * 3)
-    place(img, sub, 'hand_sub', *centers['windurst'], (hh + mm / 60) * 15)
+    place(img, sub, 'hand_sub' + sfx, *centers['sandoria'], (dow - 1) * 360 / 7)
+    place(img, sub, 'hand_sub' + sfx, *centers['bastok'], -150 + batt * 3)
+    place(img, sub, 'hand_sub' + sfx, *centers['windurst'], (hh + mm / 60) * 15)
     if not ambient or dark:
         d = ImageDraw.Draw(img)
         text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15),
                (190, 190, 190) if dark else (20, 20, 20))
-    place(img, hands_hi['hand_hour'], 'hand_hour', 225, 225, (hh % 12 + mm / 60) * 30)
-    place(img, hands_hi['hand_minute'], 'hand_minute', 225, 225, mm * 6 + ss / 10)
+    place(img, hands_hi['hand_hour' + sfx], 'hand_hour' + sfx, 225, 225, (hh % 12 + mm / 60) * 30)
+    place(img, hands_hi['hand_minute' + sfx], 'hand_minute' + sfx, 225, 225, mm * 6 + ss / 10)
     img.alpha_composite(cap_hi, (round(C - cap_hi.width / 2), round(C - cap_hi.height / 2)))
     if not ambient and not dark:
         img.alpha_composite(glass_hi)
@@ -603,8 +675,10 @@ def main():
     for name, (build, *_rest) in HANDS.items():
         hands_hi[name] = build()
         finish(hands_hi[name]).save(os.path.join(OUT, name + '.png'))
-    cap_hi = domed_cap(CAP_R)
-    finish(cap_hi).save(os.path.join(OUT, 'cap.png'))
+    cap_hi = {}
+    for name, (build, _) in CAPS.items():
+        cap_hi[name] = build()
+        finish(cap_hi[name]).save(os.path.join(OUT, name + '.png'))
     glass_hi = make_glass()
     finish(glass_hi).save(os.path.join(OUT, 'glass.png'))
     patch_xml()

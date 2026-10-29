@@ -68,34 +68,63 @@
       </PartImage>
     </Group>
 
-    <!-- San d'Oria sub-dial (9 o'clock): day of week, SU at top -->
-    <PartImage name="sub_sandoria" x="119" y="176" width="12" height="68" pivotX="0.5" pivotY="0.7206">
-      <Transform target="angle" value="([DAY_OF_WEEK] - 1) * 51.428571" />
-      <Image resource="hand_sub" />
-    </PartImage>
-
-    <!-- Bastok sub-dial (3 o'clock): battery, E at -150deg, F at +150deg -->
-    <PartImage name="sub_bastok" x="319" y="176" width="12" height="68" pivotX="0.5" pivotY="0.7206">
-      <Transform target="angle" value="-150 + [BATTERY_PERCENT] * 3" />
-      <Image resource="hand_sub" />
-    </PartImage>
-
-    <!-- Windurst sub-dial (6 o'clock): 24-hour hand, 24 at top -->
-    <PartImage name="sub_windurst" x="219" y="276" width="12" height="68" pivotX="0.5" pivotY="0.7206">
-      <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
-      <Image resource="hand_sub" />
-    </PartImage>
-
-    <!-- Hour + minute -->
-    <AnalogClock x="0" y="0" width="450" height="450">
-      <HourHand resource="hand_hour" x="204" y="102" width="42" height="158" pivotX="0.5" pivotY="0.7785" />
-      <MinuteHand resource="hand_minute" x="205" y="38" width="40" height="228" pivotX="0.5" pivotY="0.8202" />
-    </AnalogClock>
-
-    <!-- Polished centre cap: static, above the hands, so its highlight never rotates -->
-    <PartImage name="cap" x="210" y="210" width="30" height="30">
-      <Image resource="cap" />
-    </PartImage>
+    <!-- Hands for the chosen style: photographed steel (Classic) or thin outlines (Dark) -->
+    <ListConfiguration id="style">
+      <ListOption id="classic">
+        <Group name="classic_hands" x="0" y="0" width="450" height="450">
+          <!-- San d'Oria sub-dial (9 o'clock): day of week, SU at top -->
+          <PartImage name="sub_sandoria" x="119" y="176" width="12" height="68" pivotX="0.5" pivotY="0.7206">
+            <Transform target="angle" value="([DAY_OF_WEEK] - 1) * 51.428571" />
+            <Image resource="hand_sub" />
+          </PartImage>
+          <!-- Bastok sub-dial (3 o'clock): battery, E at -150deg, F at +150deg -->
+          <PartImage name="sub_bastok" x="319" y="176" width="12" height="68" pivotX="0.5" pivotY="0.7206">
+            <Transform target="angle" value="-150 + [BATTERY_PERCENT] * 3" />
+            <Image resource="hand_sub" />
+          </PartImage>
+          <!-- Windurst sub-dial (6 o'clock): 24-hour hand, 24 at top -->
+          <PartImage name="sub_windurst" x="219" y="276" width="12" height="68" pivotX="0.5" pivotY="0.7206">
+            <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
+            <Image resource="hand_sub" />
+          </PartImage>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="hand_hour" x="204" y="102" width="42" height="158" pivotX="0.5" pivotY="0.7785" />
+            <MinuteHand resource="hand_minute" x="205" y="38" width="40" height="228" pivotX="0.5" pivotY="0.8202" />
+          </AnalogClock>
+          <!-- Centre cap: static, above the hands -->
+          <PartImage name="cap" x="210" y="210" width="30" height="30">
+            <Image resource="cap" />
+          </PartImage>
+        </Group>
+      </ListOption>
+      <ListOption id="dark">
+        <Group name="dark_hands" x="0" y="0" width="450" height="450">
+          <!-- San d'Oria sub-dial (9 o'clock): day of week, SU at top -->
+          <PartImage name="sub_sandoria_dark" x="119" y="179" width="12" height="58" pivotX="0.5" pivotY="0.7931">
+            <Transform target="angle" value="([DAY_OF_WEEK] - 1) * 51.428571" />
+            <Image resource="hand_sub_dark" />
+          </PartImage>
+          <!-- Bastok sub-dial (3 o'clock): battery, E at -150deg, F at +150deg -->
+          <PartImage name="sub_bastok_dark" x="319" y="179" width="12" height="58" pivotX="0.5" pivotY="0.7931">
+            <Transform target="angle" value="-150 + [BATTERY_PERCENT] * 3" />
+            <Image resource="hand_sub_dark" />
+          </PartImage>
+          <!-- Windurst sub-dial (6 o'clock): 24-hour hand, 24 at top -->
+          <PartImage name="sub_windurst_dark" x="219" y="279" width="12" height="58" pivotX="0.5" pivotY="0.7931">
+            <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
+            <Image resource="hand_sub_dark" />
+          </PartImage>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="hand_hour_dark" x="218" y="111" width="14" height="132" pivotX="0.5" pivotY="0.8636" />
+            <MinuteHand resource="hand_minute_dark" x="219" y="43" width="12" height="204" pivotX="0.5" pivotY="0.8922" />
+          </AnalogClock>
+          <!-- Centre cap: static, above the hands -->
+          <PartImage name="cap_dark" x="218" y="218" width="14" height="14">
+            <Image resource="cap_dark" />
+          </PartImage>
+        </Group>
+      </ListOption>
+    </ListConfiguration>
 
     <!-- Glass reflection (classic style only; off in ambient) -->
     <ListConfiguration id="style">
