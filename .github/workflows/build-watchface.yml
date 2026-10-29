@@ -10,6 +10,12 @@ on:
 permissions:
   contents: write
 
+# Each run republishes the APK, so an older run finishing late would overwrite a
+# newer build: keep only the latest run per branch.
+concurrency:
+  group: build-watchface-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
