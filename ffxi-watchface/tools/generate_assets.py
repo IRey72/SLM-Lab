@@ -374,8 +374,8 @@ def draw_subdial(img, key, ambient=False, bright=1.0):
         img.paste(g, (int(cx - R), int(cy - R)), circle_mask((2 * R, 2 * R), R, R, R))
         inner_shadow(img, circle_mask(img.size, cx, cy, R), depth=2.6, blur=2.0, alpha=0.8)
         metal_ring(img, cx, cy, R + s(2.4), R, (70, 76, 88), (238, 242, 248), recessed=True)
-    else:
-        d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=(110, 110, 110), width=round(s(1.2)))
+    else:   # solid black face so the world map doesn't show through
+        d.ellipse([cx - R, cy - R, cx + R, cy + R], fill=(0, 0, 0, 255), outline=(110, 110, 110), width=round(s(1.2)))
     draw_emblem(img, key, cx, cy, ambient, bright)
     d = ImageDraw.Draw(img)
 
@@ -483,7 +483,7 @@ def make_dial(ambient=False, bright=0.6):
         x, y = s(DATE_POS[0]), s(DATE_POS[1])
         w, h = s(DATE_SIZE[0]), s(DATE_SIZE[1])
         ImageDraw.Draw(img).rounded_rectangle([x - w / 2, y - h / 2, x + w / 2, y + h / 2], radius=s(3),
-                                              outline=(150, 150, 150), width=round(s(1.2)))
+                                              fill=(0, 0, 0, 255), outline=(150, 150, 150), width=round(s(1.2)))
     if not ambient:
         x, y = s(DATE_POS[0]), s(DATE_POS[1])
         w, h = s(DATE_SIZE[0]), s(DATE_SIZE[1])
