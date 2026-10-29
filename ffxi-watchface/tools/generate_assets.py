@@ -488,39 +488,79 @@ def poly_mask(size, pts):
 PHOTO_HANDS = os.path.join(os.path.dirname(__file__), 'hands')   # from tools/extract_hands.py
 
 
-def photo_hand(name, tip, pad=HAND_PAD, blur=1.8, alpha=0.55):
-    """A photographed hand, scaled so pivot-to-tip = tip, on a padded canvas with a soft shadow."""
+_PHOTO_CACHE = {}
+
+
+def prepare_photo(name, tip, thin=1.0):
+    """Scaled, straightened cut-out of a photographed hand at supersampled size.
+
+    Every row is shifted so the hand's centre line runs exactly through the pivot
+    (the photo is slightly off-axis), the pivot hole is filled with steel so the
+    centre stays clean, and thin < 1 narrows the hand. Returns (rgba, pivot_x, pivot_y).
+    """
+    key = (name, tip, thin)
+    if key in _PHOTO_CACHE:
+        return _PHOTO_CACHE[key]
+    from scipy import ndimage
     meta = json.load(open(os.path.join(PHOTO_HANDS, 'hands.json')))[name]
     src = Image.open(os.path.join(PHOTO_HANDS, name + '.png')).convert('RGBA')
     k = s(tip) / meta['pivot'][1]
-    src = src.resize((round(src.width * k), round(src.height * k)), Image.LANCZOS)
-    w, tail = photo_geom(name, tip)[:2]
+    w = round(src.width * k * thin)
+    src = src.resize((w, round(src.height * k)), Image.LANCZOS)
+    a = np.asarray(src).astype(float)
+    solid = a[..., 3] > 8
+    hole = ndimage.binary_fill_holes(solid) & ~solid
+    if hole.any():
+        steel = np.median(a[solid & (a[..., 3] > 200)][:, :3], axis=0)
+        a[hole, :3] = steel
+        a[hole, 3] = 255
+    # pad so rows can shift, then centre every row on the pivot column
+    pad = round(w * 0.5) + SS
+    a = np.pad(a, ((0, 0), (pad, pad), (0, 0)))
+    target = pad + w / 2
+    for y in range(a.shape[0]):
+        xs = np.nonzero(a[y, :, 3] > 128)[0]
+        if len(xs):
+            a[y] = np.roll(a[y], round(target - (xs[0] + xs[-1]) / 2), axis=0)
+    img = Image.fromarray(a.clip(0, 255).astype(np.uint8), 'RGBA')
+    box = img.getchannel('A').getbbox()
+    half = max(target - box[0], box[2] - target)
+    img = img.crop((round(target - half), 0, round(target + half), img.height))
+    _PHOTO_CACHE[key] = (img, img.width / 2, meta['pivot'][1] * k)
+    return _PHOTO_CACHE[key]
+
+
+def photo_hand(name, tip, thin=1.0, pad=HAND_PAD, blur=1.8, alpha=0.55):
+    """A photographed hand on a padded canvas, pivot centred, with a soft shadow."""
+    src, sx, sy = prepare_photo(name, tip, thin)
+    w, tail = photo_geom(name, tip, thin)
     img, px, py = hand_canvas(w, tip, tail, pad)
-    img.alpha_composite(src, (round(px - meta['pivot'][0] * k), round(py - s(tip))))
+    img.alpha_composite(src, (round(px - sx), round(py - sy)))
     return with_shadow(img, blur, alpha)
 
 
-def photo_geom(name, tip):
-    """(visual width, tail length) in 450px units, symmetric about the pivot so it stays centred."""
-    meta = json.load(open(os.path.join(PHOTO_HANDS, 'hands.json')))[name]
-    k = tip / meta['pivot'][1]
-    px = meta['pivot'][0] * k
-    w = 2 * math.ceil(max(px, meta["size"][0] * k - px))
-    tail = math.ceil((meta['size'][1] - meta['pivot'][1]) * k) + 1
+def photo_geom(name, tip, thin=1.0):
+    """(visual width, tail length) in 450px units; even width keeps XML coordinates whole."""
+    src, sx, sy = prepare_photo(name, tip, thin)
+    w = 2 * math.ceil(sx / SS)
+    tail = math.ceil((src.height - sy) / SS) + 1
     return w, tail
 
 
 def domed_cap(r, pad=HAND_PAD):
-    """Static polished centre cap (drawn above the hands so its highlight never rotates)."""
+    """Static polished centre cap with a blued pin, drawn above the hands."""
     size = s(2 * (r + pad))
     img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     c = size / 2
-    m = circle_mask(img.size, c, c, s(r))
-    hl = radial_gradient(img.size, (255, 255, 255), (96, 102, 116), cx=c - s(r * 0.35), cy=c - s(r * 0.45), r=s(r * 1.5))
-    fill_mask(img, m, hl)
-    ImageDraw.Draw(img).ellipse([c - s(r), c - s(r), c + s(r), c + s(r)], outline=(40, 44, 54), width=SS)
-    ImageDraw.Draw(img).ellipse([c - s(1.6), c - s(1.6), c + s(1.6), c + s(1.6)], fill=(70, 76, 90))
-    return with_shadow(img, blur=1.4, alpha=0.7)
+    # polished steel: soft highlight towards the light, crisp darker rim
+    hl = radial_gradient(img.size, (250, 252, 255), (150, 158, 172), cx=c - s(r * 0.3), cy=c - s(r * 0.35), r=s(r * 1.4))
+    fill_mask(img, circle_mask(img.size, c, c, s(r)), hl)
+    d = ImageDraw.Draw(img)
+    d.ellipse([c - s(r), c - s(r), c + s(r), c + s(r)], outline=(70, 76, 90), width=round(s(0.8)))
+    pin = s(r * 0.38)
+    fill_mask(img, circle_mask(img.size, c, c, pin),
+              radial_gradient(img.size, (120, 170, 255), (20, 50, 130), cx=c - pin * 0.3, cy=c - pin * 0.3, r=pin * 1.3))
+    return with_shadow(img, blur=0.9, alpha=0.5)
 
 
 def outline_hand(tip, tail, w, stroke=1.4, pad=2, color=(225, 225, 225)):
@@ -556,7 +596,7 @@ def outline_cap(r, pad=2, color=(225, 225, 225)):
     return img
 
 
-CAP_R = 10   # covers the hour hand's pivot hole
+CAP_R = 6
 CAPS = {
     # name: (builder, canvas half-size in 450px units)
     'cap': (lambda: domed_cap(CAP_R), CAP_R + HAND_PAD),
@@ -564,15 +604,15 @@ CAPS = {
 }
 
 
-def _photo(name, tip, pad=HAND_PAD, **kw):
-    w, tail = photo_geom(name, tip)
-    return (lambda: photo_hand(name, tip, pad, **kw), w, tip, tail, pad)
+def _photo(name, tip, thin=1.0, pad=HAND_PAD, **kw):
+    w, tail = photo_geom(name, tip, thin)
+    return (lambda: photo_hand(name, tip, thin, pad, **kw), w, tip, tail, pad)
 
 
 HANDS = {
     # name: (builder, visual width, tip length, tail length, shadow padding)
-    'hand_hour': _photo('hour', 118),
-    'hand_minute': _photo('minute', 182),
+    'hand_hour': _photo('hour', 118, thin=0.48),
+    'hand_minute': _photo('minute', 182, thin=0.5),
     'hand_sub': _photo('sub', 46, pad=3, blur=1.0, alpha=0.6),
     # Dark style: thin outline hands
     'hand_hour_dark': (lambda: outline_hand(112, 16, 10), 10, 112, 16, 2),

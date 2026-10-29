@@ -73,26 +73,26 @@
       <ListOption id="classic">
         <Group name="classic_hands" x="0" y="0" width="450" height="450">
           <!-- San d'Oria sub-dial (9 o'clock): day of week, SU at top -->
-          <PartImage name="sub_sandoria" x="119" y="176" width="12" height="68" pivotX="0.5" pivotY="0.7206">
+          <PartImage name="sub_sandoria" x="118" y="176" width="14" height="68" pivotX="0.5" pivotY="0.7206">
             <Transform target="angle" value="([DAY_OF_WEEK] - 1) * 51.428571" />
             <Image resource="hand_sub" />
           </PartImage>
           <!-- Bastok sub-dial (3 o'clock): battery, E at -150deg, F at +150deg -->
-          <PartImage name="sub_bastok" x="319" y="176" width="12" height="68" pivotX="0.5" pivotY="0.7206">
+          <PartImage name="sub_bastok" x="318" y="176" width="14" height="68" pivotX="0.5" pivotY="0.7206">
             <Transform target="angle" value="-150 + [BATTERY_PERCENT] * 3" />
             <Image resource="hand_sub" />
           </PartImage>
           <!-- Windurst sub-dial (6 o'clock): 24-hour hand, 24 at top -->
-          <PartImage name="sub_windurst" x="219" y="276" width="12" height="68" pivotX="0.5" pivotY="0.7206">
+          <PartImage name="sub_windurst" x="218" y="276" width="14" height="68" pivotX="0.5" pivotY="0.7206">
             <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
             <Image resource="hand_sub" />
           </PartImage>
           <AnalogClock x="0" y="0" width="450" height="450">
-            <HourHand resource="hand_hour" x="204" y="102" width="42" height="158" pivotX="0.5" pivotY="0.7785" />
-            <MinuteHand resource="hand_minute" x="205" y="38" width="40" height="228" pivotX="0.5" pivotY="0.8202" />
+            <HourHand resource="hand_hour" x="212" y="102" width="26" height="158" pivotX="0.5" pivotY="0.7785" />
+            <MinuteHand resource="hand_minute" x="212" y="38" width="26" height="228" pivotX="0.5" pivotY="0.8202" />
           </AnalogClock>
           <!-- Centre cap: static, above the hands -->
-          <PartImage name="cap" x="210" y="210" width="30" height="30">
+          <PartImage name="cap" x="214" y="214" width="22" height="22">
             <Image resource="cap" />
           </PartImage>
         </Group>
