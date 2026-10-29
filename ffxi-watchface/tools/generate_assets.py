@@ -321,38 +321,6 @@ def dauphine(w, tip, tail, cap=0):
     return img
 
 
-def excalibur(w=40, tip=195, tail=50):
-    """Seconds hand styled after Excalibur: blade to the tip, hilt as counterweight."""
-    img, d, px, py = hand_canvas(w, tip, tail)
-    guard_y = py - s(14)
-    blade_w = s(3.6)
-    taper_y = py - s(tip - 22)
-    tip_y = py - s(tip) + SS
-    # blade (two facets + fuller)
-    d.polygon([(px, tip_y), (px - blade_w, taper_y), (px - blade_w, guard_y), (px, guard_y)], fill=(244, 246, 250))
-    d.polygon([(px, tip_y), (px + blade_w, taper_y), (px + blade_w, guard_y), (px, guard_y)], fill=(150, 160, 176))
-    d.line([(px, guard_y - s(4)), (px, taper_y)], fill=(110, 140, 220), width=round(s(1)))
-    # crossguard: swept wings
-    g = [(px - s(18), guard_y - s(7)), (px - s(14), guard_y - s(2)), (px - s(5), guard_y + s(1)),
-         (px, guard_y + s(4)), (px + s(5), guard_y + s(1)), (px + s(14), guard_y - s(2)),
-         (px + s(18), guard_y - s(7)), (px + s(12), guard_y - s(5)), (px, guard_y - s(4)),
-         (px - s(12), guard_y - s(5))]
-    d.polygon(g, fill=GOLD, outline=GOLD_DK, width=SS)
-    d.ellipse([px - s(3), guard_y - s(3.5), px + s(3), guard_y + s(2.5)], fill=(50, 110, 255), outline=(200, 230, 255), width=SS)
-    # grip with gold bands
-    d.rectangle([px - s(2.6), guard_y + s(4), px + s(2.6), py + s(38)], fill=(28, 52, 130))
-    for yy in range(int(guard_y + s(8)), int(py + s(38)), s(5)):
-        d.line([(px - s(2.6), yy), (px + s(2.6), yy - s(1.5))], fill=GOLD, width=SS)
-    # pommel
-    pm = py + s(43)
-    d.ellipse([px - s(6), pm - s(6), px + s(6), pm + s(6)], fill=GOLD, outline=GOLD_DK, width=SS)
-    d.ellipse([px - s(3), pm - s(3), px + s(3), pm + s(3)], fill=(50, 110, 255))
-    # pivot cap
-    d.ellipse([px - s(6), py - s(6), px + s(6), py + s(6)], fill=GOLD, outline=GOLD_DK, width=SS)
-    d.ellipse([px - s(2), py - s(2), px + s(2), py + s(2)], fill=(60, 40, 10))
-    return img
-
-
 def sub_hand(w=10, tip=46, tail=10):
     img, d, px, py = hand_canvas(w, tip, tail)
     d.polygon([(px, py - s(tip) + SS), (px - s(1.8), py), (px - s(1.2), py + s(tail) - SS),
@@ -365,7 +333,6 @@ HANDS = {
     # name: (builder, width, tip, tail)
     'hand_hour': (lambda: dauphine(22, 118, 22), 22, 118, 22),
     'hand_minute': (lambda: dauphine(18, 180, 26, cap=9), 18, 180, 26),
-    'hand_second': (excalibur, 40, 195, 50),
     'hand_sub': (sub_hand, 10, 46, 10),
 }
 
@@ -389,8 +356,6 @@ def preview(dial_hi, hands_hi, hh=10, mm=8, ss=32, dow=5, day=29, batt=78, ambie
         text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), (20, 20, 20))
     place(img, hands_hi['hand_hour'], 22, 118, 225, 225, (hh % 12 + mm / 60) * 30)
     place(img, hands_hi['hand_minute'], 18, 180, 225, 225, mm * 6 + ss / 10)
-    if not ambient:
-        place(img, hands_hi['hand_second'], 40, 195, 225, 225, ss * 6)
     return finish(img)
 
 

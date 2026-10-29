@@ -15,11 +15,10 @@ A Pixel Watch / Wear OS watch face inspired by the Seiko × FINAL FANTASY XI
 | Blue crystal index at 12 | Large faceted blue crystal with glow |
 | "XI" at 11 | Gold serif **XI** |
 | Crystal-shaped indices | Faceted silver crystals at 1, 2, 4, 5, 7, 8, 10 |
-| Excalibur chronograph seconds hand | Sweeping Excalibur seconds hand (winged gold guard, blue gem, hilt as counterweight) |
 | Three sub-dials styled on the three nations' banners (crest medallion in the centre) | **San d'Oria** (red, 9 o'clock): day of week<br>**Bastok** (blue, 3 o'clock): battery E→F<br>**Windurst** (green, 6 o'clock): 24-hour hand |
 | Date window | Live date at 4:30 |
 
-Always-on mode switches to an outline-only dial and hides the seconds hand to save power.
+There's no seconds hand, by choice. Always-on mode switches to a dimmed, outline-only dial.
 
 ## Install from your phone (no computer)
 
