@@ -10,7 +10,7 @@ import math
 import os
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 N = 450            # watch face canvas (matches watchface.xml)
 SS = 4             # supersampling factor
@@ -71,6 +71,25 @@ def text_ff(d, xy, txt, size, fill, stroke=0, stroke_fill=None):
             d.text((x, xy[1]), ch, font=f, fill=fill, anchor='lm',
                    stroke_width=stroke, stroke_fill=stroke_fill)
         x += w
+
+
+def xi_mask(size, center, height=32, gap=0.14):
+    """'XI' as an L mask with both letters cropped to their ink and scaled to exactly
+    the same height, so tops and bottoms line up (the font's X and I differ)."""
+    f = ImageFont.truetype(FONT_FF, 400)
+    glyphs = []
+    for ch in 'XI':
+        g = Image.new('L', (600, 600), 0)
+        ImageDraw.Draw(g).text((50, 500), ch, font=f, fill=255, anchor='ls')
+        g = g.crop(g.getbbox())
+        glyphs.append(g.resize((round(g.width * s(height) / g.height), round(s(height))), Image.LANCZOS))
+    total = sum(g.width for g in glyphs) + s(height) * gap
+    m = Image.new('L', size, 0)
+    x, top = center[0] - total / 2, center[1] - s(height) / 2
+    for g in glyphs:
+        m.paste(g, (round(x), round(top)))
+        x += g.width + s(height) * gap
+    return m
 
 
 _FF_CMAP = None
@@ -190,9 +209,12 @@ GOLD_STOPS = [(0, (255, 232, 150)), (0.45, (226, 182, 82)), (0.55, (176, 128, 42
 
 
 def applied_text(img, draw_fn, stops=GOLD_STOPS, shadow=True):
-    """Raised metal lettering: draw_fn(draw, fill) paints a mask; filled with a gradient + shadow."""
-    m = Image.new('L', img.size, 0)
-    draw_fn(ImageDraw.Draw(m), 255)
+    """Raised metal lettering from a mask (or draw_fn(draw, fill) painting one): gradient + shadow."""
+    if isinstance(draw_fn, Image.Image):
+        m = draw_fn
+    else:
+        m = Image.new('L', img.size, 0)
+        draw_fn(ImageDraw.Draw(m), 255)
     box = m.getbbox()
     if not box:
         return
@@ -427,12 +449,16 @@ def make_dial(ambient=False, bright=0.6):
     d = ImageDraw.Draw(img)
 
     pos = polar(s(180), 330)
-    if ambient:   # crystal-blue outline numeral
-        blue = tuple(int(c * (0.6 + 0.4 * bright)) for c in (110, 155, 255))
-        text_ff(d, pos, 'XI', 34, (14, 26, 70), stroke=round(s(1)), stroke_fill=blue)
+    xi = xi_mask(size, pos)
+    if ambient:   # crystal-blue numeral with a lighter edge
+        k = 0.6 + 0.4 * bright
+        edge = ImageChops.subtract(xi, xi.filter(ImageFilter.MinFilter(round(s(0.4)) * 2 + 1)))
+        fill_mask(img, xi, tuple(int(c * k) for c in (70, 115, 235)) + (255,))
+        fill_mask(img, edge, tuple(int(c * k) for c in (150, 190, 255)) + (255,))
+        d = ImageDraw.Draw(img)
     else:
         # applied (raised) gold numeral and wordmark; small print stays flat like pad printing
-        applied_text(img, lambda dd, f: text_ff(dd, pos, 'XI', 34, f))
+        applied_text(img, xi)
         applied_text(img, lambda dd, f: text_ff(dd, (C, C - s(99)), "VANA'DIEL", 23, f))
         d = ImageDraw.Draw(img)
         text_c(d, (C, C - s(118)), 'WE ARE', font(FONT_LABEL, 8), (200, 206, 218))
