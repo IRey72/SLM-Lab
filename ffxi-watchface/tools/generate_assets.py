@@ -202,28 +202,6 @@ def applied_text(img, draw_fn, stops=GOLD_STOPS, shadow=True):
 
 
 # --------------------------------------------------------------------- crystals
-def crystal_pts(r_in, r_out, w, deg):
-    a = math.radians(deg)
-    u = (math.sin(a), -math.cos(a))       # radial (outward)
-    v = (math.cos(a), math.sin(a))        # perpendicular
-    k = w * 0.75
-
-    def p(r, off):
-        return (C + u[0] * r + v[0] * off, C + u[1] * r + v[1] * off)
-    return {
-        'out': p(r_out, 0), 'in': p(r_in, 0),
-        'ol': p(r_out - k, -w / 2), 'or': p(r_out - k, w / 2),
-        'il': p(r_in + k * 0.6, -w / 2), 'ir': p(r_in + k * 0.6, w / 2),
-        'core_o': p(r_out - k * 0.9, 0), 'core_i': p(r_in + k * 0.9, 0),
-        'cl': p((r_in + r_out) / 2, -w / 5), 'cr': p((r_in + r_out) / 2, w / 5),
-    }
-
-
-def crystal_outline(d, r_in, r_out, w, deg, color):
-    P = crystal_pts(s(r_in), s(r_out), s(w), deg)
-    d.polygon([P['out'], P['ol'], P['il'], P['in'], P['ir'], P['or']], outline=color, width=round(s(1.5)))
-
-
 CRYSTAL_R = (140, 204)   # 12 o'clock crystal spans these radii
 MARKER_R = (160, 201)    # clear crystal hour markers span these radii
 
@@ -251,12 +229,42 @@ def place_marker(img, deg):
     img.alpha_composite(layer)
 
 
+# Gem line drawing for the outline styles: outer outline, inner table, and facet
+# lines joining them. Points are (x in widths, y in half-heights), mirrored left/right.
+GEM_OUTER = [(0, -1), (0.34, -0.66), (0.5, -0.12), (0.47, 0.42), (0.3, 0.84), (0, 1)]
+GEM_TABLE = [(0, -0.6), (0.17, -0.38), (0.25, -0.06), (0.23, 0.3), (0.14, 0.58), (0, 0.7)]
+
+
+def crystal_lines(img, bright=1.0):
+    """The 12 o'clock crystal as white minimal line art (more detailed than plain markers)."""
+    h = s(CRYSTAL_R[1] - CRYSTAL_R[0])
+    w = h * 0.43
+    cx, cy = C, C - s((CRYSTAL_R[0] + CRYSTAL_R[1]) / 2)
+
+    def ring(pts):
+        right = [(cx + x * w, cy + y * h / 2) for x, y in pts]
+        left = [(cx - x * w, cy + y * h / 2) for x, y in pts[-2:0:-1]]
+        return right + left
+    outer, table = ring(GEM_OUTER), ring(GEM_TABLE)
+    col = tuple(int(c * bright) for c in (236, 242, 255))
+    thin = tuple(int(c * bright * 0.75) for c in (236, 242, 255))
+    d = ImageDraw.Draw(img)
+    d.polygon(outer, fill=(0, 0, 0, 255))
+    n = len(outer)
+    for i in range(n):   # facets: each table corner to its outer corner and the next one
+        d.line([table[i], outer[i]], fill=thin, width=round(s(0.8)))
+        d.line([table[i], outer[(i + 1) % n]], fill=thin, width=round(s(0.6)))
+    d.line([table[0], table[n // 2]], fill=thin, width=round(s(0.6)))
+    d.line(table + table[:1], fill=col, width=round(s(1.0)), joint='curve')
+    d.line(outer + outer[:1], fill=col, width=round(s(1.4)), joint='curve')
+
+
 def place_crystal(img, ambient, bright=1.0):
     """The big blue crystal at 12, from tools/emblems/crystal.png (background already cut out)."""
+    if ambient:
+        crystal_lines(img, bright)
+        return
     cr = load_crystal(s(CRYSTAL_R[1] - CRYSTAL_R[0]))
-    if ambient:   # dim it so always-on stays mostly dark
-        r, g, b, a = cr.split()
-        cr = Image.merge('RGBA', [ch.point(lambda v: int(v * 0.6 * bright)) for ch in (r, g, b)] + [a])
     layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
     layer.paste(cr, (round(C - cr.width / 2), round(C - s(CRYSTAL_R[1]))))
     if not ambient:
@@ -273,37 +281,50 @@ def sub_centers():
     }
 
 
-def emblem_lines(em, bright=1.0):
-    """Colour-edge line art of a crest (works where greyscale fails, e.g. black griffins on red)."""
-    size = em.size
-    a = np.asarray(em.resize((256, 256), Image.LANCZOS).filter(ImageFilter.GaussianBlur(1.2))).astype(float)
-    gy = np.abs(np.diff(a, axis=0, prepend=a[:1])).sum(-1)
-    gx = np.abs(np.diff(a, axis=1, prepend=a[:, :1])).sum(-1)
-    e = np.clip((gx + gy - 40) * 1.6, 0, 210) * bright
-    return Image.fromarray(e.astype(np.uint8)).resize(size, Image.LANCZOS).convert('RGB')
-
-
-def sandoria_art(size, bright=1.0):
-    """San d'Oria for the outline styles: grey griffin silhouettes with a light edge,
-    crown and spears picked out. Edge-tracing turns its gold detailing into noise."""
+def crest_masks(key, a):
+    """(figure, accent) masks for a crest at source resolution, from its colours."""
     from scipy import ndimage
-    a = np.asarray(Image.open(os.path.join(EMBLEMS, 'sandoria.png')).convert('RGB')).astype(int)
-    r, g, b = a[..., 0], a[..., 1], a[..., 2]
 
     def keep(m, min_size):
         lab, n = ndimage.label(m)
         sizes = ndimage.sum(m, lab, range(1, n + 1))
         return np.isin(lab, [i + 1 for i, sz in enumerate(sizes) if sz >= min_size])
 
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    if key == 'sandoria':   # black griffins; gold crown, spears and spear tips
+        fig = keep(a.max(2) < 100, 300)
+        acc = keep(((r > 160) & (g > 100) & (b < 150) & (g > b + 30)) | (a.min(2) > 190), 40)
+    elif key == 'bastok':   # navy gear and bottles; light-blue rims, bars and white dots
+        fig = keep((b > 70) & (r < 80) & (g < 80) & (b > r + 40), 200)
+        light = (b > 180) & (r < 150) & (g > 70) & (b > r + 60)
+        greyblue = (b > 130) & (g > 100) & (r < 130) & (b > r + 30) & ~light
+        white = (a.min(2) > 170) & (b >= r - 5) & (b > g - 5)
+        yy, xx = np.mgrid[0:a.shape[0], 0:a.shape[1]]
+        rr = np.hypot(xx - a.shape[1] / 2, yy - a.shape[0] / 2)
+        dots = ndimage.binary_dilation(ndimage.binary_opening(white & (rr > a.shape[0] * 0.32), iterations=2), iterations=3)
+        acc = (keep(light | greyblue, 20) | dots) & (rr < a.shape[0] * 0.47)
+    else:                   # windurst: green star tree; yellow stars
+        star = (r > 170) & (g > 170) & (b < 110)
+        fig = keep((g > r + 25) & ~star, 300)
+        acc = keep(star, 30)
+    return fig, acc
+
+
+def crest_art(key, size, bright=1.0):
+    """Crest for the outline styles, the same treatment for every nation: the main figure
+    as a grey silhouette with a light edge, accents (crown, stars, rims...) bright."""
+    from scipy import ndimage
+    a = np.asarray(Image.open(os.path.join(EMBLEMS, key + '.png')).convert('RGB')).astype(int)
+    fig, acc = crest_masks(key, a)
+
     def soft_mask(m, sigma, thresh):
         f = ndimage.gaussian_filter(m.astype(float), sigma)
         f = Image.fromarray((np.clip(f, 0, 1) * 255).astype(np.uint8)).resize(size, Image.LANCZOS)
         return np.asarray(f) > thresh * 255
 
-    black = soft_mask(keep(a.max(2) < 100, 300), 2.2, 0.5)
-    gold = soft_mask(keep(((r > 160) & (g > 100) & (b < 150) & (g > b + 30)) | (a.min(2) > 190), 40), 1.2, 0.45)
-    edge = black & ~ndimage.binary_erosion(black, iterations=3)
-    v = np.where(black, 85, 0) + np.where(edge, 120, 0) + np.where(gold, 230, 0)
+    fig, acc = soft_mask(fig, 2.2, 0.5), soft_mask(acc, 1.2, 0.45)
+    edge = fig & ~ndimage.binary_erosion(fig, iterations=3)
+    v = np.where(acc, 230, np.where(fig, 85, 0) + np.where(edge, 120, 0))
     v = np.clip(v, 0, 255) * bright
     return Image.fromarray(v.astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.8)).convert('RGB')
 
@@ -313,7 +334,7 @@ def draw_emblem(img, key, cx, cy, ambient, bright=1.0):
     r = s(EMBLEM_R)
     em = Image.open(os.path.join(EMBLEMS, key + '.png')).convert('RGB').resize((2 * r, 2 * r), Image.LANCZOS)
     if ambient:   # engraved line art: readable on black and keeps few pixels lit
-        em = sandoria_art(em.size, bright) if key == 'sandoria' else emblem_lines(em, bright)
+        em = crest_art(key, em.size, bright)
     img.paste(em, (int(cx - r), int(cy - r)), circle_mask((2 * r, 2 * r), r, r, r))
     if ambient:
         ImageDraw.Draw(img).ellipse([cx - r, cy - r, cx + r, cy + r], outline=(90, 90, 90), width=round(s(1.4)))
@@ -408,12 +429,9 @@ def make_dial(ambient=False, bright=0.6):
         d.line([polar(s(222), a), polar(s(211 if five else 216), a)], fill=col, width=round(s(2.2 if five else 1)))
 
     # hour indices: crystals; 12 = blue crystal, 11 = "XI"
-    for h in (1, 2, 4, 5, 7, 8, 10):
-        a = h * 30
-        if ambient:
-            crystal_outline(d, 162, 200, 16, a, (150, 150, 150))
-        else:
-            place_marker(img, a)
+    if not ambient:   # the outline styles keep only the 12 o'clock crystal
+        for h in (1, 2, 4, 5, 7, 8, 10):
+            place_marker(img, h * 30)
     d = ImageDraw.Draw(img)
     if not ambient:
         glow = Image.new('RGBA', size, (0, 0, 0, 0))
@@ -423,8 +441,9 @@ def make_dial(ambient=False, bright=0.6):
     d = ImageDraw.Draw(img)
 
     pos = polar(s(180), 330)
-    if ambient:
-        text_ff(d, pos, 'XI', 34, (0, 0, 0), stroke=round(s(1)), stroke_fill=(150, 150, 150))
+    if ambient:   # crystal-blue outline numeral
+        blue = tuple(int(c * (0.6 + 0.4 * bright)) for c in (110, 155, 255))
+        text_ff(d, pos, 'XI', 34, (14, 26, 70), stroke=round(s(1)), stroke_fill=blue)
     else:
         # applied (raised) gold numeral and wordmark; small print stays flat like pad printing
         applied_text(img, lambda dd, f: text_ff(dd, pos, 'XI', 34, f))

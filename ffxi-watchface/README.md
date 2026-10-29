@@ -9,8 +9,9 @@ A Pixel Watch / Wear OS watch face inspired by the Seiko × FINAL FANTASY XI
 | ![classic](docs/preview_active.png) | ![dark](docs/preview_dark.png) | ![ambient](docs/preview_ambient.png) |
 
 Switch styles on the watch: long-press the face, tap **Customize**, then **Style** (Classic or Dark).
-Dark is the minimalist outline look: thin outline hands, a hairline sub-dial needle, and the crests drawn as line art
-(San d'Oria as grey griffin silhouettes so it stays readable).
+Dark is the minimalist outline look: thin outline hands, hairline sub-dial needles, a white line-drawn crystal
+at 12, a crystal-blue XI, no other hour markers, and all three crests in one style (grey silhouettes with a
+light edge, details picked out in white).
 
 ## Design (after the Seiko piece)
 
