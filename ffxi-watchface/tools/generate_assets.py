@@ -20,10 +20,13 @@ FONTS = os.path.join(os.path.dirname(__file__), 'fonts')
 FONT_SERIF = os.path.join(FONTS, 'Cinzel-Bold.ttf')      # XI, wordmark, date
 FONT_LABEL = os.path.join(FONTS, 'Cinzel-SemiBold.ttf')  # nation names, day names
 FONT_NUM = os.path.join(FONTS, 'Oswald-SemiBold.ttf')    # sub-dial numerals
+FONT_FF = os.path.join(FONTS, 'FinalFantasy.ttf')        # caps only; no digits/space/'
+EMBLEMS = os.path.join(os.path.dirname(__file__), 'emblems')  # square crops of the nation crests
 
 # Layout (in 450px units) -- keep in sync with watchface.xml
 SUB_OFFSET = 100   # sub-dial centre distance from main centre
 SUB_R = 56         # sub-dial radius
+EMBLEM_R = 33      # crest medallion radius inside each sub-dial
 DATE_POS = (225 + 103, 225 + 103)  # date window centre (4:30)
 DATE_SIZE = (34, 24)
 
@@ -54,6 +57,33 @@ def font(path, size):
 
 def text_c(d, xy, txt, f, fill, **kw):
     d.text(xy, txt, font=f, fill=fill, anchor='mm', **kw)
+
+
+def text_ff(d, xy, txt, size, fill, stroke=0, stroke_fill=None):
+    """Centre txt in the Final Fantasy font, falling back to Cinzel for missing glyphs."""
+    ff, fb = font(FONT_FF, size), font(FONT_SERIF, size * 0.8)
+    have = set(chr(c) for c in _ff_cmap())
+    runs = []
+    for ch in txt:
+        f = ff if ch in have else fb
+        runs.append((ch, f, d.textlength(ch, font=f) if ch != ' ' else size * SS * 0.35))
+    x = xy[0] - sum(w for *_, w in runs) / 2
+    for ch, f, w in runs:
+        if ch != ' ':
+            d.text((x, xy[1]), ch, font=f, fill=fill, anchor='lm',
+                   stroke_width=stroke, stroke_fill=stroke_fill)
+        x += w
+
+
+_FF_CMAP = None
+
+
+def _ff_cmap():
+    global _FF_CMAP
+    if _FF_CMAP is None:
+        from fontTools.ttLib import TTFont
+        _FF_CMAP = list(TTFont(FONT_FF).getBestCmap())
+    return _FF_CMAP
 
 
 def radial_gradient(size, inner, outer, cx=None, cy=None, r=None):
@@ -117,6 +147,18 @@ def sub_centers():
     }
 
 
+def draw_emblem(img, key, cx, cy, ambient):
+    """Nation crest in a round medallion at the sub-dial centre."""
+    r = s(EMBLEM_R)
+    em = Image.open(os.path.join(EMBLEMS, key + '.png')).convert('RGB').resize((2 * r, 2 * r), Image.LANCZOS)
+    if ambient:   # dim greyscale so always-on stays mostly dark
+        em = em.convert('L').point(lambda v: int(v * 0.3)).convert('RGB')
+    img.paste(em, (int(cx - r), int(cy - r)), circle_mask((2 * r, 2 * r), r, r, r))
+    d = ImageDraw.Draw(img)
+    ring = (90, 90, 90) if ambient else GOLD
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=ring, width=round(s(1.4)))
+
+
 def draw_subdial(img, key, ambient=False):
     cx, cy = (s(v) for v in sub_centers()[key])
     R = s(SUB_R)
@@ -136,37 +178,34 @@ def draw_subdial(img, key, ambient=False):
                   outline=(0, 0, 0, 110), width=round(s(1)))
     else:
         d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=(110, 110, 110), width=round(s(1.2)))
+    draw_emblem(img, key, cx, cy, ambient)
+    d = ImageDraw.Draw(img)
 
     small = font(FONT_LABEL, 8)
     num = font(FONT_NUM, 8.5)
-    tiny = font(FONT_LABEL, 6.5)
-    tick_r0, tick_r1, lab_r = R - s(3), R - s(8), R - s(16)
+    tick_r0, tick_r1, lab_r = R - s(3), R - s(6.5), R - s(13.5)
     if key == 'sandoria':
         days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']
         for i, lab in enumerate(days):
             a = i * 360 / 7
             d.line([polar(tick_r0, a, cx, cy), polar(tick_r1, a, cx, cy)], fill=fg, width=round(s(1.4)))
             text_c(d, polar(lab_r, a, cx, cy), lab, small, fg)
-        name = "SAN D'ORIA"
     elif key == 'bastok':
         for i in range(11):
             a = -150 + i * 30
             long_ = i % 5 == 0
-            d.line([polar(tick_r0, a, cx, cy), polar(tick_r1 - (s(2) if long_ else 0), a, cx, cy)],
+            d.line([polar(tick_r0, a, cx, cy), polar(tick_r1 - (s(1) if long_ else 0), a, cx, cy)],
                    fill=fg, width=round(s(1.6 if long_ else 1)))
         for val, a in (('E', -150), ('½', 0), ('F', 150)):
-            text_c(d, polar(lab_r - s(2), a, cx, cy), val, num, fg)
-        name = 'BASTOK'
+            text_c(d, polar(lab_r, a, cx, cy), val, num, fg)
     else:
         for i in range(24):
             a = i * 15
             long_ = i % 6 == 0
-            d.line([polar(tick_r0, a, cx, cy), polar(tick_r1 - (s(2) if long_ else s(-2)), a, cx, cy)],
+            d.line([polar(tick_r0, a, cx, cy), polar(tick_r1 - (s(1) if long_ else s(-2)), a, cx, cy)],
                    fill=fg, width=round(s(1.6 if long_ else 0.8)))
         for val, a in (('24', 0), ('6', 90), ('12', 180), ('18', 270)):
-            text_c(d, polar(lab_r - s(2), a, cx, cy), val, num, fg)
-        name = 'WINDURST'
-    text_c(d, (cx, cy + s(20)), name, tiny, GOLD if not ambient else (120, 120, 120))
+            text_c(d, polar(lab_r, a, cx, cy), val, num, fg)
 
 
 def make_dial(ambient=False):
@@ -217,19 +256,18 @@ def make_dial(ambient=False):
         d.line([(sx - s(4), sy), (sx + s(4), sy)], fill=(255, 255, 255, 220), width=SS)
         d.line([(sx, sy - s(4)), (sx, sy + s(4))], fill=(255, 255, 255, 220), width=SS)
 
-    xi = font(FONT_SERIF, 30)
     pos = polar(s(180), 330)
     if ambient:
-        text_c(d, pos, 'XI', xi, (0, 0, 0), stroke_width=round(s(1)), stroke_fill=(150, 150, 150))
+        text_ff(d, pos, 'XI', 34, (0, 0, 0), stroke=round(s(1)), stroke_fill=(150, 150, 150))
     else:
-        text_c(d, (pos[0] + s(1), pos[1] + s(1.5)), 'XI', xi, (0, 0, 0, 160))
-        text_c(d, pos, 'XI', xi, GOLD, stroke_width=round(s(0.6)), stroke_fill=GOLD_DK)
+        text_ff(d, (pos[0] + s(1), pos[1] + s(1.5)), 'XI', 34, (0, 0, 0, 160))
+        text_ff(d, pos, 'XI', 34, GOLD, stroke=round(s(0.6)), stroke_fill=GOLD_DK)
 
     # wordmark
     if not ambient:
-        text_c(d, (C, C - s(121)), 'WE ARE', font(FONT_LABEL, 8), (200, 206, 218))
-        text_c(d, (C, C - s(104)), "VANA'DIEL", font(FONT_SERIF, 18), GOLD)
-        text_c(d, (C, C - s(87)), 'CHRONOGRAPH', font(FONT_LABEL, 6.5), (170, 178, 192))
+        text_c(d, (C, C - s(123)), 'WE ARE', font(FONT_LABEL, 8), (200, 206, 218))
+        text_ff(d, (C, C - s(104)), "VANA'DIEL", 23, GOLD)
+        text_c(d, (C, C - s(85)), 'CHRONOGRAPH', font(FONT_LABEL, 6.5), (170, 178, 192))
 
     for key in NATIONS:
         draw_subdial(img, key, ambient)

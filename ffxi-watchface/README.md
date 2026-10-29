@@ -16,7 +16,7 @@ A Pixel Watch / Wear OS watch face inspired by the Seiko × FINAL FANTASY XI
 | "XI" at 11 | Gold serif **XI** |
 | Crystal-shaped indices | Faceted silver crystals at 1, 2, 4, 5, 7, 8, 10 |
 | Excalibur chronograph seconds hand | Sweeping Excalibur seconds hand (winged gold guard, blue gem, hilt as counterweight) |
-| Three sub-dials in the three nations' colours | **San d'Oria** (red, 9 o'clock): day of week<br>**Bastok** (blue, 3 o'clock): battery E→F<br>**Windurst** (green, 6 o'clock): 24-hour hand |
+| Three sub-dials styled on the three nations' banners (crest medallion in the centre) | **San d'Oria** (red, 9 o'clock): day of week<br>**Bastok** (blue, 3 o'clock): battery E→F<br>**Windurst** (green, 6 o'clock): 24-hour hand |
 | Date window | Live date at 4:30 |
 
 Always-on mode switches to an outline-only dial and hides the seconds hand to save power.
@@ -53,7 +53,8 @@ You need Android Studio (or the Android SDK plus Gradle 8.7 or newer).
 
 ## Tweaking the look
 
-All art comes from `tools/generate_assets.py` (Pillow and numpy). Edit the colours and
+All art comes from `tools/generate_assets.py` (Pillow, numpy and fontTools).
+The nation crests are square crops in `tools/emblems/`. Replace a crop to change a crest. Edit the colours and
 layout constants at the top, then run:
 
 ```
@@ -64,6 +65,7 @@ This rewrites the PNGs in `app/src/main/res/drawable-nodpi/` and the previews in
 If you move a sub-dial, the date window or a hand size, update the matching
 coordinates in `app/src/main/res/raw/watchface.xml`.
 
-Fonts: Cinzel and Oswald (SIL Open Font License, see `tools/fonts/`).
+Fonts: "Final Fantasy" by Juan Pablo Reyes Altamirano (XI and the VANA'DIEL wordmark),
+plus Cinzel and Oswald (SIL Open Font License). See `tools/fonts/`.
 
 Fan-made and unofficial. Not affiliated with Seiko or Square Enix.
