@@ -24,7 +24,7 @@
       <!-- Date window (frame is part of dial.png) -->
       <PartText x="311" y="316" width="34" height="24">
         <Text align="CENTER">
-          <Font family="SYNC_TO_DEVICE" size="17" weight="BOLD" color="#ff141414">
+          <Font family="cinzel_bold" size="17" color="#ff141414">
             <Template>%d<Parameter expression="[DAY]" /></Template>
           </Font>
         </Text>

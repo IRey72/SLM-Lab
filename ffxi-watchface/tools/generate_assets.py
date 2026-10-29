@@ -16,8 +16,10 @@ SS = 4             # supersampling factor
 C = N * SS / 2     # canvas centre in supersampled px
 OUT = os.path.join(os.path.dirname(__file__), '..', 'app', 'src', 'main', 'res', 'drawable-nodpi')
 
-FONT_SERIF = '/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf'
-FONT_SANS = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
+FONTS = os.path.join(os.path.dirname(__file__), 'fonts')
+FONT_SERIF = os.path.join(FONTS, 'Cinzel-Bold.ttf')      # XI, wordmark, date
+FONT_LABEL = os.path.join(FONTS, 'Cinzel-SemiBold.ttf')  # nation names, day names
+FONT_NUM = os.path.join(FONTS, 'Oswald-SemiBold.ttf')    # sub-dial numerals
 
 # Layout (in 450px units) -- keep in sync with watchface.xml
 SUB_OFFSET = 100   # sub-dial centre distance from main centre
@@ -135,8 +137,9 @@ def draw_subdial(img, key, ambient=False):
     else:
         d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=(110, 110, 110), width=round(s(1.2)))
 
-    small = font(FONT_SANS, 7.5)
-    tiny = font(FONT_SANS, 6)
+    small = font(FONT_LABEL, 8)
+    num = font(FONT_NUM, 8.5)
+    tiny = font(FONT_LABEL, 6.5)
     tick_r0, tick_r1, lab_r = R - s(3), R - s(8), R - s(16)
     if key == 'sandoria':
         days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']
@@ -152,7 +155,7 @@ def draw_subdial(img, key, ambient=False):
             d.line([polar(tick_r0, a, cx, cy), polar(tick_r1 - (s(2) if long_ else 0), a, cx, cy)],
                    fill=fg, width=round(s(1.6 if long_ else 1)))
         for val, a in (('E', -150), ('½', 0), ('F', 150)):
-            text_c(d, polar(lab_r - s(2), a, cx, cy), val, small, fg)
+            text_c(d, polar(lab_r - s(2), a, cx, cy), val, num, fg)
         name = 'BASTOK'
     else:
         for i in range(24):
@@ -161,7 +164,7 @@ def draw_subdial(img, key, ambient=False):
             d.line([polar(tick_r0, a, cx, cy), polar(tick_r1 - (s(2) if long_ else s(-2)), a, cx, cy)],
                    fill=fg, width=round(s(1.6 if long_ else 0.8)))
         for val, a in (('24', 0), ('6', 90), ('12', 180), ('18', 270)):
-            text_c(d, polar(lab_r - s(2), a, cx, cy), val, small, fg)
+            text_c(d, polar(lab_r - s(2), a, cx, cy), val, num, fg)
         name = 'WINDURST'
     text_c(d, (cx, cy + s(20)), name, tiny, GOLD if not ambient else (120, 120, 120))
 
@@ -224,9 +227,9 @@ def make_dial(ambient=False):
 
     # wordmark
     if not ambient:
-        text_c(d, (C, C - s(120)), 'WE ARE', font(FONT_SANS, 7.5), (200, 206, 218))
-        text_c(d, (C, C - s(104)), "VANA'DIEL", font(FONT_SERIF, 17), GOLD)
-        text_c(d, (C, C - s(88)), 'CHRONOGRAPH', font(FONT_SANS, 6), (170, 178, 192))
+        text_c(d, (C, C - s(121)), 'WE ARE', font(FONT_LABEL, 8), (200, 206, 218))
+        text_c(d, (C, C - s(104)), "VANA'DIEL", font(FONT_SERIF, 18), GOLD)
+        text_c(d, (C, C - s(87)), 'CHRONOGRAPH', font(FONT_LABEL, 6.5), (170, 178, 192))
 
     for key in NATIONS:
         draw_subdial(img, key, ambient)
@@ -335,7 +338,7 @@ def preview(dial_hi, hands_hi, hh=10, mm=8, ss=32, dow=5, day=29, batt=78, ambie
     place(img, sub, 10, 46, *centers['windurst'], (hh + mm / 60) * 15)
     if not ambient:
         d = ImageDraw.Draw(img)
-        text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SANS, 15), (20, 20, 20))
+        text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), (20, 20, 20))
     place(img, hands_hi['hand_hour'], 22, 118, 225, 225, (hh % 12 + mm / 60) * 30)
     place(img, hands_hi['hand_minute'], 18, 180, 225, 225, mm * 6 + ss / 10)
     if not ambient:

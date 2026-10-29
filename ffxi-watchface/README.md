@@ -64,4 +64,6 @@ This rewrites the PNGs in `app/src/main/res/drawable-nodpi/` and the previews in
 If you move a sub-dial, the date window or a hand size, update the matching
 coordinates in `app/src/main/res/raw/watchface.xml`.
 
+Fonts: Cinzel and Oswald (SIL Open Font License, see `tools/fonts/`).
+
 Fan-made and unofficial. Not affiliated with Seiko or Square Enix.
