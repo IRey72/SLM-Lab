@@ -8,8 +8,10 @@ A Pixel Watch / Wear OS watch face inspired by the Seiko × FINAL FANTASY XI
 
 Switch styles on the watch: long-press the face, tap **Customize**, then **Style** (Classic, Dark or Light).
 Light follows the real Seiko piece: silver-white dial, blue inner ring, lume batons, white sub-dials with
-nation-coloured rings and hands, and Windurst at 3 / Bastok at 6 as on the watch. Its faint world-map
-background is drawn from `tools/emblems/worldmap.png` when that image is present.
+nation-coloured rings and hands, and Windurst at 3 / Bastok at 6 as on the watch.
+
+All three styles carry a faint outline of Vana'diel behind the dial (not in always-on). The land shapes are
+cut from `tools/emblems/worldmap_source.png` into `tools/emblems/worldmap_land.png`.
 Dark is the minimalist outline look: thin outline hands, hairline sub-dial needles, a white line-drawn crystal
 at 12, a crystal-blue XI, no other hour markers, and all three crests in one style (grey silhouettes with a
 light edge, details picked out in white).

@@ -23,6 +23,7 @@ FONT_LABEL = os.path.join(FONTS, 'Cinzel-SemiBold.ttf')  # nation names, day nam
 FONT_NUM = os.path.join(FONTS, 'Oswald-SemiBold.ttf')    # sub-dial numerals
 FONT_FF = os.path.join(FONTS, 'FinalFantasy.ttf')        # caps only; no digits/space/'
 EMBLEMS = os.path.join(os.path.dirname(__file__), 'emblems')  # square crops of the nation crests
+WORLD_LAND = os.path.join(EMBLEMS, 'worldmap_land.png')      # Vana'diel land mask
 
 # Layout (in 450px units) -- keep in sync with watchface.xml
 SUB_OFFSET = 100   # sub-dial centre distance from main centre
@@ -434,8 +435,11 @@ def make_dial(ambient=False, bright=0.6):
     size = (s(N), s(N))
     if ambient:
         img = Image.new('RGBA', size, (0, 0, 0, 255))
+        if bright >= 1:   # Dark style only; always-on stays plain black
+            draw_world(img, (0, 0, 0, 0), (70, 76, 90, 255), width=0.8)
     else:
         img = sunburst(size)
+        draw_world(img, (200, 215, 255, 14), (200, 215, 255, 46))
         # chapter ring: dark gunmetal, stepped down from the dial with a bright chamfer
         metal_ring(img, C, C, s(226), s(206), (10, 13, 19), (58, 64, 78))
         inner_shadow(img, ring_mask(size, C, C, s(226), s(206)), depth=1.2, blur=1.0, alpha=0.5)
@@ -507,7 +511,6 @@ POSITION_SCALE = {'left': 'days', 'right': 'battery', 'bottom': '24h'}
 LIGHT_LAYOUT = {'left': 'sandoria', 'right': 'windurst', 'bottom': 'bastok'}
 NATION_INK = {'sandoria': (196, 32, 44), 'windurst': (40, 150, 70), 'bastok': (40, 70, 190)}
 LIGHT_BLUE_RING = ((24, 40, 104), (66, 96, 178))
-WORLD_MAP = os.path.join(EMBLEMS, 'worldmap.png')   # optional: drop a map image here
 
 
 def light_sunburst(size):
@@ -518,19 +521,20 @@ def light_sunburst(size):
     return Image.fromarray(out.astype(np.uint8), 'RGB').convert('RGBA')
 
 
-def world_map_layer(img):
-    """The world map printed faintly in light grey across the dial (if the image exists)."""
-    if not os.path.exists(WORLD_MAP):
-        return
-    m = Image.open(WORLD_MAP).convert('L')
-    k = s(400) / max(m.size)
+def draw_world(img, fill, line, width=1.0, diameter=330):
+    """Rough outline of Vana'diel behind the dial furniture: land mask from
+    tools/emblems/worldmap_land.png (cut from worldmap_source.png), filled and outlined."""
+    from scipy import ndimage
+    m = Image.open(WORLD_LAND).convert('L')
+    k = s(diameter) / max(m.size)
     m = m.resize((round(m.width * k), round(m.height * k)), Image.LANCZOS)
-    a = np.asarray(m).astype(float)
-    ink = np.clip((a.mean() + 10 - a) / max(1, a.mean()), 0, 1)   # darker than average = land
-    layer = Image.new('L', img.size, 0)
-    layer.paste(Image.fromarray((ink * 255 * 0.16).astype(np.uint8)), (round(C - m.width / 2), round(C - m.height / 2)))
-    layer = Image.fromarray(np.minimum(np.asarray(layer), np.asarray(circle_mask(img.size, C, C, s(204)))))
-    fill_mask(img, layer, (120, 128, 142, 255))
+    land = Image.new('L', img.size, 0)
+    land.paste(m, (round(C - m.width / 2), round(C - m.height / 2 + s(6))))
+    a = np.asarray(land) > 127
+    edge = a & ~ndimage.binary_erosion(a, iterations=max(1, round(s(width))))
+    if fill[3]:
+        fill_mask(img, Image.fromarray((a * fill[3]).astype(np.uint8)).filter(ImageFilter.GaussianBlur(SS / 2)), fill[:3] + (255,))
+    fill_mask(img, Image.fromarray((edge * line[3]).astype(np.uint8)).filter(ImageFilter.GaussianBlur(SS / 3)), line[:3] + (255,))
 
 
 def lume_baton(img, deg, r0=168, r1=196, w=7.5):
@@ -589,7 +593,7 @@ def light_subdial(img, pos):
 def make_light_dial():
     size = (s(N), s(N))
     img = light_sunburst(size)
-    world_map_layer(img)
+    draw_world(img, (120, 128, 142, 26), (110, 118, 132, 90))
     # blue inner ring (rehaut) with fine white ticks
     metal_ring(img, C, C, s(226), s(205), *LIGHT_BLUE_RING)
     d = ImageDraw.Draw(img)
