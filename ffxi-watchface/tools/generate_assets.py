@@ -5,6 +5,7 @@ preview. All art is drawn at SS x supersampling and downscaled.
 
     python3 tools/generate_assets.py
 """
+import json
 import math
 import os
 
@@ -459,26 +460,29 @@ def poly_mask(size, pts):
     return m
 
 
-def dauphine(w, tip, tail):
-    """Polished faceted dauphine hand with a lume insert."""
-    img, px, py = hand_canvas(w, tip, tail)
-    half = s(w) / 2 - SS
-    tip_pt, tail_pt = (px, py - s(tip) + SS), (px, py + s(tail) - SS)
-    wide_y = py - s(tip) * 0.12
-    left = [tip_pt, (px - half, wide_y), (px - half * 0.55, tail_pt[1]), tail_pt]
-    right = [tip_pt, (px + half, wide_y), (px + half * 0.55, tail_pt[1]), tail_pt]
-    along = ((px, tip_pt[1]), (px, tail_pt[1]))
-    fill_mask(img, poly_mask(img.size, left), lgrad(img.size, *along, [(0, (255, 255, 255)), (0.6, (214, 220, 230)), (1, (176, 184, 198))]))
-    fill_mask(img, poly_mask(img.size, right), lgrad(img.size, *along, [(0, (150, 158, 172)), (0.6, (96, 104, 120)), (1, (70, 76, 90))]))
-    d = ImageDraw.Draw(img)
-    d.line([tip_pt, tail_pt], fill=(255, 255, 255, 140), width=SS)          # polished ridge
-    d.polygon(left[:-1] + right[-2:0:-1], outline=(36, 40, 50), width=SS)
-    # lume insert set into the hand
-    lw = half * 0.45
-    lume = [(px, py - s(tip) * 0.88), (px - lw, py - s(tip) * 0.2), (px, py - s(tip) * 0.12), (px + lw, py - s(tip) * 0.2)]
-    fill_mask(img, poly_mask(img.size, lume), lgrad(img.size, *along, [(0, (236, 250, 226)), (1, (198, 222, 190))]))
-    d.polygon(lume, outline=(110, 118, 130), width=SS)
-    return with_shadow(img)
+PHOTO_HANDS = os.path.join(os.path.dirname(__file__), 'hands')   # from tools/extract_hands.py
+
+
+def photo_hand(name, tip, pad=HAND_PAD, blur=1.8, alpha=0.55):
+    """A photographed hand, scaled so pivot-to-tip = tip, on a padded canvas with a soft shadow."""
+    meta = json.load(open(os.path.join(PHOTO_HANDS, 'hands.json')))[name]
+    src = Image.open(os.path.join(PHOTO_HANDS, name + '.png')).convert('RGBA')
+    k = s(tip) / meta['pivot'][1]
+    src = src.resize((round(src.width * k), round(src.height * k)), Image.LANCZOS)
+    w, tail = photo_geom(name, tip)[:2]
+    img, px, py = hand_canvas(w, tip, tail, pad)
+    img.alpha_composite(src, (round(px - meta['pivot'][0] * k), round(py - s(tip))))
+    return with_shadow(img, blur, alpha)
+
+
+def photo_geom(name, tip):
+    """(visual width, tail length) in 450px units, symmetric about the pivot so it stays centred."""
+    meta = json.load(open(os.path.join(PHOTO_HANDS, 'hands.json')))[name]
+    k = tip / meta['pivot'][1]
+    px = meta['pivot'][0] * k
+    w = 2 * math.ceil(max(px, meta["size"][0] * k - px))
+    tail = math.ceil((meta['size'][1] - meta['pivot'][1]) * k) + 1
+    return w, tail
 
 
 def domed_cap(r, pad=HAND_PAD):
@@ -494,27 +498,19 @@ def domed_cap(r, pad=HAND_PAD):
     return with_shadow(img, blur=1.4, alpha=0.7)
 
 
-def sub_hand(w=10, tip=46, tail=10):
-    img, px, py = hand_canvas(w, tip, tail, pad=3)
-    body = [(px, py - s(tip) + SS), (px - s(1.8), py), (px - s(1.2), py + s(tail) - SS),
-            (px + s(1.2), py + s(tail) - SS), (px + s(1.8), py)]
-    fill_mask(img, poly_mask(img.size, body), lgrad(img.size, (px - s(1.8), py), (px + s(1.8), py),
-                                                     [(0, (255, 255, 255)), (0.5, (236, 238, 242)), (1, (150, 156, 168))]))
-    d = ImageDraw.Draw(img)
-    d.polygon(body, outline=(40, 40, 40), width=SS)
-    cap = radial_gradient(img.size, (255, 255, 255), (120, 126, 138), cx=px, cy=py, r=s(4))   # symmetric: rotation-proof
-    fill_mask(img, circle_mask(img.size, px, py, s(4)), cap)
-    d.ellipse([px - s(4), py - s(4), px + s(4), py + s(4)], outline=(40, 40, 40), width=SS)
-    return with_shadow(img, blur=1.0, alpha=0.6)
+CAP_R = 10   # covers the hour hand's pivot hole
 
 
-CAP_R = 8
+def _photo(name, tip, pad=HAND_PAD, **kw):
+    w, tail = photo_geom(name, tip)
+    return (lambda: photo_hand(name, tip, pad, **kw), w, tip, tail, pad)
+
 
 HANDS = {
     # name: (builder, visual width, tip length, tail length, shadow padding)
-    'hand_hour': (lambda: dauphine(22, 118, 22), 22, 118, 22, HAND_PAD),
-    'hand_minute': (lambda: dauphine(18, 180, 26), 18, 180, 26, HAND_PAD),
-    'hand_sub': (sub_hand, 10, 46, 10, 3),
+    'hand_hour': _photo('hour', 118),
+    'hand_minute': _photo('minute', 182),
+    'hand_sub': _photo('sub', 46, pad=3, blur=1.0, alpha=0.6),
 }
 
 

@@ -56,7 +56,9 @@ You need Android Studio (or the Android SDK plus Gradle 8.7 or newer).
 ## Tweaking the look
 
 All art comes from `tools/generate_assets.py` (Pillow, numpy and fontTools).
-The nation crests are square crops in `tools/emblems/`. Replace a crop to change a crest. Edit the colours and
+The nation crests are square crops in `tools/emblems/`. Replace a crop to change a crest.
+The hands are cut from the photo in `tools/hands/source_photo.png` by `tools/extract_hands.py`
+(needs scipy). The cut-outs are committed, so you only need to re-run it with a new photo. Edit the colours and
 layout constants at the top, then run:
 
 ```

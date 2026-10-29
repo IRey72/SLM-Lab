@@ -69,31 +69,31 @@
     </Group>
 
     <!-- San d'Oria sub-dial (9 o'clock): day of week, SU at top -->
-    <PartImage name="sub_sandoria" x="117" y="176" width="16" height="62" pivotX="0.5" pivotY="0.7903">
+    <PartImage name="sub_sandoria" x="119" y="176" width="12" height="68" pivotX="0.5" pivotY="0.7206">
       <Transform target="angle" value="([DAY_OF_WEEK] - 1) * 51.428571" />
       <Image resource="hand_sub" />
     </PartImage>
 
     <!-- Bastok sub-dial (3 o'clock): battery, E at -150deg, F at +150deg -->
-    <PartImage name="sub_bastok" x="317" y="176" width="16" height="62" pivotX="0.5" pivotY="0.7903">
+    <PartImage name="sub_bastok" x="319" y="176" width="12" height="68" pivotX="0.5" pivotY="0.7206">
       <Transform target="angle" value="-150 + [BATTERY_PERCENT] * 3" />
       <Image resource="hand_sub" />
     </PartImage>
 
     <!-- Windurst sub-dial (6 o'clock): 24-hour hand, 24 at top -->
-    <PartImage name="sub_windurst" x="217" y="276" width="16" height="62" pivotX="0.5" pivotY="0.7903">
+    <PartImage name="sub_windurst" x="219" y="276" width="12" height="68" pivotX="0.5" pivotY="0.7206">
       <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
       <Image resource="hand_sub" />
     </PartImage>
 
     <!-- Hour + minute -->
     <AnalogClock x="0" y="0" width="450" height="450">
-      <HourHand resource="hand_hour" x="209" y="102" width="32" height="150" pivotX="0.5" pivotY="0.8200" />
-      <MinuteHand resource="hand_minute" x="211" y="40" width="28" height="216" pivotX="0.5" pivotY="0.8565" />
+      <HourHand resource="hand_hour" x="204" y="102" width="42" height="158" pivotX="0.5" pivotY="0.7785" />
+      <MinuteHand resource="hand_minute" x="205" y="38" width="40" height="228" pivotX="0.5" pivotY="0.8202" />
     </AnalogClock>
 
     <!-- Polished centre cap: static, above the hands, so its highlight never rotates -->
-    <PartImage name="cap" x="212" y="212" width="26" height="26">
+    <PartImage name="cap" x="210" y="210" width="30" height="30">
       <Image resource="cap" />
     </PartImage>
 
