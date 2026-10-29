@@ -10,7 +10,7 @@ import math
 import os
 
 import numpy as np
-from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 N = 450            # watch face canvas (matches watchface.xml)
 SS = 4             # supersampling factor
@@ -450,11 +450,9 @@ def make_dial(ambient=False, bright=0.6):
 
     pos = polar(s(180), 330)
     xi = xi_mask(size, pos)
-    if ambient:   # crystal-blue numeral with a lighter edge
+    if ambient:   # solid crystal-blue numeral
         k = 0.6 + 0.4 * bright
-        edge = ImageChops.subtract(xi, xi.filter(ImageFilter.MinFilter(round(s(0.4)) * 2 + 1)))
-        fill_mask(img, xi, tuple(int(c * k) for c in (70, 115, 235)) + (255,))
-        fill_mask(img, edge, tuple(int(c * k) for c in (150, 190, 255)) + (255,))
+        fill_mask(img, xi, tuple(int(c * k) for c in (85, 135, 250)) + (255,))
         d = ImageDraw.Draw(img)
     else:
         # applied (raised) gold numeral and wordmark; small print stays flat like pad printing
