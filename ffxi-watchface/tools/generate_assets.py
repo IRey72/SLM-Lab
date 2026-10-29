@@ -263,7 +263,7 @@ def sub_centers():
 
 
 def crest_masks(key, a):
-    """(figure, accent) masks for a crest at source resolution, from its colours."""
+    """(figure, accent, detail) masks for a crest at source resolution, from its colours."""
     from scipy import ndimage
 
     def keep(m, min_size):
@@ -272,9 +272,13 @@ def crest_masks(key, a):
         return np.isin(lab, [i + 1 for i, sz in enumerate(sizes) if sz >= min_size])
 
     r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    detail = np.zeros(a.shape[:2], bool)
     if key == 'sandoria':   # black griffins; gold crown, spears and spear tips
         fig = keep(a.max(2) < 100, 300)
         acc = keep(((r > 160) & (g > 100) & (b < 150) & (g > b + 30)) | (a.min(2) > 190), 40)
+        # the dimmer gold feather and outline work on the griffins
+        goldish = (r > 110) & (g > 55) & (b < 110) & (g > b + 15) & (r > g)
+        detail = goldish & ndimage.binary_dilation(fig, iterations=4) & ~acc
     elif key == 'bastok':   # navy gear and bottles; light-blue rims, bars and white dots
         fig = keep((b > 70) & (r < 80) & (g < 80) & (b > r + 40), 200)
         light = (b > 180) & (r < 150) & (g > 70) & (b > r + 60)
@@ -288,7 +292,7 @@ def crest_masks(key, a):
         star = (r > 170) & (g > 170) & (b < 110)
         fig = keep((g > r + 25) & ~star, 300)
         acc = keep(star, 30)
-    return fig, acc
+    return fig, acc, detail
 
 
 def crest_art(key, size, bright=1.0):
@@ -296,16 +300,21 @@ def crest_art(key, size, bright=1.0):
     as a grey silhouette with a light edge, accents (crown, stars, rims...) bright."""
     from scipy import ndimage
     a = np.asarray(Image.open(os.path.join(EMBLEMS, key + '.png')).convert('RGB')).astype(int)
-    fig, acc = crest_masks(key, a)
+    fig, acc, detail = crest_masks(key, a)
 
     def soft_mask(m, sigma, thresh):
         f = ndimage.gaussian_filter(m.astype(float), sigma)
         f = Image.fromarray((np.clip(f, 0, 1) * 255).astype(np.uint8)).resize(size, Image.LANCZOS)
         return np.asarray(f) > thresh * 255
 
-    fig, acc = soft_mask(fig, 2.2, 0.5), soft_mask(acc, 1.2, 0.45)
-    edge = fig & ~ndimage.binary_erosion(fig, iterations=3)
-    v = np.where(acc, 230, np.where(fig, 85, 0) + np.where(edge, 120, 0))
+    fine = detail.any()   # crests with interior detail keep finer shapes so it survives
+    fig = soft_mask(fig, 0.9 if fine else 2.2, 0.5)
+    acc = soft_mask(acc, 1.0 if fine else 1.2, 0.45)
+    edge = fig & ~ndimage.binary_erosion(fig, iterations=2 if fine else 3)
+    v = np.where(fig, 70 if fine else 85, 0) + np.where(edge, 130 if fine else 120, 0)
+    if fine:
+        v = np.where(soft_mask(detail, 0.7, 0.35), 175, v)
+    v = np.where(acc, 235 if fine else 230, v)
     v = np.clip(v, 0, 255) * bright
     return Image.fromarray(v.astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.8)).convert('RGB')
 
