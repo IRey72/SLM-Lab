@@ -128,6 +128,7 @@ def finish(img):
 # One light source, top-left (315 deg clockwise from 12): raised parts are bright
 # on that side, recesses on the opposite side, and shadows fall down-right.
 LIGHT_DEG = 315
+XI_BLUE = (85, 135, 250)   # Dark style accent: XI and sub-dial needles
 SHADOW_DXY = (1.0, 1.6)
 
 
@@ -452,7 +453,7 @@ def make_dial(ambient=False, bright=0.6):
     xi = xi_mask(size, pos)
     if ambient:   # solid crystal-blue numeral
         k = 0.6 + 0.4 * bright
-        fill_mask(img, xi, tuple(int(c * k) for c in (85, 135, 250)) + (255,))
+        fill_mask(img, xi, tuple(int(c * k) for c in XI_BLUE) + (255,))
         d = ImageDraw.Draw(img)
     else:
         # applied (raised) gold numeral and wordmark; small print stays flat like pad printing
@@ -645,7 +646,7 @@ HANDS = {
     # Dark style: thin outline hands
     'hand_hour_dark': (lambda: outline_hand(112, 16, 10), 10, 112, 16, 2),
     'hand_minute_dark': (lambda: outline_hand(180, 20, 8), 8, 180, 20, 2),
-    'hand_sub_dark': (lambda: needle_hand(44, 10), 8, 44, 10, 2),
+    'hand_sub_dark': (lambda: needle_hand(44, 10, color=XI_BLUE), 8, 44, 10, 2),
 }
 
 
