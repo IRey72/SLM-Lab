@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">Vana\'diel Chronograph</string>
+  <string name="style_label">Style</string>
+  <string name="style_classic">Classic</string>
+  <string name="style_dark">Dark</string>
 </resources>

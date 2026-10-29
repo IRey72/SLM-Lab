@@ -250,12 +250,12 @@ def place_marker(img, deg):
     img.alpha_composite(layer)
 
 
-def place_crystal(img, ambient):
+def place_crystal(img, ambient, bright=1.0):
     """The big blue crystal at 12, from tools/emblems/crystal.png (background already cut out)."""
     cr = load_crystal(s(CRYSTAL_R[1] - CRYSTAL_R[0]))
     if ambient:   # dim it so always-on stays mostly dark
         r, g, b, a = cr.split()
-        cr = Image.merge('RGBA', [ch.point(lambda v: int(v * 0.35)) for ch in (r, g, b)] + [a])
+        cr = Image.merge('RGBA', [ch.point(lambda v: int(v * 0.6 * bright)) for ch in (r, g, b)] + [a])
     layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
     layer.paste(cr, (round(C - cr.width / 2), round(C - s(CRYSTAL_R[1]))))
     if not ambient:
@@ -272,12 +272,22 @@ def sub_centers():
     }
 
 
-def draw_emblem(img, key, cx, cy, ambient):
+def emblem_lines(em, bright=1.0):
+    """Colour-edge line art of a crest (works where greyscale fails, e.g. black griffins on red)."""
+    size = em.size
+    a = np.asarray(em.resize((256, 256), Image.LANCZOS).filter(ImageFilter.GaussianBlur(1.2))).astype(float)
+    gy = np.abs(np.diff(a, axis=0, prepend=a[:1])).sum(-1)
+    gx = np.abs(np.diff(a, axis=1, prepend=a[:, :1])).sum(-1)
+    e = np.clip((gx + gy - 40) * 1.6, 0, 210) * bright
+    return Image.fromarray(e.astype(np.uint8)).resize(size, Image.LANCZOS).convert('RGB')
+
+
+def draw_emblem(img, key, cx, cy, ambient, bright=1.0):
     """Nation crest in a round medallion at the sub-dial centre."""
     r = s(EMBLEM_R)
     em = Image.open(os.path.join(EMBLEMS, key + '.png')).convert('RGB').resize((2 * r, 2 * r), Image.LANCZOS)
-    if ambient:   # dim greyscale so always-on stays mostly dark
-        em = em.convert('L').point(lambda v: int(v * 0.3)).convert('RGB')
+    if ambient:   # engraved line art: readable on black and keeps few pixels lit
+        em = emblem_lines(em, bright)
     img.paste(em, (int(cx - r), int(cy - r)), circle_mask((2 * r, 2 * r), r, r, r))
     if ambient:
         ImageDraw.Draw(img).ellipse([cx - r, cy - r, cx + r, cy + r], outline=(90, 90, 90), width=round(s(1.4)))
@@ -287,7 +297,7 @@ def draw_emblem(img, key, cx, cy, ambient):
     metal_ring(img, cx, cy, r + s(1.8), r - s(0.2), (120, 84, 24), (255, 230, 150))
 
 
-def draw_subdial(img, key, ambient=False):
+def draw_subdial(img, key, ambient=False, bright=1.0):
     cx, cy = (s(v) for v in sub_centers()[key])
     R = s(SUB_R)
     d = ImageDraw.Draw(img)
@@ -305,7 +315,7 @@ def draw_subdial(img, key, ambient=False):
         metal_ring(img, cx, cy, R + s(2.4), R, (70, 76, 88), (238, 242, 248), recessed=True)
     else:
         d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=(110, 110, 110), width=round(s(1.2)))
-    draw_emblem(img, key, cx, cy, ambient)
+    draw_emblem(img, key, cx, cy, ambient, bright)
     d = ImageDraw.Draw(img)
 
     small = font(FONT_LABEL, 8)
@@ -349,7 +359,9 @@ def sunburst(size):
     return Image.fromarray(out.astype(np.uint8), 'RGB').convert('RGBA')
 
 
-def make_dial(ambient=False):
+def make_dial(ambient=False, bright=0.6):
+    """ambient=False: classic dial. ambient=True: outline dial; bright=1 is the
+    Dark style (active), bright=0.6 the always-on version of both styles."""
     size = (s(N), s(N))
     if ambient:
         img = Image.new('RGBA', size, (0, 0, 0, 255))
@@ -381,7 +393,7 @@ def make_dial(ambient=False):
         glow = Image.new('RGBA', size, (0, 0, 0, 0))
         ImageDraw.Draw(glow).ellipse([C - s(24), C - s(208), C + s(24), C - s(136)], fill=(60, 110, 255, 150))
         img.alpha_composite(glow.filter(ImageFilter.GaussianBlur(s(9))))
-    place_crystal(img, ambient)
+    place_crystal(img, ambient, bright)
     d = ImageDraw.Draw(img)
 
     pos = polar(s(180), 330)
@@ -396,9 +408,14 @@ def make_dial(ambient=False):
         text_c(d, (C, C - s(85)), 'CHRONOGRAPH', font(FONT_LABEL, 6.5), (170, 178, 192))
 
     for key in NATIONS:
-        draw_subdial(img, key, ambient)
+        draw_subdial(img, key, ambient, bright)
 
     # date window frame (number drawn live by the watch face)
+    if ambient and bright >= 1:
+        x, y = s(DATE_POS[0]), s(DATE_POS[1])
+        w, h = s(DATE_SIZE[0]), s(DATE_SIZE[1])
+        ImageDraw.Draw(img).rounded_rectangle([x - w / 2, y - h / 2, x + w / 2, y + h / 2], radius=s(3),
+                                              outline=(150, 150, 150), width=round(s(1.2)))
     if not ambient:
         x, y = s(DATE_POS[0]), s(DATE_POS[1])
         w, h = s(DATE_SIZE[0]), s(DATE_SIZE[1])
@@ -559,20 +576,21 @@ def place(canvas, hand, name, cx, cy, deg):
     canvas.alpha_composite(layer.rotate(-deg, center=(s(cx), s(cy)), resample=Image.BICUBIC))
 
 
-def preview(dial_hi, hands_hi, cap_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day=29, batt=78, ambient=False):
+def preview(dial_hi, hands_hi, cap_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day=29, batt=78, ambient=False, dark=False):
     img = dial_hi.copy()
     sub = hands_hi['hand_sub']
     centers = sub_centers()
     place(img, sub, 'hand_sub', *centers['sandoria'], (dow - 1) * 360 / 7)
     place(img, sub, 'hand_sub', *centers['bastok'], -150 + batt * 3)
     place(img, sub, 'hand_sub', *centers['windurst'], (hh + mm / 60) * 15)
-    if not ambient:
+    if not ambient or dark:
         d = ImageDraw.Draw(img)
-        text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), (20, 20, 20))
+        text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15),
+               (190, 190, 190) if dark else (20, 20, 20))
     place(img, hands_hi['hand_hour'], 'hand_hour', 225, 225, (hh % 12 + mm / 60) * 30)
     place(img, hands_hi['hand_minute'], 'hand_minute', 225, 225, mm * 6 + ss / 10)
     img.alpha_composite(cap_hi, (round(C - cap_hi.width / 2), round(C - cap_hi.height / 2)))
-    if not ambient:
+    if not ambient and not dark:
         img.alpha_composite(glass_hi)
     return finish(img)
 
@@ -581,8 +599,10 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     dial_hi = make_dial()
     amb_hi = make_dial(ambient=True)
+    dark_hi = make_dial(ambient=True, bright=1.0)
     finish(dial_hi).save(os.path.join(OUT, 'dial.png'))
     finish(amb_hi).save(os.path.join(OUT, 'dial_ambient.png'))
+    finish(dark_hi).save(os.path.join(OUT, 'dial_dark.png'))
     hands_hi = {}
     for name, (build, *_rest) in HANDS.items():
         hands_hi[name] = build()
@@ -598,6 +618,8 @@ def main():
     os.makedirs(docs, exist_ok=True)
     active.save(os.path.join(docs, 'preview_active.png'))
     preview(amb_hi, hands_hi, cap_hi, glass_hi, ambient=True).save(os.path.join(docs, 'preview_ambient.png'))
+    dark = preview(dark_hi, hands_hi, cap_hi, glass_hi, ambient=True, dark=True)
+    dark.save(os.path.join(docs, 'preview_dark.png'))
     print('assets written to', os.path.abspath(OUT))
 
 
