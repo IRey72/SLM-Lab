@@ -138,6 +138,22 @@ def crystal_outline(d, r_in, r_out, w, deg, color):
     d.polygon([P['out'], P['ol'], P['il'], P['in'], P['ir'], P['or']], outline=color, width=round(s(1.5)))
 
 
+CRYSTAL_R = (140, 204)   # 12 o'clock crystal spans these radii
+
+
+def place_crystal(img, ambient):
+    """The big blue crystal at 12, from tools/emblems/crystal.png (background already cut out)."""
+    cr = Image.open(os.path.join(EMBLEMS, 'crystal.png')).convert('RGBA')
+    h = s(CRYSTAL_R[1] - CRYSTAL_R[0])
+    cr = cr.resize((round(h * cr.width / cr.height), h), Image.LANCZOS)
+    if ambient:   # dim it so always-on stays mostly dark
+        r, g, b, a = cr.split()
+        cr = Image.merge('RGBA', [ch.point(lambda v: int(v * 0.35)) for ch in (r, g, b)] + [a])
+    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    layer.paste(cr, (round(C - cr.width / 2), round(C - s(CRYSTAL_R[1]))))
+    img.alpha_composite(layer)
+
+
 # --------------------------------------------------------------------- dial
 def sub_centers():
     return {
@@ -243,18 +259,12 @@ def make_dial(ambient=False):
             crystal_outline(d, 162, 200, 16, a, (150, 150, 150))
         else:
             draw_crystal(d, 162, 200, 16, a, (246, 249, 255), (200, 214, 232), (120, 136, 160), (60, 70, 90))
-    if ambient:
-        crystal_outline(d, 145, 203, 28, 0, (110, 150, 255))
-    else:
+    if not ambient:
         glow = Image.new('RGBA', size, (0, 0, 0, 0))
-        ImageDraw.Draw(glow).ellipse([C - s(26), C - s(208), C + s(26), C - s(140)], fill=(60, 130, 255, 150))
+        ImageDraw.Draw(glow).ellipse([C - s(24), C - s(208), C + s(24), C - s(136)], fill=(60, 110, 255, 150))
         img.alpha_composite(glow.filter(ImageFilter.GaussianBlur(s(9))))
-        d = ImageDraw.Draw(img)
-        draw_crystal(d, 145, 203, 28, 0, (150, 200, 255), (70, 140, 255), (20, 60, 170), (10, 30, 90))
-        # sparkle
-        sx, sy = polar(s(186), -3)
-        d.line([(sx - s(4), sy), (sx + s(4), sy)], fill=(255, 255, 255, 220), width=SS)
-        d.line([(sx, sy - s(4)), (sx, sy + s(4))], fill=(255, 255, 255, 220), width=SS)
+    place_crystal(img, ambient)
+    d = ImageDraw.Draw(img)
 
     pos = polar(s(180), 330)
     if ambient:
