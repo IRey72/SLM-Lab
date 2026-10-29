@@ -4,11 +4,12 @@ A Pixel Watch / Wear OS watch face inspired by the Seiko × FINAL FANTASY XI
 "WE ARE VANA'DIEL" 20th-anniversary chronograph. It's built with Google's
 **Watch Face Format** (WFF), so it's an XML-and-images package with no app code.
 
-| Classic | Dark | Always-on |
-|---|---|---|
-| ![classic](docs/preview_active.png) | ![dark](docs/preview_dark.png) | ![ambient](docs/preview_ambient.png) |
+![styles](docs/styles.png)
 
-Switch styles on the watch: long-press the face, tap **Customize**, then **Style** (Classic or Dark).
+Switch styles on the watch: long-press the face, tap **Customize**, then **Style** (Classic, Dark or Light).
+Light follows the real Seiko piece: silver-white dial, blue inner ring, lume batons, white sub-dials with
+nation-coloured rings and hands, and Windurst at 3 / Bastok at 6 as on the watch. Its faint world-map
+background is drawn from `tools/emblems/worldmap.png` when that image is present.
 Dark is the minimalist outline look: thin outline hands, hairline sub-dial needles, a white line-drawn crystal
 at 12, a crystal-blue XI, no other hour markers, and all three crests in one style (grey silhouettes with a
 light edge, details picked out in white).

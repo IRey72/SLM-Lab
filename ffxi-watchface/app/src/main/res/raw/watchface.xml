@@ -7,6 +7,8 @@
   Styles (long-press the face > Customize > Style):
     classic  realistic navy dial with full-colour crests
     dark     the outline "dark chronograph" look with line-art crests
+    light    after the real Seiko: silver-white dial, blue ring, world map
+             (its sub-dials follow the real watch: Windurst at 3, Bastok at 6)
   Sub-dials:  9 o'clock San d'Oria = day of week
               3 o'clock Bastok     = battery (E..F over 300 degrees)
               6 o'clock Windurst   = 24-hour hand
@@ -20,6 +22,7 @@
     <ListConfiguration id="style" displayName="@string/style_label" defaultValue="classic">
       <ListOption id="classic" displayName="@string/style_classic" />
       <ListOption id="dark" displayName="@string/style_dark" />
+      <ListOption id="light" displayName="@string/style_light" />
     </ListConfiguration>
   </UserConfigurations>
 
@@ -52,6 +55,21 @@
           <PartText x="311" y="316" width="34" height="24">
             <Text align="CENTER">
               <Font family="cinzel_bold" size="17" color="#ffbebebe">
+                <Template>%d<Parameter expression="[DAY]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+        </Group>
+      </ListOption>
+      <ListOption id="light">
+        <Group name="light_dial" x="0" y="0" width="450" height="450">
+          <Variant mode="AMBIENT" target="alpha" value="0" />
+          <PartImage x="0" y="0" width="450" height="450">
+            <Image resource="dial_light" />
+          </PartImage>
+          <PartText x="311" y="316" width="34" height="24">
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="17" color="#ff141414">
                 <Template>%d<Parameter expression="[DAY]" /></Template>
               </Font>
             </Text>
@@ -124,9 +142,36 @@
           </PartImage>
         </Group>
       </ListOption>
+      <ListOption id="light">
+        <Group name="light_hands" x="0" y="0" width="450" height="450">
+          <!-- San d'Oria (9 o'clock): day of week -->
+          <PartImage name="sub_left_light" x="119" y="179" width="12" height="58" pivotX="0.5" pivotY="0.7931">
+            <Transform target="angle" value="([DAY_OF_WEEK] - 1) * 51.428571" />
+            <Image resource="hand_sub_red" />
+          </PartImage>
+          <!-- Windurst (3 o'clock): battery -->
+          <PartImage name="sub_right_light" x="319" y="179" width="12" height="58" pivotX="0.5" pivotY="0.7931">
+            <Transform target="angle" value="-150 + [BATTERY_PERCENT] * 3" />
+            <Image resource="hand_sub_green" />
+          </PartImage>
+          <!-- Bastok (6 o'clock): 24-hour -->
+          <PartImage name="sub_bottom_light" x="219" y="279" width="12" height="58" pivotX="0.5" pivotY="0.7931">
+            <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
+            <Image resource="hand_sub_blue" />
+          </PartImage>
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <HourHand resource="hand_hour_light" x="212" y="102" width="26" height="158" pivotX="0.5" pivotY="0.7785" />
+            <MinuteHand resource="hand_minute_light" x="212" y="38" width="26" height="228" pivotX="0.5" pivotY="0.8202" />
+          </AnalogClock>
+          <!-- Bronze star hub -->
+          <PartImage name="cap_light" x="212" y="212" width="26" height="26">
+            <Image resource="cap_light" />
+          </PartImage>
+        </Group>
+      </ListOption>
     </ListConfiguration>
 
-    <!-- Glass reflection (classic style only; off in ambient) -->
+    <!-- Glass reflection (Classic and Light; off in ambient) -->
     <ListConfiguration id="style">
       <ListOption id="classic">
         <Group name="glass" x="0" y="0" width="450" height="450">
@@ -138,6 +183,14 @@
       </ListOption>
       <ListOption id="dark">
         <Group name="no_glass" x="0" y="0" width="450" height="450" />
+      </ListOption>
+      <ListOption id="light">
+        <Group name="glass_light" x="0" y="0" width="450" height="450">
+          <Variant mode="AMBIENT" target="alpha" value="0" />
+          <PartImage x="0" y="0" width="450" height="450">
+            <Image resource="glass" />
+          </PartImage>
+        </Group>
       </ListOption>
     </ListConfiguration>
 

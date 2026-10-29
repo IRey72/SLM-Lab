@@ -378,16 +378,25 @@ def draw_subdial(img, key, ambient=False, bright=1.0):
     draw_emblem(img, key, cx, cy, ambient, bright)
     d = ImageDraw.Draw(img)
 
+    draw_scale(d, SCALE_OF[key], cx, cy, R, fg)
+
+
+# Which scale each nation's sub-dial carries in Classic / Dark (by position).
+SCALE_OF = {'sandoria': 'days', 'bastok': 'battery', 'windurst': '24h'}
+
+
+def draw_scale(d, kind, cx, cy, R, fg):
+    """Ticks and labels of a sub-dial: 'days' (9 o'clock), 'battery' (3), '24h' (6)."""
     small = font(FONT_LABEL, 8)
     num = font(FONT_NUM, 8.5)
     tick_r0, tick_r1, lab_r = R - s(3), R - s(6.5), R - s(13.5)
-    if key == 'sandoria':
+    if kind == 'days':
         days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']
         for i, lab in enumerate(days):
             a = i * 360 / 7
             d.line([polar(tick_r0, a, cx, cy), polar(tick_r1, a, cx, cy)], fill=fg, width=round(s(1.4)))
             text_c(d, polar(lab_r, a, cx, cy), lab, small, fg)
-    elif key == 'bastok':
+    elif kind == 'battery':
         for i in range(11):
             a = -150 + i * 30
             long_ = i % 5 == 0
@@ -489,6 +498,158 @@ def make_dial(ambient=False, bright=0.6):
     return img
 
 
+# --------------------------------------------------------------------- light style
+# After the real Seiko piece: silver-white dial with a faint Vana'diel world map,
+# blue inner ring, applied lume batons, white sub-dials with printed crests and
+# nation-coloured rings and hands. Sub-dial positions follow the real watch.
+POSITIONS = {'left': (225 - SUB_OFFSET, 225), 'right': (225 + SUB_OFFSET, 225), 'bottom': (225, 225 + SUB_OFFSET)}
+POSITION_SCALE = {'left': 'days', 'right': 'battery', 'bottom': '24h'}
+LIGHT_LAYOUT = {'left': 'sandoria', 'right': 'windurst', 'bottom': 'bastok'}
+NATION_INK = {'sandoria': (196, 32, 44), 'windurst': (40, 150, 70), 'bastok': (40, 70, 190)}
+LIGHT_BLUE_RING = ((24, 40, 104), (66, 96, 178))
+WORLD_MAP = os.path.join(EMBLEMS, 'worldmap.png')   # optional: drop a map image here
+
+
+def light_sunburst(size):
+    base = np.asarray(radial_gradient(size, (248, 249, 251), (214, 218, 226), r=s(225)).convert('RGB'), float)
+    th = angle_map(size, C, C)
+    sheen = 1 + 0.035 * np.cos(2 * (th - math.radians(LIGHT_DEG)))
+    out = np.clip(base * sheen[..., None], 0, 255)
+    return Image.fromarray(out.astype(np.uint8), 'RGB').convert('RGBA')
+
+
+def world_map_layer(img):
+    """The world map printed faintly in light grey across the dial (if the image exists)."""
+    if not os.path.exists(WORLD_MAP):
+        return
+    m = Image.open(WORLD_MAP).convert('L')
+    k = s(400) / max(m.size)
+    m = m.resize((round(m.width * k), round(m.height * k)), Image.LANCZOS)
+    a = np.asarray(m).astype(float)
+    ink = np.clip((a.mean() + 10 - a) / max(1, a.mean()), 0, 1)   # darker than average = land
+    layer = Image.new('L', img.size, 0)
+    layer.paste(Image.fromarray((ink * 255 * 0.16).astype(np.uint8)), (round(C - m.width / 2), round(C - m.height / 2)))
+    layer = Image.fromarray(np.minimum(np.asarray(layer), np.asarray(circle_mask(img.size, C, C, s(204)))))
+    fill_mask(img, layer, (120, 128, 142, 255))
+
+
+def lume_baton(img, deg, r0=168, r1=196, w=7.5):
+    """Applied silver baton with a lume insert, long axis radial."""
+    L = s(r1 - r0)
+    pad = s(4)
+    tile = Image.new('RGBA', (round(s(w)) + 2 * pad, L + 2 * pad), (0, 0, 0, 0))
+    m = Image.new('L', tile.size, 0)
+    ImageDraw.Draw(m).rounded_rectangle([pad, pad, pad + s(w), pad + L], radius=s(w) / 2, fill=255)
+    fill_mask(tile, m, lgrad(tile.size, (pad, 0), (pad + s(w), 0), [(0, (250, 252, 255)), (0.5, (196, 202, 212)), (1, (130, 138, 152))]))
+    lm = Image.new('L', tile.size, 0)
+    inset = s(w) * 0.27
+    ImageDraw.Draw(lm).rounded_rectangle([pad + inset, pad + inset, pad + s(w) - inset, pad + L - inset], radius=(s(w) - 2 * inset) / 2, fill=255)
+    fill_mask(tile, lm, vgrad(tile.size, [(0, (236, 246, 240)), (1, (214, 230, 222))]))
+    tile = tile.rotate(-deg, resample=Image.BICUBIC, expand=True)
+    cx, cy = polar(s((r0 + r1) / 2), deg)
+    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    layer.paste(tile, (round(cx - tile.width / 2), round(cy - tile.height / 2)))
+    drop_shadow(img, layer.getchannel('A'), blur=1.0, alpha=0.45)
+    img.alpha_composite(layer)
+
+
+def light_crest(key, size):
+    """Crest as see-through grey ink for a white sub-dial (the outline-style art, inverted)."""
+    v = np.asarray(crest_art(key, size).convert('L')).astype(float)
+    img = Image.new('RGBA', size, (40, 44, 52, 0))
+    img.putalpha(Image.fromarray(np.clip(v * 0.95, 0, 255).astype(np.uint8)))
+    return img
+
+
+def light_subdial(img, pos):
+    key = LIGHT_LAYOUT[pos]
+    cx, cy = (s(v) for v in POSITIONS[pos])
+    R = s(SUB_R)
+    g = radial_gradient((2 * R, 2 * R), (252, 252, 253), (232, 234, 238))
+    rings = Image.new('RGBA', g.size, (0, 0, 0, 0))
+    rd = ImageDraw.Draw(rings)
+    for rr in range(s(2), R, round(s(2.2))):     # fine azurage
+        rd.ellipse([R - rr, R - rr, R + rr, R + rr], outline=(0, 0, 0, 10), width=SS)
+    g.alpha_composite(rings)
+    img.paste(g, (int(cx - R), int(cy - R)), circle_mask((2 * R, 2 * R), R, R, R))
+    inner_shadow(img, circle_mask(img.size, cx, cy, R), depth=1.6, blur=1.4, alpha=0.35)
+    r = s(EMBLEM_R)
+    em = light_crest(key, (2 * r, 2 * r))
+    em.putalpha(Image.fromarray(np.minimum(np.asarray(em.getchannel('A')), np.asarray(circle_mask(em.size, r, r, r)))))
+    img.alpha_composite(em, (int(cx - r), int(cy - r)))
+    d = ImageDraw.Draw(img)
+    for i in range(60):   # fine outer track
+        a = i * 6
+        d.line([polar(R - s(1.5), a, cx, cy), polar(R - s(3.2), a, cx, cy)], fill=(120, 124, 132), width=round(s(0.5)))
+    draw_scale(d, POSITION_SCALE[pos], cx, cy, R, (54, 58, 66))
+    # thin printed ring in the nation's colour
+    d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=NATION_INK[key], width=round(s(1.8)))
+
+
+def make_light_dial():
+    size = (s(N), s(N))
+    img = light_sunburst(size)
+    world_map_layer(img)
+    # blue inner ring (rehaut) with fine white ticks
+    metal_ring(img, C, C, s(226), s(205), *LIGHT_BLUE_RING)
+    d = ImageDraw.Draw(img)
+    for i in range(240):
+        a = i * 1.5
+        major, five = i % 4 == 0, i % 20 == 0
+        r1 = 213 if five else (217 if major else 220)
+        d.line([polar(s(224), a), polar(s(r1), a)], fill=(236, 240, 250), width=round(s(1.4 if five else (0.8 if major else 0.5))))
+    d.ellipse([C - s(205), C - s(205), C + s(205), C + s(205)], outline=(20, 24, 34), width=round(s(1)))
+    inner_shadow(img, circle_mask(size, C, C, s(205)), depth=1.6, blur=1.6, alpha=0.35)
+    # applied lume batons, small blue crystal at 12, gold XI at 11
+    for h in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+        lume_baton(img, h * 30)
+    cr = load_crystal(s(30))
+    layer = Image.new('RGBA', size, (0, 0, 0, 0))
+    layer.paste(cr, (round(C - cr.width / 2), round(C - s(202))))
+    drop_shadow(img, layer.getchannel('A'), blur=1.2, alpha=0.5)
+    img.alpha_composite(layer)
+    applied_text(img, xi_mask(size, polar(s(180), 330)))
+    applied_text(img, lambda dd, f: text_ff(dd, (C, C - s(112)), "VANA'DIEL", 21, f),
+                 stops=[(0, (190, 196, 206)), (0.5, (90, 96, 108)), (1, (150, 156, 168))])
+    for pos in POSITIONS:
+        light_subdial(img, pos)
+    # date window (number drawn live by the watch face)
+    x, y = s(DATE_POS[0]), s(DATE_POS[1])
+    w, h = s(DATE_SIZE[0]), s(DATE_SIZE[1])
+    frame = Image.new('L', size, 0)
+    ImageDraw.Draw(frame).rounded_rectangle([x - w / 2 - s(2.2), y - h / 2 - s(2.2), x + w / 2 + s(2.2),
+                                             y + h / 2 + s(2.2)], radius=s(4), fill=255)
+    win = Image.new('L', size, 0)
+    ImageDraw.Draw(win).rounded_rectangle([x - w / 2, y - h / 2, x + w / 2, y + h / 2], radius=s(3), fill=255)
+    fill_mask(img, frame, lgrad(size, (x - w / 2, y - h / 2), (x + w / 2, y + h / 2),
+                                [(0, (120, 126, 140)), (0.5, (190, 196, 208)), (1, (246, 248, 252))]))
+    fill_mask(img, win, (255, 255, 255, 255))
+    inner_shadow(img, win, depth=1.6, blur=1.2, alpha=0.4)
+    img.putalpha(circle_mask(size, C, C, s(225)))
+    return img
+
+
+def star_cap(r=8, pad=None):
+    """Bronze four-point star hub, after the real watch's chronograph hand."""
+    pad = HAND_PAD if pad is None else pad
+    size = s(2 * (r + pad))
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    c = size / 2
+    pts = []
+    for i in range(8):
+        a = math.radians(i * 45)
+        rr = s(r) if i % 2 == 0 else s(r * 0.38)
+        pts.append((c + rr * math.sin(a), c - rr * math.cos(a)))
+    m = Image.new('L', img.size, 0)
+    ImageDraw.Draw(m).polygon(pts, fill=255)
+    fill_mask(img, m, lgrad(img.size, (c - s(r), c - s(r)), (c + s(r), c + s(r)),
+                            [(0, (238, 198, 120)), (0.5, (184, 132, 58)), (1, (120, 80, 30))]))
+    d = ImageDraw.Draw(img)
+    d.polygon(pts, outline=(96, 64, 24), width=round(s(0.5)))
+    d.ellipse([c - s(2.2), c - s(2.2), c + s(2.2), c + s(2.2)], fill=(214, 172, 96), outline=(96, 64, 24), width=round(s(0.5)))
+    return with_shadow(img, blur=0.9, alpha=0.5)
+
+
 # --------------------------------------------------------------------- hands
 HAND_PAD = 5   # room around each hand for its soft shadow
 
@@ -559,11 +720,20 @@ def prepare_photo(name, tip, thin=1.0):
     return _PHOTO_CACHE[key]
 
 
-def photo_hand(name, tip, thin=1.0, pad=HAND_PAD, blur=1.8, alpha=0.55):
-    """A photographed hand on a padded canvas, pivot centred, with a soft shadow."""
+def photo_hand(name, tip, thin=1.0, pad=HAND_PAD, blur=1.8, alpha=0.55, outline=False):
+    """A photographed hand on a padded canvas, pivot centred, with a soft shadow.
+    outline=True adds a thin dark edge and deepens the steel so it holds up on a white dial."""
     src, sx, sy = prepare_photo(name, tip, thin)
     w, tail = photo_geom(name, tip, thin)
     img, px, py = hand_canvas(w, tip, tail, pad)
+    if outline:
+        r, g, b, a = src.split()
+        src = Image.merge('RGBA', [ch.point(lambda v: int(v * 0.86)) for ch in (r, g, b)] + [a])
+        edge = Image.new('RGBA', img.size, (0, 0, 0, 0))
+        edge.paste(src, (round(px - sx), round(py - sy)))
+        k = round(s(0.6)) * 2 + 1
+        ring = edge.getchannel('A').filter(ImageFilter.MaxFilter(k))
+        img.alpha_composite(Image.merge('RGBA', [Image.new('L', img.size, v) for v in (58, 62, 72)] + [ring]))
     img.alpha_composite(src, (round(px - sx), round(py - sy)))
     return with_shadow(img, blur, alpha)
 
@@ -604,13 +774,13 @@ def outline_hand(tip, tail, w, stroke=1.4, pad=2, color=(225, 225, 225)):
     return img
 
 
-def needle_hand(tip, tail, stroke=1.3, ring=3.2, pad=2, color=(225, 225, 225)):
+def needle_hand(tip, tail, stroke=1.3, ring=3.2, pad=2, color=(225, 225, 225), ring_fill=(0, 0, 0, 255)):
     """Minimal Dark-style sub-dial hand: a hairline with a hollow pivot ring."""
     img, px, py = hand_canvas(8, tip, tail, pad)
     d = ImageDraw.Draw(img)
     d.line([(px, py - s(tip)), (px, py - s(ring))], fill=color, width=round(s(stroke)))
     d.line([(px, py + s(ring)), (px, py + s(tail))], fill=color, width=round(s(stroke)))
-    d.ellipse([px - s(ring), py - s(ring), px + s(ring), py + s(ring)], fill=(0, 0, 0, 255),
+    d.ellipse([px - s(ring), py - s(ring), px + s(ring), py + s(ring)], fill=ring_fill,
               outline=color, width=round(s(stroke)))
     return img
 
@@ -630,6 +800,7 @@ CAPS = {
     # name: (builder, canvas half-size in 450px units)
     'cap': (lambda: domed_cap(CAP_R), CAP_R + HAND_PAD),
     'cap_dark': (lambda: outline_cap(5), 5 + 2),
+    'cap_light': (lambda: star_cap(8), 8 + HAND_PAD),
 }
 
 
@@ -647,7 +818,17 @@ HANDS = {
     'hand_hour_dark': (lambda: outline_hand(112, 16, 10), 10, 112, 16, 2),
     'hand_minute_dark': (lambda: outline_hand(180, 20, 8), 8, 180, 20, 2),
     'hand_sub_dark': (lambda: needle_hand(44, 10, color=XI_BLUE), 8, 44, 10, 2),
+    # Light style: steel hands with a firmer shadow on the white dial; nation-coloured needles
+    'hand_hour_light': _photo('hour', 118, thin=0.48, alpha=0.6, outline=True),
+    'hand_minute_light': _photo('minute', 182, thin=0.5, alpha=0.6, outline=True),
+    'hand_sub_red': (lambda: with_shadow(needle_hand(44, 10, 1.5, 2.6, color=NATION_INK['sandoria'] + (255,),
+                                                     ring_fill=NATION_INK['sandoria'] + (255,)), 0.8, 0.4), 8, 44, 10, 2),
+    'hand_sub_green': (lambda: with_shadow(needle_hand(44, 10, 1.5, 2.6, color=NATION_INK['windurst'] + (255,),
+                                                       ring_fill=NATION_INK['windurst'] + (255,)), 0.8, 0.4), 8, 44, 10, 2),
+    'hand_sub_blue': (lambda: with_shadow(needle_hand(44, 10, 1.5, 2.6, color=NATION_INK['bastok'] + (255,),
+                                                      ring_fill=NATION_INK['bastok'] + (255,)), 0.8, 0.4), 8, 44, 10, 2),
 }
+LIGHT_NEEDLE = {'sandoria': 'hand_sub_red', 'windurst': 'hand_sub_green', 'bastok': 'hand_sub_blue'}
 
 
 def hand_geom(name):
@@ -681,6 +862,10 @@ def patch_xml():
         setattrs(rf'<MinuteHand resource="hand_minute{sfx}" [^>]*>', 225, 225, 'hand_minute' + sfx)
         for key, (cx, cy) in sub_centers().items():
             setattrs(rf'<PartImage name="sub_{key}{sfx}" [^>]*>', cx, cy, 'hand_sub' + sfx)
+    setattrs(r'<HourHand resource="hand_hour_light" [^>]*>', 225, 225, 'hand_hour_light')
+    setattrs(r'<MinuteHand resource="hand_minute_light" [^>]*>', 225, 225, 'hand_minute_light')
+    for pos, (cx, cy) in POSITIONS.items():
+        setattrs(rf'<PartImage name="sub_{pos}_light" [^>]*>', cx, cy, LIGHT_NEEDLE[LIGHT_LAYOUT[pos]])
     for name, (_, half) in CAPS.items():
         xml, n = re.subn(rf'(<PartImage name="{name}" )[^>]*>',
                          rf'\g<1>x="{225 - half:g}" y="{225 - half:g}" width="{2 * half:g}" height="{2 * half:g}">', xml)
@@ -732,6 +917,21 @@ def preview(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day
     return finish(img)
 
 
+def preview_light(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, dow=5, day=29, batt=78):
+    img = dial_hi.copy()
+    angle = {'left': (dow - 1) * 360 / 7, 'right': -150 + batt * 3, 'bottom': (hh + mm / 60) * 15}
+    for pos, (cx, cy) in POSITIONS.items():
+        name = LIGHT_NEEDLE[LIGHT_LAYOUT[pos]]
+        place(img, hands_hi[name], name, cx, cy, angle[pos])
+    text_c(ImageDraw.Draw(img), (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), (20, 20, 20))
+    place(img, hands_hi['hand_hour_light'], 'hand_hour_light', 225, 225, (hh % 12 + mm / 60) * 30)
+    place(img, hands_hi['hand_minute_light'], 'hand_minute_light', 225, 225, mm * 6)
+    cap = caps_hi['cap_light']
+    img.alpha_composite(cap, (round(C - cap.width / 2), round(C - cap.height / 2)))
+    img.alpha_composite(glass_hi)
+    return finish(img)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     dial_hi = make_dial()
@@ -740,6 +940,8 @@ def main():
     finish(dial_hi).save(os.path.join(OUT, 'dial.png'))
     finish(amb_hi).save(os.path.join(OUT, 'dial_ambient.png'))
     finish(dark_hi).save(os.path.join(OUT, 'dial_dark.png'))
+    light_hi = make_light_dial()
+    finish(light_hi).save(os.path.join(OUT, 'dial_light.png'))
     hands_hi = {}
     for name, (build, *_rest) in HANDS.items():
         hands_hi[name] = build()
@@ -759,6 +961,14 @@ def main():
     preview(amb_hi, hands_hi, cap_hi, glass_hi, ambient=True).save(os.path.join(docs, 'preview_ambient.png'))
     dark = preview(dark_hi, hands_hi, cap_hi, glass_hi, ambient=True, dark=True)
     dark.save(os.path.join(docs, 'preview_dark.png'))
+    light = preview_light(light_hi, hands_hi, cap_hi, glass_hi)
+    light.save(os.path.join(docs, 'preview_light.png'))
+    styles = Image.new('RGB', (3 * 460 + 20, 500), (18, 18, 22))
+    sd = ImageDraw.Draw(styles)
+    for i, (label, im) in enumerate((('Classic', active), ('Dark', dark), ('Light', light))):
+        styles.paste(im, (15 + i * 460, 40), im)
+        sd.text((15 + i * 460 + 225, 20), label, font=ImageFont.truetype(FONT_LABEL, 22), fill=(230, 230, 230), anchor='mm')
+    styles.save(os.path.join(docs, 'styles.png'))
     print('assets written to', os.path.abspath(OUT))
 
 
