@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Vana\'diel Chronograph</string>
+  <string name="style_label">Style</string>
+  <string name="style_classic">Classic</string>
+  <string name="style_dark">Dark</string>
+  <string name="style_light">Light</string>
+  <string name="style_vanadiel">Canvas</string>
+  <string name="style_wearevanadiel">We Are Vana\'diel</string>
+  <string name="style_cyberpunk">Cyberpunk</string>
+</resources>
