@@ -26,15 +26,17 @@ EMBLEMS = os.path.join(os.path.dirname(__file__), 'emblems')  # square crops of 
 WORLD_LAND = os.path.join(EMBLEMS, 'worldmap_land.png')      # Vana'diel land mask
 
 # Layout (in 450px units) -- keep in sync with watchface.xml
-SUB_OFFSET = 100   # sub-dial centre distance from main centre
-SUB_R = 56         # sub-dial radius
-EMBLEM_R = 33      # crest medallion radius inside each sub-dial
+SUB_OFFSET = 112   # sub-dial centre distance from main centre
+SUB_R = 64         # sub-dial radius
+EMBLEM_R = 38      # crest medallion radius inside each sub-dial
 DATE_POS = (225 + 103, 225 + 103)  # date window centre (4:30)
 DATE_SIZE = (34, 24)
 # Sub-dials, as on the real watch: San d'Oria at 9, Bastok at 6, Windurst at 3.
 POSITIONS = {'left': (225 - SUB_OFFSET, 225), 'right': (225 + SUB_OFFSET, 225), 'bottom': (225, 225 + SUB_OFFSET)}
-POSITION_SCALE = {'left': 'days', 'right': 'battery', 'bottom': '24h'}
+POSITION_SCALE = {'left': 'days', 'right': 'battery', 'bottom': '24h', 'top': '24h'}
 LAYOUT = {'left': 'sandoria', 'bottom': 'bastok', 'right': 'windurst'}
+# Fourth dial at 12: Vana'diel time on a 24-hour scale under the Jeuno crest.
+VANA_POS = (225, 225 - SUB_OFFSET)
 
 NAVY_IN, NAVY_OUT = (30, 48, 84), (6, 11, 24)
 # Nation colours: San d'Oria red, Bastok blue, Windurst green
@@ -42,6 +44,7 @@ NATIONS = {
     'sandoria': ((150, 28, 38), (70, 10, 16)),
     'bastok': ((36, 84, 168), (12, 32, 78)),
     'windurst': ((34, 120, 66), (10, 50, 26)),
+    'jeuno': ((150, 112, 44), (70, 48, 14)),
 }
 
 
@@ -230,7 +233,7 @@ def applied_text(img, draw_fn, stops=GOLD_STOPS, shadow=True):
 
 
 # --------------------------------------------------------------------- crystals
-CRYSTAL_R = (140, 204)   # 12 o'clock crystal spans these radii
+CRYSTAL_R = (176, 210)   # 12 o'clock crystal spans these radii
 
 
 def load_crystal(height):
@@ -284,11 +287,13 @@ def place_crystal(img, ambient, bright=1.0):
 # --------------------------------------------------------------------- dial
 def sub_centers():
     """Sub-dial centre per nation, from LAYOUT (same in every style, as on the real watch)."""
-    return {key: POSITIONS[pos] for pos, key in LAYOUT.items()}
+    centres = {key: POSITIONS[pos] for pos, key in LAYOUT.items()}
+    centres['jeuno'] = VANA_POS
+    return centres
 
 
 def position_of(key):
-    return next(pos for pos, k in LAYOUT.items() if k == key)
+    return 'top' if key == 'jeuno' else next(pos for pos, k in LAYOUT.items() if k == key)
 
 
 def crest_masks(key, a):
@@ -317,10 +322,17 @@ def crest_masks(key, a):
         rr = np.hypot(xx - a.shape[1] / 2, yy - a.shape[0] / 2)
         dots = ndimage.binary_dilation(ndimage.binary_opening(white & (rr > a.shape[0] * 0.32), iterations=2), iterations=3)
         acc = (keep(light | greyblue, 20) | dots) & (rr < a.shape[0] * 0.47)
-    else:                   # windurst: green star tree; yellow stars
+    elif key == 'windurst':  # green star tree; yellow stars
         star = (r > 170) & (g > 170) & (b < 110)
         fig = keep((g > r + 25) & ~star, 300)
         acc = keep(star, 30)
+    else:                   # jeuno: the sunburst bright, the triangle's coloured bands as linework
+        yy = np.mgrid[0:a.shape[0], 0:a.shape[1]][0]
+        sun = (r > 190) & (g < 215) & (b < 120) & (r > b + 80)
+        bands = (((a.max(2) - a.min(2)) > 50) | (a.max(2) < 120)) & ~sun & (yy < a.shape[0] * 0.86)
+        fig = np.zeros(a.shape[:2], bool)
+        acc = keep(sun, 40)
+        detail = keep(bands, 60)
     return fig, acc, detail
 
 
@@ -389,8 +401,8 @@ def draw_subdial(img, key, ambient=False, bright=1.0):
 
 def draw_scale(d, kind, cx, cy, R, fg):
     """Ticks and labels of a sub-dial: 'days' (9 o'clock), 'battery' (3), '24h' (6)."""
-    small = font(FONT_LABEL, 8)
-    num = font(FONT_NUM, 8.5)
+    small = font(FONT_LABEL, 9)
+    num = font(FONT_NUM, 9.5)
     tick_r0, tick_r1, lab_r = R - s(3), R - s(6.5), R - s(13.5)
     if kind == 'days':
         days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']
@@ -442,9 +454,9 @@ def make_dial(ambient=False, bright=0.6):
         img = sunburst(size)
         draw_world(img, (200, 215, 255, 14), (200, 215, 255, 46))
         # chapter ring: dark gunmetal, stepped down from the dial with a bright chamfer
-        metal_ring(img, C, C, s(226), s(206), (10, 13, 19), (58, 64, 78))
-        inner_shadow(img, ring_mask(size, C, C, s(226), s(206)), depth=1.2, blur=1.0, alpha=0.5)
-        metal_ring(img, C, C, s(206.5), s(204.5), (60, 66, 80), (210, 216, 228), recessed=True)
+        metal_ring(img, C, C, s(226), s(213), (10, 13, 19), (58, 64, 78))
+        inner_shadow(img, ring_mask(size, C, C, s(226), s(213)), depth=1.2, blur=1.0, alpha=0.5)
+        metal_ring(img, C, C, s(213.5), s(211.5), (60, 66, 80), (210, 216, 228), recessed=True)
     d = ImageDraw.Draw(img)
 
     for i in range(60):
@@ -453,17 +465,17 @@ def make_dial(ambient=False, bright=0.6):
         if ambient and not five:
             continue
         col = (120, 120, 120) if ambient else ((240, 240, 240) if five else (170, 176, 186))
-        d.line([polar(s(222), a), polar(s(211 if five else 216), a)], fill=col, width=round(s(2.2 if five else 1)))
+        d.line([polar(s(224), a), polar(s(216 if five else 220), a)], fill=col, width=round(s(2.2 if five else 1)))
 
     # 12 = crystal, 11 = "XI"
     if not ambient:
         glow = Image.new('RGBA', size, (0, 0, 0, 0))
-        ImageDraw.Draw(glow).ellipse([C - s(24), C - s(208), C + s(24), C - s(136)], fill=(60, 110, 255, 150))
+        ImageDraw.Draw(glow).ellipse([C - s(16), C - s(213), C + s(16), C - s(173)], fill=(60, 110, 255, 150))
         img.alpha_composite(glow.filter(ImageFilter.GaussianBlur(s(9))))
     place_crystal(img, ambient, bright)
     d = ImageDraw.Draw(img)
 
-    pos = polar(s(180), 330)
+    pos = polar(s(188), 330)
     xi = xi_mask(size, pos)
     if ambient:   # solid crystal-blue numeral
         k = 0.6 + 0.4 * bright
@@ -472,9 +484,7 @@ def make_dial(ambient=False, bright=0.6):
     else:
         # applied (raised) gold numeral and wordmark; small print stays flat like pad printing
         applied_text(img, xi)
-        applied_text(img, lambda dd, f: text_ff(dd, (C, C - s(99)), "VANA'DIEL", 23, f))
         d = ImageDraw.Draw(img)
-        text_c(d, (C, C - s(118)), 'WE ARE', font(FONT_LABEL, 8), (200, 206, 218))
 
     for key in NATIONS:
         draw_subdial(img, key, ambient, bright)
@@ -507,7 +517,7 @@ def make_dial(ambient=False, bright=0.6):
 # After the real Seiko piece: silver-white dial with a faint Vana'diel world map,
 # blue inner ring, applied lume batons, white sub-dials with printed crests and
 # nation-coloured rings and hands.
-NATION_INK = {'sandoria': (196, 32, 44), 'windurst': (40, 150, 70), 'bastok': (40, 70, 190)}
+NATION_INK = {'sandoria': (196, 32, 44), 'windurst': (40, 150, 70), 'bastok': (40, 70, 190), 'jeuno': (150, 110, 40)}
 LIGHT_BLUE_RING = ((24, 40, 104), (66, 96, 178))
 
 
@@ -535,7 +545,7 @@ def draw_world(img, fill, line, width=1.0, diameter=330):
     fill_mask(img, Image.fromarray((edge * line[3]).astype(np.uint8)).filter(ImageFilter.GaussianBlur(SS / 3)), line[:3] + (255,))
 
 
-def lume_baton(img, deg, r0=168, r1=196, w=7.5):
+def lume_baton(img, deg, r0=182, r1=207, w=7.5):
     """Applied silver baton with a lume insert, long axis radial."""
     L = s(r1 - r0)
     pad = s(4)
@@ -563,9 +573,8 @@ def light_crest(key, size):
     return img
 
 
-def light_subdial(img, pos):
-    key = LAYOUT[pos]
-    cx, cy = (s(v) for v in POSITIONS[pos])
+def light_subdial(img, key, centre, scale):
+    cx, cy = (s(v) for v in centre)
     R = s(SUB_R)
     g = radial_gradient((2 * R, 2 * R), (252, 252, 253), (232, 234, 238))
     rings = Image.new('RGBA', g.size, (0, 0, 0, 0))
@@ -583,7 +592,7 @@ def light_subdial(img, pos):
     for i in range(60):   # fine outer track
         a = i * 6
         d.line([polar(R - s(1.5), a, cx, cy), polar(R - s(3.2), a, cx, cy)], fill=(120, 124, 132), width=round(s(0.5)))
-    draw_scale(d, POSITION_SCALE[pos], cx, cy, R, (54, 58, 66))
+    draw_scale(d, scale, cx, cy, R, (54, 58, 66))
     # thin printed ring in the nation's colour
     d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=NATION_INK[key], width=round(s(1.8)))
 
@@ -593,28 +602,27 @@ def make_light_dial():
     img = light_sunburst(size)
     draw_world(img, (120, 128, 142, 26), (110, 118, 132, 90))
     # blue inner ring (rehaut) with fine white ticks
-    metal_ring(img, C, C, s(226), s(205), *LIGHT_BLUE_RING)
+    metal_ring(img, C, C, s(226), s(212), *LIGHT_BLUE_RING)
     d = ImageDraw.Draw(img)
     for i in range(240):
         a = i * 1.5
         major, five = i % 4 == 0, i % 20 == 0
-        r1 = 213 if five else (217 if major else 220)
+        r1 = 216 if five else (219 if major else 221.5)
         d.line([polar(s(224), a), polar(s(r1), a)], fill=(236, 240, 250), width=round(s(1.4 if five else (0.8 if major else 0.5))))
-    d.ellipse([C - s(205), C - s(205), C + s(205), C + s(205)], outline=(20, 24, 34), width=round(s(1)))
-    inner_shadow(img, circle_mask(size, C, C, s(205)), depth=1.6, blur=1.6, alpha=0.35)
+    d.ellipse([C - s(212), C - s(212), C + s(212), C + s(212)], outline=(20, 24, 34), width=round(s(1)))
+    inner_shadow(img, circle_mask(size, C, C, s(212)), depth=1.6, blur=1.6, alpha=0.35)
     # applied lume batons, small blue crystal at 12, gold XI at 11
     for h in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
         lume_baton(img, h * 30)
-    cr = load_crystal(s(30))
+    cr = load_crystal(s(26))
     layer = Image.new('RGBA', size, (0, 0, 0, 0))
-    layer.paste(cr, (round(C - cr.width / 2), round(C - s(202))))
+    layer.paste(cr, (round(C - cr.width / 2), round(C - s(208))))
     drop_shadow(img, layer.getchannel('A'), blur=1.2, alpha=0.5)
     img.alpha_composite(layer)
-    applied_text(img, xi_mask(size, polar(s(180), 330)))
-    applied_text(img, lambda dd, f: text_ff(dd, (C, C - s(112)), "VANA'DIEL", 21, f),
-                 stops=[(0, (190, 196, 206)), (0.5, (90, 96, 108)), (1, (150, 156, 168))])
+    applied_text(img, xi_mask(size, polar(s(188), 330)))
     for pos in POSITIONS:
-        light_subdial(img, pos)
+        light_subdial(img, LAYOUT[pos], POSITIONS[pos], POSITION_SCALE[pos])
+    light_subdial(img, 'jeuno', VANA_POS, '24h')
     # date window (number drawn live by the watch face)
     x, y = s(DATE_POS[0]), s(DATE_POS[1])
     w, h = s(DATE_SIZE[0]), s(DATE_SIZE[1])
@@ -943,24 +951,48 @@ HANDS = {
     # name: (builder, visual width, tip length, tail length, shadow padding)
     'hand_hour': _photo('hour', 118, thin=0.48),
     'hand_minute': _photo('minute', 182, thin=0.5),
-    'hand_sub': _photo('sub', 46, pad=3, blur=1.0, alpha=0.6),
+    'hand_sub': _photo('sub', 54, pad=3, blur=1.0, alpha=0.6),
     # Dark style: thin outline hands
     'hand_hour_dark': (lambda: outline_hand(112, 16, 10), 10, 112, 16, 2),
     'hand_minute_dark': (lambda: outline_hand(180, 20, 8), 8, 180, 20, 2),
-    'hand_sub_dark': (lambda: needle_hand(44, 10, color=XI_BLUE), 8, 44, 10, 2),
+    'hand_sub_dark': (lambda: needle_hand(52, 12, color=XI_BLUE), 8, 52, 12, 2),
     # Light style: steel hands with a firmer shadow on the white dial; nation-coloured needles
     'hand_hour_light': _photo('hour', 118, thin=0.48, alpha=0.6, outline=True),
     'hand_minute_light': _photo('minute', 182, thin=0.5, alpha=0.6, outline=True),
-    'hand_sub_red': (lambda: with_shadow(needle_hand(44, 10, 1.5, 2.6, color=NATION_INK['sandoria'] + (255,),
-                                                     ring_fill=NATION_INK['sandoria'] + (255,)), 0.8, 0.4), 8, 44, 10, 2),
-    'hand_sub_green': (lambda: with_shadow(needle_hand(44, 10, 1.5, 2.6, color=NATION_INK['windurst'] + (255,),
-                                                       ring_fill=NATION_INK['windurst'] + (255,)), 0.8, 0.4), 8, 44, 10, 2),
-    'hand_sub_blue': (lambda: with_shadow(needle_hand(44, 10, 1.5, 2.6, color=NATION_INK['bastok'] + (255,),
-                                                      ring_fill=NATION_INK['bastok'] + (255,)), 0.8, 0.4), 8, 44, 10, 2),
+    'hand_sub_red': (lambda: with_shadow(needle_hand(52, 12, 1.5, 2.6, color=NATION_INK['sandoria'] + (255,),
+                                                     ring_fill=NATION_INK['sandoria'] + (255,)), 0.8, 0.4), 8, 52, 12, 2),
+    'hand_sub_green': (lambda: with_shadow(needle_hand(52, 12, 1.5, 2.6, color=NATION_INK['windurst'] + (255,),
+                                                       ring_fill=NATION_INK['windurst'] + (255,)), 0.8, 0.4), 8, 52, 12, 2),
+    'hand_sub_blue': (lambda: with_shadow(needle_hand(52, 12, 1.5, 2.6, color=NATION_INK['bastok'] + (255,),
+                                                      ring_fill=NATION_INK['bastok'] + (255,)), 0.8, 0.4), 8, 52, 12, 2),
     # Vana'diel Time style: ink hands
     'hand_hour_vana': (lambda: ink_hand(110, 18, 10), 10, 110, 18, 3),
     'hand_minute_vana': (lambda: ink_hand(176, 22, 8), 8, 176, 22, 3),
 }
+VANA_HAND = (12, 54, 12, 2)   # visual width, tip, tail, pad
+
+
+def vana_hand(color):
+    """Vana'diel 24h hand: a steel needle whose tip is today's elemental crystal."""
+    w, tip, tail, pad = VANA_HAND
+    img, px, py = hand_canvas(w, tip, tail, pad)
+    d = ImageDraw.Draw(img)
+    shaft = [(px - s(0.9), py - s(tip - 12)), (px - s(1.8), py), (px - s(1.3), py + s(tail)),
+             (px + s(1.3), py + s(tail)), (px + s(1.8), py), (px + s(0.9), py - s(tip - 12))]
+    d.polygon(shaft, fill=(236, 238, 242, 255), outline=(40, 44, 54, 255), width=round(s(0.6)))
+    d.ellipse([px - s(3.2), py - s(3.2), px + s(3.2), py + s(3.2)], fill=(236, 238, 242, 255), outline=(40, 44, 54, 255), width=round(s(0.6)))
+    d.ellipse([px - s(1.2), py - s(1.2), px + s(1.2), py + s(1.2)], fill=color + (255,))
+    cr = element_crystal(color, h=15)
+    at = (round(px - cr.width / 2), round(py - s(tip) - s(1.5)))
+    halo = Image.new('L', img.size, 0)   # light rim so dark elements (Darksday) read on dark dials
+    halo.paste(cr.getchannel('A').filter(ImageFilter.MaxFilter(round(s(0.7)) * 2 + 1)), at)
+    fill_mask(img, halo.point(lambda v: v * 0.85), (240, 240, 244, 255))
+    img.alpha_composite(cr, at)
+    return with_shadow(img, blur=0.9, alpha=0.5)
+
+
+for _k, (_name, _color) in enumerate(ELEMENTS):
+    HANDS[f'hand_vana_{_k}'] = ((lambda c=_color: vana_hand(c)),) + VANA_HAND
 LIGHT_NEEDLE = {'sandoria': 'hand_sub_red', 'windurst': 'hand_sub_green', 'bastok': 'hand_sub_blue'}
 
 
@@ -999,6 +1031,7 @@ def patch_xml():
     setattrs(r'<MinuteHand resource="hand_minute_light" [^>]*>', 225, 225, 'hand_minute_light')
     for pos, (cx, cy) in POSITIONS.items():
         setattrs(rf'<PartImage name="sub_{pos}_light" [^>]*>', cx, cy, LIGHT_NEEDLE[LAYOUT[pos]])
+    setattrs(r'<PartImage name="vana_hand_\d_\w+" [^>]*>', *VANA_POS, 'hand_vana_0')
     setattrs(r'<HourHand resource="hand_hour_vana" [^>]*>', 225, 225, 'hand_hour_vana')
     setattrs(r'<MinuteHand resource="hand_minute_vana" [^>]*>', 225, 225, 'hand_minute_vana')
     for name, (_, half) in CAPS.items():
@@ -1031,6 +1064,14 @@ def place(canvas, hand, name, cx, cy, deg):
     canvas.alpha_composite(layer.rotate(-deg, center=(s(cx), s(cy)), resample=Image.BICUBIC))
 
 
+PREVIEW_UTC = 1793270400   # sample moment for the previews
+
+
+def place_vana_hand(img, hands_hi, utc=PREVIEW_UTC):
+    vh, vm, wd = vana_now(utc)
+    place(img, hands_hi[f'hand_vana_{wd}'], f'hand_vana_{wd}', *VANA_POS, (vh + vm / 60) * 15)
+
+
 def preview(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day=29, batt=78, ambient=False, dark=False):
     img = dial_hi.copy()
     sfx = '_dark' if dark else ''
@@ -1039,6 +1080,7 @@ def preview(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day
     angle = {'left': (dow - 1) * 360 / 7, 'right': -150 + batt * 3, 'bottom': (hh + mm / 60) * 15}
     for pos, (cx, cy) in POSITIONS.items():
         place(img, sub, 'hand_sub' + sfx, cx, cy, angle[pos])
+    place_vana_hand(img, hands_hi)
     if not ambient or dark:
         d = ImageDraw.Draw(img)
         text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15),
@@ -1057,6 +1099,7 @@ def preview_light(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, dow=5, day=
     for pos, (cx, cy) in POSITIONS.items():
         name = LIGHT_NEEDLE[LAYOUT[pos]]
         place(img, hands_hi[name], name, cx, cy, angle[pos])
+    place_vana_hand(img, hands_hi)
     text_c(ImageDraw.Draw(img), (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), (20, 20, 20))
     place(img, hands_hi['hand_hour_light'], 'hand_hour_light', 225, 225, (hh % 12 + mm / 60) * 30)
     place(img, hands_hi['hand_minute_light'], 'hand_minute_light', 225, 225, mm * 6)

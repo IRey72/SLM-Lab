@@ -11,6 +11,13 @@ Light follows the real Seiko piece: silver-white dial, blue inner ring, lume bat
 nation-coloured rings and hands. Every style uses the real watch's sub-dial order: San d'Oria at 9
 (day of week), Bastok at 6 (24-hour), Windurst at 3 (battery).
 
+Classic, Dark and Light also have a fourth dial at 12 under the Jeuno crest: **Vana'diel time** on a
+24-hour scale (one turn per Vana'diel day, 57.6 Earth minutes). Its hand is tipped with today's
+elemental crystal, so its colour tells you the Vana'diel weekday (Firesday red, Earthsday ochre,
+Watersday blue, Windsday green, Iceday pale blue, Lightningday violet, Lightsday white, Darksday black):
+
+![weekday hands](docs/vanadiel_weekday_hands.png)
+
 **Vana'diel Time** is a parchment map of Vana'diel with Earth time on ink hands, plus a live readout of
 Vana'diel time (25x Earth time) and today's elemental weekday with its crystal. Both are computed on the
 watch from the UTC time: one Earth day is exactly 25 Vana'diel days, so the time of day depends only on
