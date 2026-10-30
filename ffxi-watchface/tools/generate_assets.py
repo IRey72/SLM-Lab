@@ -21,6 +21,7 @@ FONTS = os.path.join(os.path.dirname(__file__), 'fonts')
 FONT_SERIF = os.path.join(FONTS, 'Cinzel-Bold.ttf')      # XI, wordmark, date
 FONT_LABEL = os.path.join(FONTS, 'Cinzel-SemiBold.ttf')  # nation names, day names
 FONT_NUM = os.path.join(FONTS, 'Oswald-SemiBold.ttf')    # sub-dial numerals
+FONT_SANS_BOLD = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
 FONT_FF = os.path.join(FONTS, 'FinalFantasy.ttf')        # caps only; no digits/space/'
 EMBLEMS = os.path.join(os.path.dirname(__file__), 'emblems')  # square crops of the nation crests
 WORLD_LAND = os.path.join(EMBLEMS, 'worldmap_land.png')      # Vana'diel land mask
@@ -421,10 +422,10 @@ def draw_subdial(img, key, ambient=False, bright=1.0):
     draw_scale(d, POSITION_SCALE[position_of(key)], cx, cy, R, fg)
 
 
-def draw_scale(d, kind, cx, cy, R, fg):
-    """Ticks and labels of a sub-dial: 'days' (9 o'clock), 'battery' (3), '24h' (6)."""
-    small = font(FONT_LABEL, 9)
-    num = font(FONT_NUM, 9.5)
+def draw_scale(d, kind, cx, cy, R, fg, fs=1.0):
+    """Ticks and labels of a sub-dial: 'days', 'battery', '24h', '30min' or 'seconds'."""
+    small = font(FONT_LABEL, 9 * fs)
+    num = font(FONT_NUM, 9.5 * fs)
     tick_r0, tick_r1, lab_r = R - s(3), R - s(6.5), R - s(13.5)
     if kind == 'days':
         days = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']
@@ -440,6 +441,23 @@ def draw_scale(d, kind, cx, cy, R, fg):
                    fill=fg, width=round(s(1.6 if long_ else 1)))
         for val, a in (('E', -150), ('½', 0), ('F', 150)):
             text_c(d, polar(lab_r, a, cx, cy), val, num, fg)
+    elif kind == '30min':
+        for i in range(30):
+            a = i * 12
+            long_ = i % 5 == 0
+            d.line([polar(tick_r0, a, cx, cy), polar(tick_r1 - (s(1.5) if long_ else s(-1)), a, cx, cy)],
+                   fill=fg, width=round(s(1.4 if long_ else 0.6)))
+        for val, a in (('30', 0), ('10', 120), ('20', 240)):
+            text_c(d, polar(lab_r - s(1), a, cx, cy), val, num, fg)
+        text_c(d, (cx, cy + R * 0.42), 'MIN', font(FONT_LABEL, 6.5 * fs), fg)
+    elif kind == 'seconds':
+        for i in range(60):
+            a = i * 6
+            long_ = i % 5 == 0
+            d.line([polar(tick_r0, a, cx, cy), polar(tick_r1 - (s(1.5) if long_ else s(-1)), a, cx, cy)],
+                   fill=fg, width=round(s(1.2 if long_ else 0.5)))
+        for val, a in (('60', 0), ('20', 120), ('40', 240)):
+            text_c(d, polar(lab_r - s(1), a, cx, cy), val, num, fg)
     else:
         for i in range(24):
             a = i * 15
@@ -592,9 +610,9 @@ def light_crest(key, size):
     return img
 
 
-def light_subdial(img, key, centre, scale):
+def light_subdial(img, key, centre, scale, sub_r=None, emblem_r=None, fs=1.0):
     cx, cy = (s(v) for v in centre)
-    R = s(SUB_R)
+    R = s(sub_r or SUB_R)
     g = radial_gradient((2 * R, 2 * R), (252, 252, 253), (232, 234, 238))
     rings = Image.new('RGBA', g.size, (0, 0, 0, 0))
     rd = ImageDraw.Draw(rings)
@@ -603,7 +621,7 @@ def light_subdial(img, key, centre, scale):
     g.alpha_composite(rings)
     img.paste(g, (int(cx - R), int(cy - R)), circle_mask((2 * R, 2 * R), R, R, R))
     inner_shadow(img, circle_mask(img.size, cx, cy, R), depth=1.6, blur=1.4, alpha=0.35)
-    r = s(EMBLEM_R)
+    r = s(emblem_r or EMBLEM_R)
     em = light_crest(key, (2 * r, 2 * r))
     em.putalpha(Image.fromarray(np.minimum(np.asarray(em.getchannel('A')), np.asarray(circle_mask(em.size, r, r, r)))))
     img.alpha_composite(em, (int(cx - r), int(cy - r)))
@@ -611,7 +629,7 @@ def light_subdial(img, key, centre, scale):
     for i in range(60):   # fine outer track
         a = i * 6
         d.line([polar(R - s(1.5), a, cx, cy), polar(R - s(3.2), a, cx, cy)], fill=(120, 124, 132), width=round(s(0.5)))
-    draw_scale(d, scale, cx, cy, R, (54, 58, 66))
+    draw_scale(d, scale, cx, cy, R, (54, 58, 66), fs)
     # thin printed ring in the nation's colour
     d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=NATION_INK[key], width=round(s(1.8)))
 
@@ -866,6 +884,187 @@ def ink_cap(r=5, pad=3):
     return with_shadow(img, blur=0.8, alpha=0.4)
 
 
+# --------------------------------------------------------------------- we are vana'diel
+# A replica of the Seiko x FFXI "WE ARE VANA'DIEL" chronograph: steel tachymeter bezel,
+# blue inner ring, silver-white dial with the world map, crystal-shaped lume markers,
+# SEIKO, gold XI, three white sub-dials (San d'Oria 30-min counter at 9, Windurst 24h at 3,
+# Bastok running seconds at 6), lume hands and a gold chronograph hand resting at 12.
+SEIKO_SUB_R = 50
+SEIKO_EMBLEM_R = 30
+SEIKO_POS = {'left': (225 - 92, 225), 'right': (225 + 92, 225), 'bottom': (225, 225 + 92)}
+SEIKO_LAYOUT = {'left': ('sandoria', '30min'), 'right': ('windurst', '24h'), 'bottom': ('bastok', 'seconds')}
+SEIKO_DATE = (319, 319)
+SEIKO_DIAL_R = 181        # dial surface; the blue ring and bezel sit outside it
+TACHY = [400, 300, 250, 200, 180, 160, 140, 120, 100, 90, 80, 75, 70, 65, 60]
+FONT_BEZEL = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf'
+FONT_SEIKO = '/usr/share/fonts/truetype/crosextra/Caladea-Bold.ttf'
+
+
+def glyph(text, f, color, deg):
+    """Text rendered on its own tile and rotated `deg` clockwise (for bezel engraving)."""
+    w, h = f.getbbox(text)[2] + SS * 2, f.getbbox(text)[3] + SS * 2
+    tile = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    ImageDraw.Draw(tile).text((w / 2, h / 2), text, font=f, fill=color, anchor='mm')
+    return tile.rotate(-deg, resample=Image.BICUBIC, expand=True)
+
+
+def put(img, tile, xy):
+    img.alpha_composite(tile, (round(xy[0] - tile.width / 2), round(xy[1] - tile.height / 2)))
+
+
+def tachy_bezel(img, ambient=False):
+    size = img.size
+    ink = (120, 120, 120) if ambient else (34, 36, 42)
+    if not ambient:   # brushed, polished steel
+        metal_ring(img, C, C, s(226), s(197), (128, 134, 146), (246, 248, 252))
+        rings = Image.new('RGBA', size, (0, 0, 0, 0))
+        rd = ImageDraw.Draw(rings)
+        for rr in range(197, 226):
+            rd.ellipse([C - s(rr), C - s(rr), C + s(rr), C + s(rr)], outline=(0, 0, 0, 10 if rr % 2 else 0), width=SS)
+        img.alpha_composite(rings)
+        d = ImageDraw.Draw(img)
+        d.ellipse([C - s(225), C - s(225), C + s(225), C + s(225)], outline=(96, 100, 110), width=round(s(1)))
+    d = ImageDraw.Draw(img)
+    f = font(FONT_BEZEL, 11)
+    for v in TACHY:
+        a = 6 * 3600 / v % 360
+        put(img, glyph(str(v), f, ink, a if a <= 90 or a >= 270 else a + 180), polar(s(211), a))
+    for v0, v1 in zip(TACHY, TACHY[1:]):   # engraved dots between the numbers
+        a = 6 * 3600 / ((v0 + v1) / 2) % 360
+        x, y = polar(s(211), a)
+        d.ellipse([x - s(1.1), y - s(1.1), x + s(1.1), y + s(1.1)], fill=ink)
+    fl = font(FONT_BEZEL, 9)
+    letters = 'TACHYMETER'
+    for i, ch in enumerate(letters):   # arced between 60 and 400
+        a = 11 + i * (32 / (len(letters) - 1))
+        put(img, glyph(ch, fl, ink, a), polar(s(211), a))
+    d.ellipse([C - s(197), C - s(197), C + s(197), C + s(197)], outline=(14, 16, 22) if not ambient else (90, 90, 90),
+              width=round(s(1.6)))
+
+
+def crystal_index(img, deg, r0=150, r1=176, w=9.5, ambient=False):
+    """Applied crystal-shaped lume marker: polished silver elongated hexagon, lume inside."""
+    L, half = s(r1 - r0), s(w) / 2
+    pad = s(4)
+    tile = Image.new('RGBA', (round(2 * half) + 2 * pad, L + 2 * pad), (0, 0, 0, 0))
+    cx = tile.width / 2
+
+    def hexa(k):
+        hw, inset = half * k, (1 - k) * half
+        return [(cx, pad + inset), (cx + hw, pad + inset + hw * 1.1), (cx + hw, pad + L - inset - hw * 1.1),
+                (cx, pad + L - inset), (cx - hw, pad + L - inset - hw * 1.1), (cx - hw, pad + inset + hw * 1.1)]
+    d = ImageDraw.Draw(tile)
+    if ambient:
+        d.polygon(hexa(1), outline=(150, 150, 150, 255), width=round(s(1)))
+    else:
+        m = Image.new('L', tile.size, 0)
+        ImageDraw.Draw(m).polygon(hexa(1), fill=255)
+        fill_mask(tile, m, lgrad(tile.size, (cx - half, 0), (cx + half, 0), [(0, (252, 253, 255)), (0.5, (190, 196, 206)), (1, (120, 128, 142))]))
+        lm = Image.new('L', tile.size, 0)
+        ImageDraw.Draw(lm).polygon(hexa(0.5), fill=255)
+        fill_mask(tile, lm, vgrad(tile.size, [(0, (240, 248, 244)), (1, (214, 232, 224))]))
+    tile = tile.rotate(-deg, resample=Image.BICUBIC, expand=True)
+    x, y = polar(s((r0 + r1) / 2), deg)
+    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    layer.paste(tile, (round(x - tile.width / 2), round(y - tile.height / 2)))
+    if not ambient:
+        drop_shadow(img, layer.getchannel('A'), blur=0.9, alpha=0.45)
+    img.alpha_composite(layer)
+
+
+def make_seiko_dial(ambient=False):
+    size = (s(N), s(N))
+    if ambient:
+        img = Image.new('RGBA', size, (0, 0, 0, 255))
+    else:
+        img = light_sunburst(size)
+        draw_world(img, (120, 128, 142, 30), (110, 118, 132, 96), diameter=310)
+        # blue inner ring with fine white ticks
+        metal_ring(img, C, C, s(197), s(SEIKO_DIAL_R), *LIGHT_BLUE_RING)
+        d = ImageDraw.Draw(img)
+        for i in range(240):
+            a = i * 1.5
+            five, major = i % 20 == 0, i % 4 == 0
+            r1 = 186 if five else (189 if major else 191.5)
+            d.line([polar(s(195), a), polar(s(r1), a)], fill=(236, 240, 250), width=round(s(1.3 if five else (0.8 if major else 0.5))))
+        d.ellipse([C - s(SEIKO_DIAL_R), C - s(SEIKO_DIAL_R), C + s(SEIKO_DIAL_R), C + s(SEIKO_DIAL_R)], outline=(20, 24, 34), width=round(s(0.8)))
+        inner_shadow(img, circle_mask(size, C, C, s(SEIKO_DIAL_R)), depth=1.4, blur=1.4, alpha=0.3)
+    tachy_bezel(img, ambient)
+    for h in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
+        crystal_index(img, h * 30, ambient=ambient)
+    # small blue crystal at 12, gold XI, SEIKO
+    cr = load_crystal(s(24))
+    if ambient:
+        cr = colorize(cr, ((10, 20, 50), (40, 70, 140), (110, 150, 230)))
+    layer = Image.new('RGBA', size, (0, 0, 0, 0))
+    layer.paste(cr, (round(C - cr.width / 2), round(C - s(178))))
+    if not ambient:
+        drop_shadow(img, layer.getchannel('A'), blur=1.0, alpha=0.5)
+    img.alpha_composite(layer)
+    xi = xi_mask(size, polar(s(160), 330), height=24)
+    if ambient:
+        fill_mask(img, xi, (150, 126, 70, 255))
+    else:
+        applied_text(img, xi)
+
+    def seiko_word(dd, f):
+        x = C - s(27)
+        for ch in 'SEIKO':   # letter-spaced, as on the dial
+            dd.text((x, C - s(118)), ch, font=font(FONT_SEIKO, 19), fill=f, anchor='mm')
+            x += s(13.5)
+    if ambient:
+        seiko_word(ImageDraw.Draw(img), (150, 150, 150))
+    else:
+        applied_text(img, seiko_word, stops=[(0, (236, 240, 246)), (0.45, (150, 156, 168)), (0.55, (96, 102, 114)), (1, (200, 204, 214))])
+    for pos, (key, scale) in SEIKO_LAYOUT.items():
+        if ambient:
+            cx, cy = (s(v) for v in SEIKO_POS[pos])
+            R = s(SEIKO_SUB_R)
+            ImageDraw.Draw(img).ellipse([cx - R, cy - R, cx + R, cy + R], outline=(110, 110, 110), width=round(s(1)))
+        else:
+            light_subdial(img, key, SEIKO_POS[pos], scale, SEIKO_SUB_R, SEIKO_EMBLEM_R, fs=0.82)
+    if not ambient:   # date window
+        x, y = s(SEIKO_DATE[0]), s(SEIKO_DATE[1])
+        w, h = s(28), s(20)
+        win = Image.new('L', size, 0)
+        ImageDraw.Draw(win).rounded_rectangle([x - w / 2, y - h / 2, x + w / 2, y + h / 2], radius=s(2), fill=255)
+        frame = win.filter(ImageFilter.MaxFilter(round(s(1.6)) * 2 + 1))
+        fill_mask(img, frame, lgrad(size, (x - w / 2, y - h / 2), (x + w / 2, y + h / 2),
+                                    [(0, (120, 126, 140)), (0.5, (196, 202, 212)), (1, (248, 250, 252))]))
+        fill_mask(img, win, (255, 255, 255, 255))
+        inner_shadow(img, win, depth=1.2, blur=1.0, alpha=0.4)
+    img.putalpha(circle_mask(size, C, C, s(225)))
+    return img
+
+
+def lume_hand(tip, tail, w, pad=None):
+    """Polished silver hand with a lume fill, after the real watch's hands."""
+    pad = HAND_PAD if pad is None else pad
+    img, px, py = hand_canvas(w, tip, tail, pad)
+    half = s(w) / 2
+    outer = [(px, py - s(tip)), (px + half, py - s(tip) * 0.16), (px + half * 0.55, py + s(tail)),
+             (px - half * 0.55, py + s(tail)), (px - half, py - s(tip) * 0.16)]
+    m = poly_mask(img.size, outer)
+    fill_mask(img, m, lgrad(img.size, (px - half, 0), (px + half, 0), [(0, (252, 253, 255)), (0.5, (186, 192, 204)), (1, (118, 126, 140))]))
+    lw = half * 0.55
+    lume = [(px, py - s(tip) * 0.9), (px + lw, py - s(tip) * 0.2), (px + lw * 0.5, py - s(tip) * 0.06),
+            (px - lw * 0.5, py - s(tip) * 0.06), (px - lw, py - s(tip) * 0.2)]
+    fill_mask(img, poly_mask(img.size, lume), vgrad(img.size, [(0, (242, 250, 244)), (1, (216, 234, 224))]))
+    ImageDraw.Draw(img).polygon(outer, outline=(70, 76, 90, 255), width=round(s(0.5)))
+    return with_shadow(img, 1.6, 0.6)
+
+
+def chrono_hand(tip=166, tail=36, pad=3):
+    """Gold chronograph seconds hand with a round counterweight (rests at 12)."""
+    img, px, py = hand_canvas(10, tip, tail, pad)
+    d = ImageDraw.Draw(img)
+    gold = (206, 160, 76, 255)
+    d.polygon([(px, py - s(tip)), (px - s(0.9), py), (px + s(0.9), py)], fill=gold)
+    d.rectangle([px - s(1.4), py, px + s(1.4), py + s(tail - 8)], fill=gold)
+    d.ellipse([px - s(4.5), py + s(tail - 13), px + s(4.5), py + s(tail - 4)], fill=gold, outline=(120, 84, 30, 255), width=round(s(0.5)))
+    return with_shadow(img, 1.0, 0.5)
+
+
 # --------------------------------------------------------------------- hands
 HAND_PAD = 5   # room around each hand for its soft shadow
 
@@ -1022,6 +1221,7 @@ CAPS = {
     'cap_dark': (lambda: outline_cap(5), 5 + 2),
     'cap_light': (lambda: star_cap(8), 8 + HAND_PAD),
     'cap_vana': (lambda: ink_cap(5), 5 + 3),
+    'cap_seiko': (lambda: star_cap(7), 7 + HAND_PAD),
 }
 
 
@@ -1082,6 +1282,14 @@ for _k, (_name, _color) in enumerate(ELEMENTS):
     HANDS[f'hand_hour_vana_{_k}'] = (lambda c=_tones[1]: ink_hand(110, 18, 10, inlay=c), 10, 110, 18, 3)
     HANDS[f'hand_minute_vana_{_k}'] = (lambda c=_tones[1]: ink_hand(176, 22, 8, inlay=c), 8, 176, 22, 3)
     HANDS[f'hand_minute_dark_{_k}'] = (lambda c=_line: outline_hand(180, 20, 8, color=c), 8, 180, 20, 2)
+HANDS.update({
+    'hand_hour_seiko': (lambda: lume_hand(98, 18, 12), 12, 98, 18, HAND_PAD),
+    'hand_minute_seiko': (lambda: lume_hand(152, 22, 10), 10, 152, 22, HAND_PAD),
+    'hand_chrono_seiko': (chrono_hand, 10, 166, 36, 3),
+})
+for _key, _ink in (('sandoria', 'red'), ('windurst', 'green'), ('bastok', 'blue')):
+    HANDS[f'hand_sub_{_ink}_seiko'] = (lambda c=NATION_INK[_key]: with_shadow(needle_hand(40, 10, 1.4, 2.4, color=c + (255,), ring_fill=c + (255,)), 0.8, 0.4),
+                                       8, 40, 10, 2)
 LIGHT_NEEDLE = {'sandoria': 'hand_sub_red', 'windurst': 'hand_sub_green', 'bastok': 'hand_sub_blue'}
 
 
@@ -1128,6 +1336,12 @@ def patch_xml(overlays=None):
     setattrs(r'<PartImage name="vana_hand_\d_\w+" [^>]*>', *VANA_POS, 'hand_vana_0')
     for pos, (cx, cy) in POSITIONS.items():
         setattrs(rf'<PartImage name="sub_{pos}_vana" [^>]*>', cx, cy, 'hand_sub_ink')
+    for pos, (cx, cy) in SEIKO_POS.items():
+        ink = {'sandoria': 'red', 'windurst': 'green', 'bastok': 'blue'}[SEIKO_LAYOUT[pos][0]]
+        setattrs(rf'<PartImage name="sub_{pos}_seiko" [^>]*>', cx, cy, f'hand_sub_{ink}_seiko')
+    setattrs(r'<PartImage name="chrono_seiko" [^>]*>', 225, 225, 'hand_chrono_seiko')
+    setattrs(r'<HourHand resource="hand_hour_seiko" [^>]*>', 225, 225, 'hand_hour_seiko')
+    setattrs(r'<MinuteHand resource="hand_minute_seiko" [^>]*>', 225, 225, 'hand_minute_seiko')
     for name, (_, half) in CAPS.items():
         xml, n = re.subn(rf'(<PartImage name="{name}" )[^>]*>',
                          rf'\g<1>x="{225 - half:g}" y="{225 - half:g}" width="{2 * half:g}" height="{2 * half:g}">', xml)
@@ -1239,6 +1453,22 @@ def preview_vana(dial_hi, hands_hi, caps_hi, hh=10, mm=8, dow=5, day=29, batt=78
     return finish(img)
 
 
+def preview_seiko(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, day=29):
+    img = dial_hi.copy()
+    angle = {'left': (mm % 30) * 12, 'right': (hh + mm / 60) * 15, 'bottom': ss * 6}
+    for pos, (cx, cy) in SEIKO_POS.items():
+        ink = {'sandoria': 'red', 'windurst': 'green', 'bastok': 'blue'}[SEIKO_LAYOUT[pos][0]]
+        place(img, hands_hi[f'hand_sub_{ink}_seiko'], f'hand_sub_{ink}_seiko', cx, cy, angle[pos])
+    text_c(ImageDraw.Draw(img), (s(SEIKO_DATE[0]), s(SEIKO_DATE[1])), str(day), font(FONT_SANS_BOLD, 12.5), (16, 16, 16))
+    place(img, hands_hi['hand_hour_seiko'], 'hand_hour_seiko', 225, 225, (hh % 12 + mm / 60) * 30)
+    place(img, hands_hi['hand_minute_seiko'], 'hand_minute_seiko', 225, 225, mm * 6)
+    place(img, hands_hi['hand_chrono_seiko'], 'hand_chrono_seiko', 225, 225, 0)
+    cap = caps_hi['cap_seiko']
+    img.alpha_composite(cap, (round(C - cap.width / 2), round(C - cap.height / 2)))
+    img.alpha_composite(glass_hi)
+    return finish(img)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     dial_hi = make_dial(crystal=False)
@@ -1249,6 +1479,9 @@ def main():
     finish(dark_hi).save(os.path.join(OUT, 'dial_dark.png'))
     light_hi = make_light_dial()
     finish(light_hi).save(os.path.join(OUT, 'dial_light.png'))
+    seiko_hi = make_seiko_dial()
+    finish(seiko_hi).save(os.path.join(OUT, 'dial_seiko.png'))
+    finish(make_seiko_dial(ambient=True)).save(os.path.join(OUT, 'dial_seiko_ambient.png'))
     vana_hi = make_vana_dial()
     finish(vana_hi).save(os.path.join(OUT, 'dial_vana.png'))
     finish(make_vana_dial(ambient=True)).save(os.path.join(OUT, 'dial_vana_ambient.png'))
@@ -1286,6 +1519,8 @@ def main():
     light.save(os.path.join(docs, 'preview_light.png'))
     vana = preview_vana(vana_hi, hands_hi, cap_hi)
     vana.save(os.path.join(docs, 'preview_vana.png'))
+    seiko = preview_seiko(seiko_hi, hands_hi, cap_hi, glass_hi)
+    seiko.save(os.path.join(docs, 'preview_wearevanadiel.png'))
     # weekday showcase: the same faces on four Vana'diel days
     days = [(1, 'Firesday'), (3, 'Watersday'), (4, 'Windsday'), (6, 'Lightningday')]
     show = Image.new('RGB', (4 * 300 + 20, 3 * 300 + 50), (18, 18, 22))
