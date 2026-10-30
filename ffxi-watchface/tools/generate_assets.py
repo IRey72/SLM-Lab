@@ -31,6 +31,10 @@ SUB_R = 56         # sub-dial radius
 EMBLEM_R = 33      # crest medallion radius inside each sub-dial
 DATE_POS = (225 + 103, 225 + 103)  # date window centre (4:30)
 DATE_SIZE = (34, 24)
+# Sub-dials, as on the real watch: San d'Oria at 9, Bastok at 6, Windurst at 3.
+POSITIONS = {'left': (225 - SUB_OFFSET, 225), 'right': (225 + SUB_OFFSET, 225), 'bottom': (225, 225 + SUB_OFFSET)}
+POSITION_SCALE = {'left': 'days', 'right': 'battery', 'bottom': '24h'}
+LAYOUT = {'left': 'sandoria', 'bottom': 'bastok', 'right': 'windurst'}
 
 NAVY_IN, NAVY_OUT = (30, 48, 84), (6, 11, 24)
 # Nation colours: San d'Oria red, Bastok blue, Windurst green
@@ -279,11 +283,12 @@ def place_crystal(img, ambient, bright=1.0):
 
 # --------------------------------------------------------------------- dial
 def sub_centers():
-    return {
-        'sandoria': (225 - SUB_OFFSET, 225),   # 9 o'clock: day of week
-        'bastok': (225 + SUB_OFFSET, 225),     # 3 o'clock: battery
-        'windurst': (225, 225 + SUB_OFFSET),   # 6 o'clock: 24 hour
-    }
+    """Sub-dial centre per nation, from LAYOUT (same in every style, as on the real watch)."""
+    return {key: POSITIONS[pos] for pos, key in LAYOUT.items()}
+
+
+def position_of(key):
+    return next(pos for pos, k in LAYOUT.items() if k == key)
 
 
 def crest_masks(key, a):
@@ -379,11 +384,7 @@ def draw_subdial(img, key, ambient=False, bright=1.0):
     draw_emblem(img, key, cx, cy, ambient, bright)
     d = ImageDraw.Draw(img)
 
-    draw_scale(d, SCALE_OF[key], cx, cy, R, fg)
-
-
-# Which scale each nation's sub-dial carries in Classic / Dark (by position).
-SCALE_OF = {'sandoria': 'days', 'bastok': 'battery', 'windurst': '24h'}
+    draw_scale(d, POSITION_SCALE[position_of(key)], cx, cy, R, fg)
 
 
 def draw_scale(d, kind, cx, cy, R, fg):
@@ -505,10 +506,7 @@ def make_dial(ambient=False, bright=0.6):
 # --------------------------------------------------------------------- light style
 # After the real Seiko piece: silver-white dial with a faint Vana'diel world map,
 # blue inner ring, applied lume batons, white sub-dials with printed crests and
-# nation-coloured rings and hands. Sub-dial positions follow the real watch.
-POSITIONS = {'left': (225 - SUB_OFFSET, 225), 'right': (225 + SUB_OFFSET, 225), 'bottom': (225, 225 + SUB_OFFSET)}
-POSITION_SCALE = {'left': 'days', 'right': 'battery', 'bottom': '24h'}
-LIGHT_LAYOUT = {'left': 'sandoria', 'right': 'windurst', 'bottom': 'bastok'}
+# nation-coloured rings and hands.
 NATION_INK = {'sandoria': (196, 32, 44), 'windurst': (40, 150, 70), 'bastok': (40, 70, 190)}
 LIGHT_BLUE_RING = ((24, 40, 104), (66, 96, 178))
 
@@ -566,7 +564,7 @@ def light_crest(key, size):
 
 
 def light_subdial(img, pos):
-    key = LIGHT_LAYOUT[pos]
+    key = LAYOUT[pos]
     cx, cy = (s(v) for v in POSITIONS[pos])
     R = s(SUB_R)
     g = radial_gradient((2 * R, 2 * R), (252, 252, 253), (232, 234, 238))
@@ -864,12 +862,12 @@ def patch_xml():
     for sfx in ('', '_dark'):
         setattrs(rf'<HourHand resource="hand_hour{sfx}" [^>]*>', 225, 225, 'hand_hour' + sfx)
         setattrs(rf'<MinuteHand resource="hand_minute{sfx}" [^>]*>', 225, 225, 'hand_minute' + sfx)
-        for key, (cx, cy) in sub_centers().items():
-            setattrs(rf'<PartImage name="sub_{key}{sfx}" [^>]*>', cx, cy, 'hand_sub' + sfx)
+        for pos, (cx, cy) in POSITIONS.items():
+            setattrs(rf'<PartImage name="sub_{pos}{sfx}" [^>]*>', cx, cy, 'hand_sub' + sfx)
     setattrs(r'<HourHand resource="hand_hour_light" [^>]*>', 225, 225, 'hand_hour_light')
     setattrs(r'<MinuteHand resource="hand_minute_light" [^>]*>', 225, 225, 'hand_minute_light')
     for pos, (cx, cy) in POSITIONS.items():
-        setattrs(rf'<PartImage name="sub_{pos}_light" [^>]*>', cx, cy, LIGHT_NEEDLE[LIGHT_LAYOUT[pos]])
+        setattrs(rf'<PartImage name="sub_{pos}_light" [^>]*>', cx, cy, LIGHT_NEEDLE[LAYOUT[pos]])
     for name, (_, half) in CAPS.items():
         xml, n = re.subn(rf'(<PartImage name="{name}" )[^>]*>',
                          rf'\g<1>x="{225 - half:g}" y="{225 - half:g}" width="{2 * half:g}" height="{2 * half:g}">', xml)
@@ -905,10 +903,9 @@ def preview(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day
     sfx = '_dark' if dark else ''
     cap_hi = caps_hi['cap' + sfx]
     sub = hands_hi['hand_sub' + sfx]
-    centers = sub_centers()
-    place(img, sub, 'hand_sub' + sfx, *centers['sandoria'], (dow - 1) * 360 / 7)
-    place(img, sub, 'hand_sub' + sfx, *centers['bastok'], -150 + batt * 3)
-    place(img, sub, 'hand_sub' + sfx, *centers['windurst'], (hh + mm / 60) * 15)
+    angle = {'left': (dow - 1) * 360 / 7, 'right': -150 + batt * 3, 'bottom': (hh + mm / 60) * 15}
+    for pos, (cx, cy) in POSITIONS.items():
+        place(img, sub, 'hand_sub' + sfx, cx, cy, angle[pos])
     if not ambient or dark:
         d = ImageDraw.Draw(img)
         text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15),
@@ -925,7 +922,7 @@ def preview_light(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, dow=5, day=
     img = dial_hi.copy()
     angle = {'left': (dow - 1) * 360 / 7, 'right': -150 + batt * 3, 'bottom': (hh + mm / 60) * 15}
     for pos, (cx, cy) in POSITIONS.items():
-        name = LIGHT_NEEDLE[LIGHT_LAYOUT[pos]]
+        name = LIGHT_NEEDLE[LAYOUT[pos]]
         place(img, hands_hi[name], name, cx, cy, angle[pos])
     text_c(ImageDraw.Draw(img), (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), (20, 20, 20))
     place(img, hands_hi['hand_hour_light'], 'hand_hour_light', 225, 225, (hh % 12 + mm / 60) * 30)

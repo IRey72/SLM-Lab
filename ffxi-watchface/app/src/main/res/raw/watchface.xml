@@ -8,10 +8,10 @@
     classic  realistic navy dial with full-colour crests
     dark     the outline "dark chronograph" look with line-art crests
     light    after the real Seiko: silver-white dial, blue ring, world map
-             (its sub-dials follow the real watch: Windurst at 3, Bastok at 6)
-  Sub-dials:  9 o'clock San d'Oria = day of week
-              3 o'clock Bastok     = battery (E..F over 300 degrees)
-              6 o'clock Windurst   = 24-hour hand
+  Sub-dials (all styles, as on the real watch):
+              9 o'clock San d'Oria = day of week
+              6 o'clock Bastok     = 24-hour hand
+              3 o'clock Windurst   = battery (E..F over 300 degrees)
   No seconds hand (hour and minute only).
 -->
 <WatchFace width="450" height="450">
@@ -90,18 +90,18 @@
     <ListConfiguration id="style">
       <ListOption id="classic">
         <Group name="classic_hands" x="0" y="0" width="450" height="450">
-          <!-- San d'Oria sub-dial (9 o'clock): day of week, SU at top -->
-          <PartImage name="sub_sandoria" x="118" y="176" width="14" height="68" pivotX="0.5" pivotY="0.7206">
+          <!-- 9 o'clock (San d'Oria): day of week, SU at top -->
+          <PartImage name="sub_left" x="118" y="176" width="14" height="68" pivotX="0.5" pivotY="0.7206">
             <Transform target="angle" value="([DAY_OF_WEEK] - 1) * 51.428571" />
             <Image resource="hand_sub" />
           </PartImage>
-          <!-- Bastok sub-dial (3 o'clock): battery, E at -150deg, F at +150deg -->
-          <PartImage name="sub_bastok" x="318" y="176" width="14" height="68" pivotX="0.5" pivotY="0.7206">
+          <!-- 3 o'clock (Windurst): battery, E at -150deg, F at +150deg -->
+          <PartImage name="sub_right" x="318" y="176" width="14" height="68" pivotX="0.5" pivotY="0.7206">
             <Transform target="angle" value="-150 + [BATTERY_PERCENT] * 3" />
             <Image resource="hand_sub" />
           </PartImage>
-          <!-- Windurst sub-dial (6 o'clock): 24-hour hand, 24 at top -->
-          <PartImage name="sub_windurst" x="218" y="276" width="14" height="68" pivotX="0.5" pivotY="0.7206">
+          <!-- 6 o'clock (Bastok): 24-hour hand, 24 at top -->
+          <PartImage name="sub_bottom" x="218" y="276" width="14" height="68" pivotX="0.5" pivotY="0.7206">
             <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
             <Image resource="hand_sub" />
           </PartImage>
@@ -117,18 +117,18 @@
       </ListOption>
       <ListOption id="dark">
         <Group name="dark_hands" x="0" y="0" width="450" height="450">
-          <!-- San d'Oria sub-dial (9 o'clock): day of week, SU at top -->
-          <PartImage name="sub_sandoria_dark" x="119" y="179" width="12" height="58" pivotX="0.5" pivotY="0.7931">
+          <!-- 9 o'clock (San d'Oria): day of week, SU at top -->
+          <PartImage name="sub_left_dark" x="119" y="179" width="12" height="58" pivotX="0.5" pivotY="0.7931">
             <Transform target="angle" value="([DAY_OF_WEEK] - 1) * 51.428571" />
             <Image resource="hand_sub_dark" />
           </PartImage>
-          <!-- Bastok sub-dial (3 o'clock): battery, E at -150deg, F at +150deg -->
-          <PartImage name="sub_bastok_dark" x="319" y="179" width="12" height="58" pivotX="0.5" pivotY="0.7931">
+          <!-- 3 o'clock (Windurst): battery, E at -150deg, F at +150deg -->
+          <PartImage name="sub_right_dark" x="319" y="179" width="12" height="58" pivotX="0.5" pivotY="0.7931">
             <Transform target="angle" value="-150 + [BATTERY_PERCENT] * 3" />
             <Image resource="hand_sub_dark" />
           </PartImage>
-          <!-- Windurst sub-dial (6 o'clock): 24-hour hand, 24 at top -->
-          <PartImage name="sub_windurst_dark" x="219" y="279" width="12" height="58" pivotX="0.5" pivotY="0.7931">
+          <!-- 6 o'clock (Bastok): 24-hour hand, 24 at top -->
+          <PartImage name="sub_bottom_dark" x="219" y="279" width="12" height="58" pivotX="0.5" pivotY="0.7931">
             <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
             <Image resource="hand_sub_dark" />
           </PartImage>
