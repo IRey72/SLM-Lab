@@ -5,7 +5,7 @@
   <string name="style_classic">Classic</string>
   <string name="style_dark">Dark</string>
   <string name="style_light">Light</string>
-  <string name="style_vanadiel">Vana\'diel Time</string>
+  <string name="style_vanadiel">Canvas</string>
   <string name="style_wearevanadiel">We Are Vana\'diel</string>
   <string name="style_cyberpunk">Cyberpunk</string>
 </resources>

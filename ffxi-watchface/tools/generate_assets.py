@@ -728,7 +728,8 @@ def colorize(img, tones):
     return Image.fromarray(np.dstack([rgb, a[..., 3]]).astype(np.uint8), 'RGBA')
 
 
-VANA_BOX = (77, 309, 161, 353)     # 7:30 cartouche: Vana'diel time and weekday
+VANA_MEDAL = (121, 329, 33)        # 7:30 medallion (x, y, r): Vana'diel time and weekday
+DATE_MEDAL_R = 25                   # matching medallion round the 4:30 date
 
 
 def parchment(size):
@@ -756,16 +757,6 @@ def compass_rose(img, cx, cy, r, color):
         d.polygon([tip, side_r, (cx, cy)], fill=tuple(int(c * 0.6 + 255 * 0.4) for c in color) + (255,))
     d.ellipse([cx - r * 0.12, cy - r * 0.12, cx + r * 0.12, cy + r * 0.12], fill=(170, 40, 30, 255))
     text_c(d, polar(r + s(6), 0, cx, cy), 'N', font(FONT_SERIF, 7), color)
-
-
-def cartouche(img, box, fill, line):
-    x0, y0, x1, y1 = (s(v) for v in box)
-    m = Image.new('L', img.size, 0)
-    ImageDraw.Draw(m).rounded_rectangle([x0, y0, x1, y1], radius=s(8), fill=255)
-    drop_shadow(img, m, blur=1.4, alpha=0.35)
-    d = ImageDraw.Draw(img)
-    d.rounded_rectangle([x0, y0, x1, y1], radius=s(8), fill=fill + (255,), outline=line + (255,), width=round(s(1.4)))
-    d.rounded_rectangle([x0 + s(3), y0 + s(3), x1 - s(3), y1 - s(3)], radius=s(6), outline=line + (255,), width=round(s(0.6)))
 
 
 def parchment_subdial(img, key, centre, scale, ambient=False):
@@ -797,6 +788,17 @@ def parchment_subdial(img, key, centre, scale, ambient=False):
     draw_scale(d, scale, cx, cy, R - s(1), ink)
 
 
+def medallion(img, x, y, r):
+    """Small round parchment medallion with a double ink rim, matching the sub-dials."""
+    cx, cy, R = s(x), s(y), s(r)
+    m = circle_mask(img.size, cx, cy, R)
+    drop_shadow(img, m, blur=1.2, alpha=0.3)
+    fill_mask(img, m, radial_gradient(img.size, (252, 244, 222), (234, 216, 176), cx=cx, cy=cy, r=R))
+    d = ImageDraw.Draw(img)
+    for rr, w in ((R, 1.4), (R - s(2.8), 0.5)):
+        d.ellipse([cx - rr, cy - rr, cx + rr, cy + rr], outline=INK + (255,), width=round(s(w)))
+
+
 def make_vana_dial(ambient=False):
     size = (s(N), s(N))
     if ambient:
@@ -826,15 +828,12 @@ def make_vana_dial(ambient=False):
     for pos in POSITIONS:
         parchment_subdial(img, LAYOUT[pos], POSITIONS[pos], POSITION_SCALE[pos], ambient)
     parchment_subdial(img, 'jeuno', VANA_POS, '24h', ambient)
-    if not ambient:   # date window and the Vana'diel cartouche (text drawn live)
-        x, y = s(DATE_POS[0]), s(DATE_POS[1])
-        w, h = s(DATE_SIZE[0]), s(DATE_SIZE[1])
+    if not ambient:   # round parchment medallions: Vana'diel time at 7:30, date at 4:30 (text drawn live)
+        medallion(img, *VANA_MEDAL)
+        medallion(img, *DATE_POS, DATE_MEDAL_R)
         d = ImageDraw.Draw(img)
-        d.rounded_rectangle([x - w / 2, y - h / 2, x + w / 2, y + h / 2], radius=s(4), fill=(250, 241, 216, 255),
-                            outline=INK + (255,), width=round(s(1.2)))
-        cartouche(img, VANA_BOX, (250, 241, 216), INK)
-        d = ImageDraw.Draw(img)
-        text_c(d, (s((VANA_BOX[0] + VANA_BOX[2]) / 2), s(VANA_BOX[1] + 9)), "VANA'DIEL", font(FONT_LABEL, 6.5), INK)
+        x, y, r = VANA_MEDAL
+        text_c(d, (s(x), s(y - 19)), "VANA'DIEL", font(FONT_LABEL, 5.5), INK)
     img.putalpha(circle_mask(size, C, C, s(225)))
     return img
 
@@ -1527,9 +1526,9 @@ def preview_vana(dial_hi, hands_hi, caps_hi, hh=10, mm=8, dow=5, day=29, batt=78
     place_vana_hand(img, hands_hi, utc)
     d = ImageDraw.Draw(img)
     text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), INK)
-    x0, y0, x1, y1 = VANA_BOX
-    text_c(d, (s((x0 + x1) / 2), s(y0 + 22)), f'{vh:02d}:{vm:02d}', font(FONT_SERIF, 17), INK)
-    text_c(d, (s((x0 + x1) / 2), s(y0 + 36)), ELEMENTS[wd][0].upper(), font(FONT_SERIF, 7.5), ELEMENT_TONES[wd][0] if wd != 6 else INK)
+    x, y, r = VANA_MEDAL
+    text_c(d, (s(x), s(y + 1)), f'{vh:02d}:{vm:02d}', font(FONT_SERIF, 15), INK)
+    text_c(d, (s(x), s(y + 16)), ELEMENTS[wd][0].upper(), font(FONT_SERIF, 6), ELEMENT_TONES[wd][0] if wd != 6 else INK)
     place(img, hands_hi[f'hand_hour_vana_{wd}'], f'hand_hour_vana_{wd}', 225, 225, (hh % 12 + mm / 60) * 30)
     place(img, hands_hi[f'hand_minute_vana_{wd}'], f'hand_minute_vana_{wd}', 225, 225, mm * 6)
     cap = caps_hi['cap_vana']

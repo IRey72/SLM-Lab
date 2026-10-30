@@ -217,59 +217,59 @@
               </Font>
             </Text>
           </PartText>
-          <PartText x="77" y="321" width="84" height="20">
+          <PartText x="91" y="320" width="60" height="18">
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="17" color="#ff5c3a1a">
+              <Font family="cinzel_bold" size="15" color="#ff5c3a1a">
                 <Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template>
               </Font>
             </Text>
           </PartText>
-          <PartText x="77" y="339" width="84" height="12">
+          <PartText x="91" y="339" width="60" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="7.5" color="#ff600c00">FIRESDAY</Font>
+              <Font family="cinzel_bold" size="6" color="#ff600c00">FIRESDAY</Font>
             </Text>
           </PartText>
-          <PartText x="77" y="339" width="84" height="12">
+          <PartText x="91" y="339" width="60" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="7.5" color="#ff4a300a">EARTHSDAY</Font>
+              <Font family="cinzel_bold" size="6" color="#ff4a300a">EARTHSDAY</Font>
             </Text>
           </PartText>
-          <PartText x="77" y="339" width="84" height="12">
+          <PartText x="91" y="339" width="60" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="7.5" color="#ff061a5c">WATERSDAY</Font>
+              <Font family="cinzel_bold" size="6" color="#ff061a5c">WATERSDAY</Font>
             </Text>
           </PartText>
-          <PartText x="77" y="339" width="84" height="12">
+          <PartText x="91" y="339" width="60" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="7.5" color="#ff063e16">WINDSDAY</Font>
+              <Font family="cinzel_bold" size="6" color="#ff063e16">WINDSDAY</Font>
             </Text>
           </PartText>
-          <PartText x="77" y="339" width="84" height="12">
+          <PartText x="91" y="339" width="60" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="7.5" color="#ff144868">ICEDAY</Font>
+              <Font family="cinzel_bold" size="6" color="#ff144868">ICEDAY</Font>
             </Text>
           </PartText>
-          <PartText x="77" y="339" width="84" height="12">
+          <PartText x="91" y="339" width="60" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="7.5" color="#ff340a54">LIGHTNINGDAY</Font>
+              <Font family="cinzel_bold" size="6" color="#ff340a54">LIGHTNINGDAY</Font>
             </Text>
           </PartText>
-          <PartText x="77" y="339" width="84" height="12">
+          <PartText x="91" y="339" width="60" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="7.5" color="#ff5c3a1a">LIGHTSDAY</Font>
+              <Font family="cinzel_bold" size="6" color="#ff5c3a1a">LIGHTSDAY</Font>
             </Text>
           </PartText>
-          <PartText x="77" y="339" width="84" height="12">
+          <PartText x="91" y="339" width="60" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="7.5" color="#ff0a0816">DARKSDAY</Font>
+              <Font family="cinzel_bold" size="6" color="#ff0a0816">DARKSDAY</Font>
             </Text>
           </PartText>
         </Group>
@@ -278,9 +278,9 @@
           <PartImage x="0" y="0" width="450" height="450">
             <Image resource="dial_vana_ambient" />
           </PartImage>
-          <PartText x="77" y="321" width="84" height="20">
+          <PartText x="91" y="320" width="60" height="18">
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="17" color="#ff9a8a6e">
+              <Font family="cinzel_bold" size="15" color="#ff9a8a6e">
                 <Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template>
               </Font>
             </Text>
