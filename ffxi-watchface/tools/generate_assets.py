@@ -247,7 +247,7 @@ GEM_OUTER = [(0, -1), (0.34, -0.66), (0.5, -0.12), (0.47, 0.42), (0.3, 0.84), (0
 GEM_TABLE = [(0, -0.6), (0.17, -0.38), (0.25, -0.06), (0.23, 0.3), (0.14, 0.58), (0, 0.7)]
 
 
-def crystal_lines(img, bright=1.0):
+def crystal_lines(img, bright=1.0, color=(236, 242, 255)):
     """The 12 o'clock crystal as white minimal line art (more detailed than plain markers)."""
     h = s(CRYSTAL_R[1] - CRYSTAL_R[0])
     w = h * 0.43
@@ -258,8 +258,8 @@ def crystal_lines(img, bright=1.0):
         left = [(cx - x * w, cy + y * h / 2) for x, y in pts[-2:0:-1]]
         return right + left
     outer, table = ring(GEM_OUTER), ring(GEM_TABLE)
-    col = tuple(int(c * bright) for c in (236, 242, 255))
-    thin = tuple(int(c * bright * 0.75) for c in (236, 242, 255))
+    col = tuple(int(c * bright) for c in color)
+    thin = tuple(int(c * bright * 0.75) for c in color)
     d = ImageDraw.Draw(img)
     d.polygon(outer, fill=(0, 0, 0, 255))
     n = len(outer)
@@ -269,6 +269,28 @@ def crystal_lines(img, bright=1.0):
     d.line([table[0], table[n // 2]], fill=thin, width=round(s(0.6)))
     d.line(table + table[:1], fill=col, width=round(s(1.0)), joint='curve')
     d.line(outer + outer[:1], fill=col, width=round(s(1.4)), joint='curve')
+
+
+def crystal12(style, k):
+    """The 12 o'clock crystal for one weekday, on its own transparent canvas (an overlay)."""
+    tones = ELEMENT_TONES[k]
+    size = (s(N), s(N))
+    img = Image.new('RGBA', size, (0, 0, 0, 0))
+    if style == 'dark':
+        crystal_lines(img, 1.0, ELEMENT_LINE[k])
+        return img
+    big = style == 'classic'
+    h, top = (s(CRYSTAL_R[1] - CRYSTAL_R[0]), CRYSTAL_R[1]) if big else (s(26), 208)
+    cr = colorize(load_crystal(h), tones)
+    if big:   # glow in the element's colour
+        glow = Image.new('RGBA', size, (0, 0, 0, 0))
+        ImageDraw.Draw(glow).ellipse([C - s(16), C - s(213), C + s(16), C - s(173)], fill=ELEMENT_LINE[k] + (170,))
+        img.alpha_composite(glow.filter(ImageFilter.GaussianBlur(s(9))))
+    layer = Image.new('RGBA', size, (0, 0, 0, 0))
+    layer.paste(cr, (round(C - cr.width / 2), round(C - s(top))))
+    drop_shadow(img, layer.getchannel('A'), blur=1.8 if big else 1.2, alpha=0.7 if big else 0.5)
+    img.alpha_composite(layer)
+    return img
 
 
 def place_crystal(img, ambient, bright=1.0):
@@ -442,7 +464,7 @@ def sunburst(size):
     return Image.fromarray(out.astype(np.uint8), 'RGB').convert('RGBA')
 
 
-def make_dial(ambient=False, bright=0.6):
+def make_dial(ambient=False, bright=0.6, crystal=True):
     """ambient=False: classic dial. ambient=True: outline dial; bright=1 is the
     Dark style (active), bright=0.6 the always-on version of both styles."""
     size = (s(N), s(N))
@@ -468,11 +490,8 @@ def make_dial(ambient=False, bright=0.6):
         d.line([polar(s(224), a), polar(s(216 if five else 220), a)], fill=col, width=round(s(2.2 if five else 1)))
 
     # 12 = crystal, 11 = "XI"
-    if not ambient:
-        glow = Image.new('RGBA', size, (0, 0, 0, 0))
-        ImageDraw.Draw(glow).ellipse([C - s(16), C - s(213), C + s(16), C - s(173)], fill=(60, 110, 255, 150))
-        img.alpha_composite(glow.filter(ImageFilter.GaussianBlur(s(9))))
-    place_crystal(img, ambient, bright)
+    if crystal:   # active dials leave it out: weekday-coloured overlays (crystal12_*) carry it
+        place_crystal(img, ambient, bright)
     d = ImageDraw.Draw(img)
 
     pos = polar(s(188), 330)
@@ -614,11 +633,6 @@ def make_light_dial():
     # applied lume batons, small blue crystal at 12, gold XI at 11
     for h in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10):
         lume_baton(img, h * 30)
-    cr = load_crystal(s(26))
-    layer = Image.new('RGBA', size, (0, 0, 0, 0))
-    layer.paste(cr, (round(C - cr.width / 2), round(C - s(208))))
-    drop_shadow(img, layer.getchannel('A'), blur=1.2, alpha=0.5)
-    img.alpha_composite(layer)
     applied_text(img, xi_mask(size, polar(s(188), 330)))
     for pos in POSITIONS:
         light_subdial(img, LAYOUT[pos], POSITIONS[pos], POSITION_SCALE[pos])
@@ -670,6 +684,31 @@ ELEMENTS = [  # weekday order: (name, crystal colour)
     ('Windsday', (64, 166, 76)), ('Iceday', (120, 196, 232)), ('Lightningday', (150, 84, 206)),
     ('Lightsday', (250, 248, 236)), ('Darksday', (44, 40, 52)),
 ]
+# Per-element tones (shadow, mid, highlight) for recolouring the crystal and hands by weekday,
+# plus the colour used for lines on black (Darksday's mid is too dark there).
+ELEMENT_TONES = [
+    ((96, 12, 0), (232, 64, 30), (255, 214, 150)),     # Fire
+    ((74, 48, 10), (204, 154, 52), (255, 236, 160)),   # Earth
+    ((6, 26, 92), (52, 112, 232), (196, 228, 255)),    # Water
+    ((6, 62, 22), (62, 172, 82), (206, 255, 206)),     # Wind
+    ((20, 72, 104), (122, 202, 238), (242, 252, 255)), # Ice
+    ((52, 10, 84), (152, 82, 214), (236, 204, 255)),   # Lightning
+    ((132, 120, 88), (242, 238, 216), (255, 255, 250)),# Light
+    ((10, 8, 22), (64, 52, 86), (176, 164, 206)),      # Dark
+]
+ELEMENT_LINE = [tones[1] for tones in ELEMENT_TONES[:7]] + [ELEMENT_TONES[7][2]]
+
+
+def colorize(img, tones):
+    """Recolour an RGBA image by luminance through a shadow-mid-highlight ramp (keeps facets)."""
+    a = np.asarray(img.convert('RGBA')).astype(float)
+    lum = a[..., :3] @ [0.3, 0.5, 0.2] / 255
+    lum = np.clip((lum - lum[a[..., 3] > 0].min()) / max(1e-6, np.ptp(lum[a[..., 3] > 0])), 0, 1) if (a[..., 3] > 0).any() else lum
+    stops = [0, 0.55, 1]
+    rgb = np.stack([np.interp(lum, stops, [t[i] for t in tones]) for i in range(3)], -1)
+    return Image.fromarray(np.dstack([rgb, a[..., 3]]).astype(np.uint8), 'RGBA')
+
+
 VANA_TIME_BOX = (150, 104, 300, 160)     # cartouche for the Vana'diel time
 VANA_DAY_BOX = (140, 286, 310, 320)      # plaque for the weekday
 
@@ -797,10 +836,11 @@ def hand_canvas(w, tip, tail, pad=HAND_PAD):
     return img, s(w / 2 + pad), s(tip + pad)
 
 
-def with_shadow(img, blur=1.8, alpha=0.55):
-    """Soft halo shadow under a rotating hand (no offset, so it reads right at any angle)."""
+def with_shadow(img, blur=1.8, alpha=0.55, color=(0, 0, 0)):
+    """Soft halo under a rotating hand (no offset, so it reads right at any angle);
+    a colour turns the shadow into a glow."""
     sh = img.getchannel('A').filter(ImageFilter.GaussianBlur(s(blur))).point(lambda v: int(v * alpha))
-    out = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    out = Image.new('RGBA', img.size, color + (0,))
     out.putalpha(sh)
     out.alpha_composite(img)
     return out
@@ -857,21 +897,24 @@ def prepare_photo(name, tip, thin=1.0):
     return _PHOTO_CACHE[key]
 
 
-def photo_hand(name, tip, thin=1.0, pad=HAND_PAD, blur=1.8, alpha=0.55, outline=False):
+def photo_hand(name, tip, thin=1.0, pad=HAND_PAD, blur=1.8, alpha=0.55, outline=False, edge=(58, 62, 72), glow=None):
     """A photographed hand on a padded canvas, pivot centred, with a soft shadow.
-    outline=True adds a thin dark edge and deepens the steel so it holds up on a white dial."""
+    outline=True adds a thin edge (colour `edge`) and deepens the steel so it holds up on a
+    white dial; `glow` swaps the shadow for a halo of that colour."""
     src, sx, sy = prepare_photo(name, tip, thin)
     w, tail = photo_geom(name, tip, thin)
     img, px, py = hand_canvas(w, tip, tail, pad)
     if outline:
         r, g, b, a = src.split()
         src = Image.merge('RGBA', [ch.point(lambda v: int(v * 0.86)) for ch in (r, g, b)] + [a])
-        edge = Image.new('RGBA', img.size, (0, 0, 0, 0))
-        edge.paste(src, (round(px - sx), round(py - sy)))
+        placed = Image.new('RGBA', img.size, (0, 0, 0, 0))
+        placed.paste(src, (round(px - sx), round(py - sy)))
         k = round(s(0.6)) * 2 + 1
-        ring = edge.getchannel('A').filter(ImageFilter.MaxFilter(k))
-        img.alpha_composite(Image.merge('RGBA', [Image.new('L', img.size, v) for v in (58, 62, 72)] + [ring]))
+        ring = placed.getchannel('A').filter(ImageFilter.MaxFilter(k))
+        img.alpha_composite(Image.merge('RGBA', [Image.new('L', img.size, v) for v in edge] + [ring]))
     img.alpha_composite(src, (round(px - sx), round(py - sy)))
+    if glow:
+        return with_shadow(with_shadow(img, blur, alpha), blur * 1.6, 0.75, glow)
     return with_shadow(img, blur, alpha)
 
 
@@ -949,16 +992,12 @@ def _photo(name, tip, thin=1.0, pad=HAND_PAD, **kw):
 
 HANDS = {
     # name: (builder, visual width, tip length, tail length, shadow padding)
-    'hand_hour': _photo('hour', 118, thin=0.48),
-    'hand_minute': _photo('minute', 182, thin=0.5),
     'hand_sub': _photo('sub', 54, pad=3, blur=1.0, alpha=0.6),
     # Dark style: thin outline hands
     'hand_hour_dark': (lambda: outline_hand(112, 16, 10), 10, 112, 16, 2),
     'hand_minute_dark': (lambda: outline_hand(180, 20, 8), 8, 180, 20, 2),
     'hand_sub_dark': (lambda: needle_hand(52, 12, color=XI_BLUE), 8, 52, 12, 2),
     # Light style: steel hands with a firmer shadow on the white dial; nation-coloured needles
-    'hand_hour_light': _photo('hour', 118, thin=0.48, alpha=0.6, outline=True),
-    'hand_minute_light': _photo('minute', 182, thin=0.5, alpha=0.6, outline=True),
     'hand_sub_red': (lambda: with_shadow(needle_hand(52, 12, 1.5, 2.6, color=NATION_INK['sandoria'] + (255,),
                                                      ring_fill=NATION_INK['sandoria'] + (255,)), 0.8, 0.4), 8, 52, 12, 2),
     'hand_sub_green': (lambda: with_shadow(needle_hand(52, 12, 1.5, 2.6, color=NATION_INK['windurst'] + (255,),
@@ -993,6 +1032,15 @@ def vana_hand(color):
 
 for _k, (_name, _color) in enumerate(ELEMENTS):
     HANDS[f'hand_vana_{_k}'] = ((lambda c=_color: vana_hand(c)),) + VANA_HAND
+    # main hands per weekday: steel with an element-coloured edge and glow (Classic, Light),
+    # element-coloured outlines (Dark)
+    _line, _tones = ELEMENT_LINE[_k], ELEMENT_TONES[_k]
+    HANDS[f'hand_hour_classic_{_k}'] = _photo('hour', 118, thin=0.48, outline=True, edge=_line, glow=_line)
+    HANDS[f'hand_minute_classic_{_k}'] = _photo('minute', 182, thin=0.5, outline=True, edge=_line, glow=_line)
+    HANDS[f'hand_hour_light_{_k}'] = _photo('hour', 118, thin=0.48, alpha=0.6, outline=True, edge=_tones[0], glow=_tones[1])
+    HANDS[f'hand_minute_light_{_k}'] = _photo('minute', 182, thin=0.5, alpha=0.6, outline=True, edge=_tones[0], glow=_tones[1])
+    HANDS[f'hand_hour_dark_{_k}'] = (lambda c=_line: outline_hand(112, 16, 10, color=c), 10, 112, 16, 2)
+    HANDS[f'hand_minute_dark_{_k}'] = (lambda c=_line: outline_hand(180, 20, 8, color=c), 8, 180, 20, 2)
 LIGHT_NEEDLE = {'sandoria': 'hand_sub_red', 'windurst': 'hand_sub_green', 'bastok': 'hand_sub_blue'}
 
 
@@ -1002,7 +1050,7 @@ def hand_geom(name):
     return w + 2 * pad, tip + pad, tip + tail + 2 * pad
 
 
-def patch_xml():
+def patch_xml(overlays=None):
     """Write hand / cap geometry into watchface.xml so it always matches the PNGs."""
     import re
     path = os.path.join(os.path.dirname(__file__), '..', 'app', 'src', 'main', 'res', 'raw', 'watchface.xml')
@@ -1022,13 +1070,18 @@ def patch_xml():
         xml, n = re.subn(pattern, sub, xml)
         assert n >= 1, pattern
 
+    setattrs(r'<HourHand resource="hand_hour_dark" [^>]*>', 225, 225, 'hand_hour_dark')
+    setattrs(r'<MinuteHand resource="hand_minute_dark" [^>]*>', 225, 225, 'hand_minute_dark')
+    for style in ('classic', 'dark', 'light'):
+        for k in range(8):
+            setattrs(rf'<HourHand resource="hand_hour_{style}_{k}" [^>]*>', 225, 225, f'hand_hour_{style}_{k}')
+            setattrs(rf'<MinuteHand resource="hand_minute_{style}_{k}" [^>]*>', 225, 225, f'hand_minute_{style}_{k}')
+    for name, (x, y, w, h) in (overlays or {}).items():
+        xml, n = re.subn(rf'(<PartImage name="{name}" )[^>]*>', rf'\g<1>x="{x}" y="{y}" width="{w}" height="{h}">', xml)
+        assert n == 1, name
     for sfx in ('', '_dark'):
-        setattrs(rf'<HourHand resource="hand_hour{sfx}" [^>]*>', 225, 225, 'hand_hour' + sfx)
-        setattrs(rf'<MinuteHand resource="hand_minute{sfx}" [^>]*>', 225, 225, 'hand_minute' + sfx)
         for pos, (cx, cy) in POSITIONS.items():
             setattrs(rf'<PartImage name="sub_{pos}{sfx}" [^>]*>', cx, cy, 'hand_sub' + sfx)
-    setattrs(r'<HourHand resource="hand_hour_light" [^>]*>', 225, 225, 'hand_hour_light')
-    setattrs(r'<MinuteHand resource="hand_minute_light" [^>]*>', 225, 225, 'hand_minute_light')
     for pos, (cx, cy) in POSITIONS.items():
         setattrs(rf'<PartImage name="sub_{pos}_light" [^>]*>', cx, cy, LIGHT_NEEDLE[LAYOUT[pos]])
     setattrs(r'<PartImage name="vana_hand_\d_\w+" [^>]*>', *VANA_POS, 'hand_vana_0')
@@ -1072,37 +1125,48 @@ def place_vana_hand(img, hands_hi, utc=PREVIEW_UTC):
     place(img, hands_hi[f'hand_vana_{wd}'], f'hand_vana_{wd}', *VANA_POS, (vh + vm / 60) * 15)
 
 
-def preview(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day=29, batt=78, ambient=False, dark=False):
+def preview(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day=29, batt=78, ambient=False, dark=False,
+            crystals=None, utc=PREVIEW_UTC):
     img = dial_hi.copy()
     sfx = '_dark' if dark else ''
+    wd = vana_now(utc)[2]
+    style = 'dark' if dark else 'classic'
+    if crystals and not (ambient and not dark):
+        img.alpha_composite(crystals[(style, wd)])
     cap_hi = caps_hi['cap' + sfx]
     sub = hands_hi['hand_sub' + sfx]
     angle = {'left': (dow - 1) * 360 / 7, 'right': -150 + batt * 3, 'bottom': (hh + mm / 60) * 15}
     for pos, (cx, cy) in POSITIONS.items():
         place(img, sub, 'hand_sub' + sfx, cx, cy, angle[pos])
-    place_vana_hand(img, hands_hi)
+    place_vana_hand(img, hands_hi, utc)
     if not ambient or dark:
         d = ImageDraw.Draw(img)
         text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15),
                (190, 190, 190) if dark else (20, 20, 20))
-    place(img, hands_hi['hand_hour' + sfx], 'hand_hour' + sfx, 225, 225, (hh % 12 + mm / 60) * 30)
-    place(img, hands_hi['hand_minute' + sfx], 'hand_minute' + sfx, 225, 225, mm * 6 + ss / 10)
+    hset = f'{style}_{wd}' if crystals and not (ambient and not dark) else 'dark'
+    hour, minute = (f'hand_hour_{hset}', f'hand_minute_{hset}') if hset != 'dark' else ('hand_hour_dark', 'hand_minute_dark')
+    if ambient and not dark:   # always-on keeps the classic steel look of the chosen style
+        hour, minute = f'hand_hour_classic_{wd}', f'hand_minute_classic_{wd}'
+    place(img, hands_hi[hour], hour, 225, 225, (hh % 12 + mm / 60) * 30)
+    place(img, hands_hi[minute], minute, 225, 225, mm * 6 + ss / 10)
     img.alpha_composite(cap_hi, (round(C - cap_hi.width / 2), round(C - cap_hi.height / 2)))
     if not ambient and not dark:
         img.alpha_composite(glass_hi)
     return finish(img)
 
 
-def preview_light(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, dow=5, day=29, batt=78):
+def preview_light(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, dow=5, day=29, batt=78, crystals=None, utc=PREVIEW_UTC):
     img = dial_hi.copy()
+    wd = vana_now(utc)[2]
+    img.alpha_composite(crystals[('light', wd)])
     angle = {'left': (dow - 1) * 360 / 7, 'right': -150 + batt * 3, 'bottom': (hh + mm / 60) * 15}
     for pos, (cx, cy) in POSITIONS.items():
         name = LIGHT_NEEDLE[LAYOUT[pos]]
         place(img, hands_hi[name], name, cx, cy, angle[pos])
-    place_vana_hand(img, hands_hi)
+    place_vana_hand(img, hands_hi, utc)
     text_c(ImageDraw.Draw(img), (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), (20, 20, 20))
-    place(img, hands_hi['hand_hour_light'], 'hand_hour_light', 225, 225, (hh % 12 + mm / 60) * 30)
-    place(img, hands_hi['hand_minute_light'], 'hand_minute_light', 225, 225, mm * 6)
+    place(img, hands_hi[f'hand_hour_light_{wd}'], f'hand_hour_light_{wd}', 225, 225, (hh % 12 + mm / 60) * 30)
+    place(img, hands_hi[f'hand_minute_light_{wd}'], f'hand_minute_light_{wd}', 225, 225, mm * 6)
     cap = caps_hi['cap_light']
     img.alpha_composite(cap, (round(C - cap.width / 2), round(C - cap.height / 2)))
     img.alpha_composite(glass_hi)
@@ -1135,9 +1199,9 @@ def preview_vana(dial_hi, hands_hi, caps_hi, hh=10, mm=8, utc=1793270400):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    dial_hi = make_dial()
+    dial_hi = make_dial(crystal=False)
     amb_hi = make_dial(ambient=True)
-    dark_hi = make_dial(ambient=True, bright=1.0)
+    dark_hi = make_dial(ambient=True, bright=1.0, crystal=False)
     finish(dial_hi).save(os.path.join(OUT, 'dial.png'))
     finish(amb_hi).save(os.path.join(OUT, 'dial_ambient.png'))
     finish(dark_hi).save(os.path.join(OUT, 'dial_dark.png'))
@@ -1158,19 +1222,41 @@ def main():
         finish(cap_hi[name]).save(os.path.join(OUT, name + '.png'))
     glass_hi = make_glass()
     finish(glass_hi).save(os.path.join(OUT, 'glass.png'))
-    patch_xml()
-    active = preview(dial_hi, hands_hi, cap_hi, glass_hi)
+    crystals, overlays = {}, {}
+    for style in ('classic', 'dark', 'light'):
+        for k in range(8):
+            crystals[(style, k)] = full = crystal12(style, k)
+            small = finish(full)
+            x, y, x1, y1 = small.getchannel('A').getbbox()
+            x, y, x1, y1 = x - x % 2, y - y % 2, x1 + x1 % 2, y1 + y1 % 2
+            small.crop((x, y, x1, y1)).save(os.path.join(OUT, f'crystal12_{style}_{k}.png'))
+            overlays[f'crystal12_{style}_{k}'] = (x, y, x1 - x, y1 - y)
+    patch_xml(overlays)
+    active = preview(dial_hi, hands_hi, cap_hi, glass_hi, crystals=crystals)
     active.save(os.path.join(OUT, 'preview.png'))
     docs = os.path.join(os.path.dirname(__file__), '..', 'docs')
     os.makedirs(docs, exist_ok=True)
     active.save(os.path.join(docs, 'preview_active.png'))
     preview(amb_hi, hands_hi, cap_hi, glass_hi, ambient=True).save(os.path.join(docs, 'preview_ambient.png'))
-    dark = preview(dark_hi, hands_hi, cap_hi, glass_hi, ambient=True, dark=True)
+    dark = preview(dark_hi, hands_hi, cap_hi, glass_hi, ambient=True, dark=True, crystals=crystals)
     dark.save(os.path.join(docs, 'preview_dark.png'))
-    light = preview_light(light_hi, hands_hi, cap_hi, glass_hi)
+    light = preview_light(light_hi, hands_hi, cap_hi, glass_hi, crystals=crystals)
     light.save(os.path.join(docs, 'preview_light.png'))
     vana = preview_vana(vana_hi, hands_hi, cap_hi)
     vana.save(os.path.join(docs, 'preview_vana.png'))
+    # weekday showcase: the same faces on four Vana'diel days
+    days = [(1, 'Firesday'), (3, 'Watersday'), (4, 'Windsday'), (6, 'Lightningday')]
+    show = Image.new('RGB', (4 * 300 + 20, 3 * 300 + 50), (18, 18, 22))
+    sd = ImageDraw.Draw(show)
+    for col, (n, label) in enumerate(days):
+        utc = PREVIEW_UTC + n * 3456
+        sd.text((10 + col * 300 + 150, 22), label, font=ImageFont.truetype(FONT_LABEL, 20), fill=(230, 230, 230), anchor='mm')
+        faces = (preview(dial_hi, hands_hi, cap_hi, glass_hi, crystals=crystals, utc=utc),
+                 preview(dark_hi, hands_hi, cap_hi, glass_hi, ambient=True, dark=True, crystals=crystals, utc=utc),
+                 preview_light(light_hi, hands_hi, cap_hi, glass_hi, crystals=crystals, utc=utc))
+        for row, face in enumerate(faces):
+            show.paste(face.resize((290, 290), Image.LANCZOS), (15 + col * 300, 45 + row * 300))
+    show.save(os.path.join(docs, 'weekday_colors.png'))
     styles = Image.new('RGB', (4 * 460 + 20, 500), (18, 18, 22))
     sd = ImageDraw.Draw(styles)
     for i, (label, im) in enumerate((('Classic', active), ('Dark', dark), ('Light', light), ("Vana'diel Time", vana))):

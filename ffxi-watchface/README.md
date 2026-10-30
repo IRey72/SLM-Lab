@@ -18,6 +18,12 @@ Watersday blue, Windsday green, Iceday pale blue, Lightningday violet, Lightsday
 
 ![weekday hands](docs/vanadiel_weekday_hands.png)
 
+The weekday colours the whole face too: the 12 o'clock crystal turns the element's colour (a glowing
+coloured crystal on Classic and Light, coloured line art on Dark) and the main hands pick it up as a
+coloured edge and glow (Classic, Light) or coloured outlines (Dark):
+
+![weekday colours](docs/weekday_colors.png)
+
 **Vana'diel Time** is a parchment map of Vana'diel with Earth time on ink hands, plus a live readout of
 Vana'diel time (25x Earth time) and today's elemental weekday with its crystal. Both are computed on the
 watch from the UTC time: one Earth day is exactly 25 Vana'diel days, so the time of day depends only on
