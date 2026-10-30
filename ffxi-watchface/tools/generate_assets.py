@@ -822,9 +822,15 @@ def make_vana_dial(ambient=False):
     for i in range(60):
         a = i * 6
         d.line([polar(s(219), a), polar(s(215 if i % 5 else 212), a)], fill=ink + (255,), width=round(s(1.2 if i % 5 == 0 else 0.6)))
-    numerals = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
+    numerals = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
     for h, num in enumerate(numerals):
         text_c(d, polar(s(196), h * 30), num, font(FONT_SERIF, 15 if h % 3 == 0 else 11), ink)
+    xi = xi_mask(size, polar(s(184), 330), height=38)   # applied gold XI, tilted like Classic
+    if ambient:
+        fill_mask(img, xi, (150, 126, 70, 255))
+    else:
+        applied_text(img, xi)
+    d = ImageDraw.Draw(img)
     for pos in POSITIONS:
         parchment_subdial(img, LAYOUT[pos], POSITIONS[pos], POSITION_SCALE[pos], ambient)
     parchment_subdial(img, 'jeuno', VANA_POS, '24h', ambient)
