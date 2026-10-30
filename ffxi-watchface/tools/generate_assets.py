@@ -709,8 +709,7 @@ def colorize(img, tones):
     return Image.fromarray(np.dstack([rgb, a[..., 3]]).astype(np.uint8), 'RGBA')
 
 
-VANA_TIME_BOX = (150, 104, 300, 160)     # cartouche for the Vana'diel time
-VANA_DAY_BOX = (140, 286, 310, 320)      # plaque for the weekday
+VANA_BOX = (77, 309, 161, 353)     # 7:30 cartouche: Vana'diel time and weekday
 
 
 def parchment(size):
@@ -750,6 +749,35 @@ def cartouche(img, box, fill, line):
     d.rounded_rectangle([x0 + s(3), y0 + s(3), x1 - s(3), y1 - s(3)], radius=s(6), outline=line + (255,), width=round(s(0.6)))
 
 
+def parchment_subdial(img, key, centre, scale, ambient=False):
+    """Sub-dial for the parchment face: inked rings, crest in sepia, ink labels."""
+    cx, cy = (s(v) for v in centre)
+    R = s(SUB_R)
+    d = ImageDraw.Draw(img)
+    ink = (130, 118, 96) if ambient else INK
+    if ambient:
+        d.ellipse([cx - R, cy - R, cx + R, cy + R], fill=(0, 0, 0, 255), outline=ink, width=round(s(1.0)))
+        r = s(EMBLEM_R)
+        em = crest_art(key, (2 * r, 2 * r), 0.55)
+        img.paste(em, (int(cx - r), int(cy - r)), circle_mask((2 * r, 2 * r), r, r, r))
+    else:
+        g = radial_gradient((2 * R, 2 * R), (252, 244, 222), (232, 214, 172))
+        img.paste(g, (int(cx - R), int(cy - R)), circle_mask((2 * R, 2 * R), R, R, R))
+        inner_shadow(img, circle_mask(img.size, cx, cy, R), depth=1.4, blur=1.4, alpha=0.3)
+        r = s(EMBLEM_R)
+        v = np.asarray(crest_art(key, (2 * r, 2 * r)).convert('L')).astype(float)
+        em = Image.new('RGBA', (2 * r, 2 * r), INK + (0,))
+        em.putalpha(Image.fromarray(np.minimum(np.clip(v * 0.9, 0, 255), np.asarray(circle_mask(em.size, r, r, r))).astype(np.uint8)))
+        img.alpha_composite(em, (int(cx - r), int(cy - r)))
+        d = ImageDraw.Draw(img)
+        for rr, w in ((R, 1.5), (R - s(3), 0.5)):
+            d.ellipse([cx - rr, cy - rr, cx + rr, cy + rr], outline=INK + (255,), width=round(s(w)))
+    for i in range(60):
+        a = i * 6
+        d.line([polar(R - s(4), a, cx, cy), polar(R - s(5.6), a, cx, cy)], fill=ink + (255,), width=round(s(0.5)))
+    draw_scale(d, scale, cx, cy, R - s(1), ink)
+
+
 def make_vana_dial(ambient=False):
     size = (s(N), s(N))
     if ambient:
@@ -764,7 +792,7 @@ def make_vana_dial(ambient=False):
         for a in range(0, 180, 30):
             d.line([polar(s(210), a), polar(s(210), a + 180)], fill=INK + (28,), width=round(s(0.6)))
         draw_world(img, (214, 172, 104, 150), INK + (210,), width=0.9, diameter=380)
-        compass_rose(img, s(338), s(318), s(20), INK)
+        compass_rose(img, s(334), s(118), s(17), INK)
         ink = INK
     d = ImageDraw.Draw(img)
     # inked chapter ring with Earth hours
@@ -776,11 +804,18 @@ def make_vana_dial(ambient=False):
     numerals = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
     for h, num in enumerate(numerals):
         text_c(d, polar(s(196), h * 30), num, font(FONT_SERIF, 15 if h % 3 == 0 else 11), ink)
-    if not ambient:
-        cartouche(img, VANA_TIME_BOX, (250, 241, 216), INK)
-        cartouche(img, VANA_DAY_BOX, (250, 241, 216), INK)
+    for pos in POSITIONS:
+        parchment_subdial(img, LAYOUT[pos], POSITIONS[pos], POSITION_SCALE[pos], ambient)
+    parchment_subdial(img, 'jeuno', VANA_POS, '24h', ambient)
+    if not ambient:   # date window and the Vana'diel cartouche (text drawn live)
+        x, y = s(DATE_POS[0]), s(DATE_POS[1])
+        w, h = s(DATE_SIZE[0]), s(DATE_SIZE[1])
         d = ImageDraw.Draw(img)
-        text_c(d, (s(225), s(VANA_TIME_BOX[1] + 11)), "VANA'DIEL TIME", font(FONT_LABEL, 7), INK)
+        d.rounded_rectangle([x - w / 2, y - h / 2, x + w / 2, y + h / 2], radius=s(4), fill=(250, 241, 216, 255),
+                            outline=INK + (255,), width=round(s(1.2)))
+        cartouche(img, VANA_BOX, (250, 241, 216), INK)
+        d = ImageDraw.Draw(img)
+        text_c(d, (s((VANA_BOX[0] + VANA_BOX[2]) / 2), s(VANA_BOX[1] + 9)), "VANA'DIEL", font(FONT_LABEL, 6.5), INK)
     img.putalpha(circle_mask(size, C, C, s(225)))
     return img
 
@@ -806,13 +841,18 @@ def element_crystal(color, h=22):
     return img
 
 
-def ink_hand(tip, tail, w, color=INK, pad=3):
-    """Slim solid ink hand for the parchment face."""
+def ink_hand(tip, tail, w, color=INK, pad=3, inlay=None):
+    """Slim solid ink hand for the parchment face; `inlay` adds a coloured centre stripe."""
     img, px, py = hand_canvas(w, tip, tail, pad)
     half = s(w) / 2
     pts = [(px, py - s(tip)), (px + half, py - s(tip) * 0.22), (px + half * 0.4, py + s(tail)),
            (px - half * 0.4, py + s(tail)), (px - half, py - s(tip) * 0.22)]
-    ImageDraw.Draw(img).polygon(pts, fill=color + (255,))
+    d = ImageDraw.Draw(img)
+    d.polygon(pts, fill=color + (255,))
+    if inlay:
+        lw = half * 0.42
+        d.polygon([(px, py - s(tip) * 0.86), (px + lw, py - s(tip) * 0.24), (px, py - s(tip) * 0.08),
+                   (px - lw, py - s(tip) * 0.24)], fill=inlay + (255,))
     return with_shadow(img, blur=1.0, alpha=0.35)
 
 
@@ -1005,8 +1045,7 @@ HANDS = {
     'hand_sub_blue': (lambda: with_shadow(needle_hand(52, 12, 1.5, 2.6, color=NATION_INK['bastok'] + (255,),
                                                       ring_fill=NATION_INK['bastok'] + (255,)), 0.8, 0.4), 8, 52, 12, 2),
     # Vana'diel Time style: ink hands
-    'hand_hour_vana': (lambda: ink_hand(110, 18, 10), 10, 110, 18, 3),
-    'hand_minute_vana': (lambda: ink_hand(176, 22, 8), 8, 176, 22, 3),
+    'hand_sub_ink': (lambda: needle_hand(52, 12, 1.4, 2.6, color=INK + (255,), ring_fill=INK + (255,)), 8, 52, 12, 2),
 }
 VANA_HAND = (12, 54, 12, 2)   # visual width, tip, tail, pad
 
@@ -1040,6 +1079,8 @@ for _k, (_name, _color) in enumerate(ELEMENTS):
     HANDS[f'hand_hour_light_{_k}'] = _photo('hour', 118, thin=0.48, alpha=0.6, outline=True, edge=_tones[0], glow=_tones[1])
     HANDS[f'hand_minute_light_{_k}'] = _photo('minute', 182, thin=0.5, alpha=0.6, outline=True, edge=_tones[0], glow=_tones[1])
     HANDS[f'hand_hour_dark_{_k}'] = (lambda c=_line: outline_hand(112, 16, 10, color=c), 10, 112, 16, 2)
+    HANDS[f'hand_hour_vana_{_k}'] = (lambda c=_tones[1]: ink_hand(110, 18, 10, inlay=c), 10, 110, 18, 3)
+    HANDS[f'hand_minute_vana_{_k}'] = (lambda c=_tones[1]: ink_hand(176, 22, 8, inlay=c), 8, 176, 22, 3)
     HANDS[f'hand_minute_dark_{_k}'] = (lambda c=_line: outline_hand(180, 20, 8, color=c), 8, 180, 20, 2)
 LIGHT_NEEDLE = {'sandoria': 'hand_sub_red', 'windurst': 'hand_sub_green', 'bastok': 'hand_sub_blue'}
 
@@ -1072,7 +1113,7 @@ def patch_xml(overlays=None):
 
     setattrs(r'<HourHand resource="hand_hour_dark" [^>]*>', 225, 225, 'hand_hour_dark')
     setattrs(r'<MinuteHand resource="hand_minute_dark" [^>]*>', 225, 225, 'hand_minute_dark')
-    for style in ('classic', 'dark', 'light'):
+    for style in ('classic', 'dark', 'light', 'vana'):
         for k in range(8):
             setattrs(rf'<HourHand resource="hand_hour_{style}_{k}" [^>]*>', 225, 225, f'hand_hour_{style}_{k}')
             setattrs(rf'<MinuteHand resource="hand_minute_{style}_{k}" [^>]*>', 225, 225, f'hand_minute_{style}_{k}')
@@ -1085,8 +1126,8 @@ def patch_xml(overlays=None):
     for pos, (cx, cy) in POSITIONS.items():
         setattrs(rf'<PartImage name="sub_{pos}_light" [^>]*>', cx, cy, LIGHT_NEEDLE[LAYOUT[pos]])
     setattrs(r'<PartImage name="vana_hand_\d_\w+" [^>]*>', *VANA_POS, 'hand_vana_0')
-    setattrs(r'<HourHand resource="hand_hour_vana" [^>]*>', 225, 225, 'hand_hour_vana')
-    setattrs(r'<MinuteHand resource="hand_minute_vana" [^>]*>', 225, 225, 'hand_minute_vana')
+    for pos, (cx, cy) in POSITIONS.items():
+        setattrs(rf'<PartImage name="sub_{pos}_vana" [^>]*>', cx, cy, 'hand_sub_ink')
     for name, (_, half) in CAPS.items():
         xml, n = re.subn(rf'(<PartImage name="{name}" )[^>]*>',
                          rf'\g<1>x="{225 - half:g}" y="{225 - half:g}" width="{2 * half:g}" height="{2 * half:g}">', xml)
@@ -1179,19 +1220,20 @@ def vana_now(t):
     return int(v % 86400 // 3600), int(v % 3600 // 60), int(v // 86400) % 8
 
 
-def preview_vana(dial_hi, hands_hi, caps_hi, hh=10, mm=8, utc=1793270400):
+def preview_vana(dial_hi, hands_hi, caps_hi, hh=10, mm=8, dow=5, day=29, batt=78, utc=PREVIEW_UTC):
     img = dial_hi.copy()
     vh, vm, wd = vana_now(utc)
+    angle = {'left': (dow - 1) * 360 / 7, 'right': -150 + batt * 3, 'bottom': (hh + mm / 60) * 15}
+    for pos, (cx, cy) in POSITIONS.items():
+        place(img, hands_hi['hand_sub_ink'], 'hand_sub_ink', cx, cy, angle[pos])
+    place_vana_hand(img, hands_hi, utc)
     d = ImageDraw.Draw(img)
-    x0, y0, x1, y1 = VANA_TIME_BOX
-    text_c(d, (s((x0 + x1) / 2), s(y1 - 19)), f'{vh:02d}:{vm:02d}', font(FONT_SERIF, 27), INK)
-    name, color = ELEMENTS[wd]
-    cr = element_crystal(color)
-    x0, y0, x1, y1 = VANA_DAY_BOX
-    img.alpha_composite(cr, (round(s(x0 + 12)), round(s((y0 + y1) / 2) - cr.height / 2)))
-    text_c(d, (s((x0 + x1) / 2 + 8), s((y0 + y1) / 2)), name.upper(), font(FONT_SERIF, 12), INK)
-    place(img, hands_hi['hand_hour_vana'], 'hand_hour_vana', 225, 225, (hh % 12 + mm / 60) * 30)
-    place(img, hands_hi['hand_minute_vana'], 'hand_minute_vana', 225, 225, mm * 6)
+    text_c(d, (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), INK)
+    x0, y0, x1, y1 = VANA_BOX
+    text_c(d, (s((x0 + x1) / 2), s(y0 + 22)), f'{vh:02d}:{vm:02d}', font(FONT_SERIF, 17), INK)
+    text_c(d, (s((x0 + x1) / 2), s(y0 + 36)), ELEMENTS[wd][0].upper(), font(FONT_SERIF, 7.5), ELEMENT_TONES[wd][0] if wd != 6 else INK)
+    place(img, hands_hi[f'hand_hour_vana_{wd}'], f'hand_hour_vana_{wd}', 225, 225, (hh % 12 + mm / 60) * 30)
+    place(img, hands_hi[f'hand_minute_vana_{wd}'], f'hand_minute_vana_{wd}', 225, 225, mm * 6)
     cap = caps_hi['cap_vana']
     img.alpha_composite(cap, (round(C - cap.width / 2), round(C - cap.height / 2)))
     return finish(img)

@@ -8,8 +8,8 @@
     classic  realistic navy dial with full-colour crests
     dark     the outline "dark chronograph" look with line-art crests
     light    after the real Seiko: silver-white dial, blue ring, world map
-    vanadiel parchment map with Earth time on ink hands, live Vana'diel time and the
-             elemental weekday (computed from UTC; see the vanadiel dial option)
+    vanadiel parchment map with the four sub-dials in ink, Vana'diel time and weekday
+             in a cartouche, ink hands inlaid with the weekday colour
   Sub-dials (Classic, Dark, Light; as on the real watch, plus Jeuno at 12):
               12 o'clock Jeuno     = Vana'diel time, 24h, crystal tip = today's element
               9 o'clock San d'Oria = day of week
@@ -198,118 +198,84 @@
         </Group>
       </ListOption>
       <ListOption id="vanadiel">
-        <!-- Vana'diel time = 25x Earth time; one Earth day is exactly 25 Vana'diel days, so the
-             time of day only needs the UTC time of day (derived exactly from local seconds plus
-             the offset, rounded to 15 min). Weekday: days since 2002-06-23 15:00 UTC, +6, mod 8. -->
+        <!-- Parchment map with the four sub-dials; Vana'diel time and weekday in the 7:30 cartouche
+             (expressions: tools/wff_expr.py) -->
         <Group name="vanadiel_dial" x="0" y="0" width="450" height="450">
           <Variant mode="AMBIENT" target="alpha" value="0" />
           <PartImage x="0" y="0" width="450" height="450">
             <Image resource="dial_vana" />
           </PartImage>
-          <PartText x="150" y="126" width="150" height="30">
+          <PartText x="311" y="316" width="34" height="24">
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="27" color="#ff5c3a1a">
+              <Font family="cinzel_bold" size="17" color="#ff5c3a1a">
+                <Template>%d<Parameter expression="[DAY]" /></Template>
+              </Font>
+            </Text>
+          </PartText>
+          <PartText x="77" y="321" width="84" height="20">
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="17" color="#ff5c3a1a">
                 <Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template>
               </Font>
             </Text>
           </PartText>
-          <Group name="weekday_firesday" x="0" y="0" width="450" height="450">
+          <PartText x="77" y="339" width="84" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
-            <PartImage x="152" y="290" width="15" height="26">
-              <Image resource="crystal_firesday" />
-            </PartImage>
-            <PartText x="165" y="291" width="136" height="24">
-              <Text align="CENTER">
-                <Font family="cinzel_bold" size="12" color="#ff5c3a1a">FIRESDAY</Font>
-              </Text>
-            </PartText>
-          </Group>
-          <Group name="weekday_earthsday" x="0" y="0" width="450" height="450">
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="7.5" color="#ff600c00">FIRESDAY</Font>
+            </Text>
+          </PartText>
+          <PartText x="77" y="339" width="84" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
-            <PartImage x="152" y="290" width="15" height="26">
-              <Image resource="crystal_earthsday" />
-            </PartImage>
-            <PartText x="165" y="291" width="136" height="24">
-              <Text align="CENTER">
-                <Font family="cinzel_bold" size="12" color="#ff5c3a1a">EARTHSDAY</Font>
-              </Text>
-            </PartText>
-          </Group>
-          <Group name="weekday_watersday" x="0" y="0" width="450" height="450">
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="7.5" color="#ff4a300a">EARTHSDAY</Font>
+            </Text>
+          </PartText>
+          <PartText x="77" y="339" width="84" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
-            <PartImage x="152" y="290" width="15" height="26">
-              <Image resource="crystal_watersday" />
-            </PartImage>
-            <PartText x="165" y="291" width="136" height="24">
-              <Text align="CENTER">
-                <Font family="cinzel_bold" size="12" color="#ff5c3a1a">WATERSDAY</Font>
-              </Text>
-            </PartText>
-          </Group>
-          <Group name="weekday_windsday" x="0" y="0" width="450" height="450">
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="7.5" color="#ff061a5c">WATERSDAY</Font>
+            </Text>
+          </PartText>
+          <PartText x="77" y="339" width="84" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
-            <PartImage x="152" y="290" width="15" height="26">
-              <Image resource="crystal_windsday" />
-            </PartImage>
-            <PartText x="165" y="291" width="136" height="24">
-              <Text align="CENTER">
-                <Font family="cinzel_bold" size="12" color="#ff5c3a1a">WINDSDAY</Font>
-              </Text>
-            </PartText>
-          </Group>
-          <Group name="weekday_iceday" x="0" y="0" width="450" height="450">
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="7.5" color="#ff063e16">WINDSDAY</Font>
+            </Text>
+          </PartText>
+          <PartText x="77" y="339" width="84" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
-            <PartImage x="152" y="290" width="15" height="26">
-              <Image resource="crystal_iceday" />
-            </PartImage>
-            <PartText x="165" y="291" width="136" height="24">
-              <Text align="CENTER">
-                <Font family="cinzel_bold" size="12" color="#ff5c3a1a">ICEDAY</Font>
-              </Text>
-            </PartText>
-          </Group>
-          <Group name="weekday_lightningday" x="0" y="0" width="450" height="450">
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="7.5" color="#ff144868">ICEDAY</Font>
+            </Text>
+          </PartText>
+          <PartText x="77" y="339" width="84" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
-            <PartImage x="152" y="290" width="15" height="26">
-              <Image resource="crystal_lightningday" />
-            </PartImage>
-            <PartText x="165" y="291" width="136" height="24">
-              <Text align="CENTER">
-                <Font family="cinzel_bold" size="12" color="#ff5c3a1a">LIGHTNINGDAY</Font>
-              </Text>
-            </PartText>
-          </Group>
-          <Group name="weekday_lightsday" x="0" y="0" width="450" height="450">
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="7.5" color="#ff340a54">LIGHTNINGDAY</Font>
+            </Text>
+          </PartText>
+          <PartText x="77" y="339" width="84" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
-            <PartImage x="152" y="290" width="15" height="26">
-              <Image resource="crystal_lightsday" />
-            </PartImage>
-            <PartText x="165" y="291" width="136" height="24">
-              <Text align="CENTER">
-                <Font family="cinzel_bold" size="12" color="#ff5c3a1a">LIGHTSDAY</Font>
-              </Text>
-            </PartText>
-          </Group>
-          <Group name="weekday_darksday" x="0" y="0" width="450" height="450">
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="7.5" color="#ff5c3a1a">LIGHTSDAY</Font>
+            </Text>
+          </PartText>
+          <PartText x="77" y="339" width="84" height="12">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
-            <PartImage x="152" y="290" width="15" height="26">
-              <Image resource="crystal_darksday" />
-            </PartImage>
-            <PartText x="165" y="291" width="136" height="24">
-              <Text align="CENTER">
-                <Font family="cinzel_bold" size="12" color="#ff5c3a1a">DARKSDAY</Font>
-              </Text>
-            </PartText>
-          </Group>
+            <Text align="CENTER">
+              <Font family="cinzel_bold" size="7.5" color="#ff0a0816">DARKSDAY</Font>
+            </Text>
+          </PartText>
         </Group>
         <Group name="vanadiel_ambient" x="0" y="0" width="450" height="450" alpha="0">
           <Variant mode="AMBIENT" target="alpha" value="255" />
           <PartImage x="0" y="0" width="450" height="450">
             <Image resource="dial_vana_ambient" />
           </PartImage>
-          <PartText x="150" y="126" width="150" height="30">
+          <PartText x="77" y="321" width="84" height="20">
             <Text align="CENTER">
-              <Font family="cinzel_bold" size="27" color="#ff9a8a6e">
+              <Font family="cinzel_bold" size="17" color="#ff9a8a6e">
                 <Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template>
               </Font>
             </Text>
@@ -689,12 +655,121 @@
       </ListOption>
       <ListOption id="vanadiel">
         <Group name="vanadiel_hands" x="0" y="0" width="450" height="450">
+          <!-- 9 o'clock (San d'Oria): day of week -->
+          <PartImage name="sub_left_vana" x="107" y="171" width="12" height="68" pivotX="0.5" pivotY="0.7941">
+            <Transform target="angle" value="([DAY_OF_WEEK] - 1) * 51.428571" />
+            <Image resource="hand_sub_ink" />
+          </PartImage>
+          <!-- 3 o'clock (Windurst): battery -->
+          <PartImage name="sub_right_vana" x="331" y="171" width="12" height="68" pivotX="0.5" pivotY="0.7941">
+            <Transform target="angle" value="-150 + [BATTERY_PERCENT] * 3" />
+            <Image resource="hand_sub_ink" />
+          </PartImage>
+          <!-- 6 o'clock (Bastok): 24-hour -->
+          <PartImage name="sub_bottom_vana" x="219" y="283" width="12" height="68" pivotX="0.5" pivotY="0.7941">
+            <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
+            <Image resource="hand_sub_ink" />
+          </PartImage>
+          <!-- 12 o'clock (Jeuno): Vana'diel time, crystal tip = today's element -->
+          <PartImage name="vana_hand_0_vanadiel" x="217" y="57" width="16" height="70" pivotX="0.5" pivotY="0.8000">
+            <Transform target="angle" value="(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 9.6" />
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <Image resource="hand_vana_0" />
+          </PartImage>
+          <PartImage name="vana_hand_1_vanadiel" x="217" y="57" width="16" height="70" pivotX="0.5" pivotY="0.8000">
+            <Transform target="angle" value="(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 9.6" />
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <Image resource="hand_vana_1" />
+          </PartImage>
+          <PartImage name="vana_hand_2_vanadiel" x="217" y="57" width="16" height="70" pivotX="0.5" pivotY="0.8000">
+            <Transform target="angle" value="(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 9.6" />
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <Image resource="hand_vana_2" />
+          </PartImage>
+          <PartImage name="vana_hand_3_vanadiel" x="217" y="57" width="16" height="70" pivotX="0.5" pivotY="0.8000">
+            <Transform target="angle" value="(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 9.6" />
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Image resource="hand_vana_3" />
+          </PartImage>
+          <PartImage name="vana_hand_4_vanadiel" x="217" y="57" width="16" height="70" pivotX="0.5" pivotY="0.8000">
+            <Transform target="angle" value="(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 9.6" />
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Image resource="hand_vana_4" />
+          </PartImage>
+          <PartImage name="vana_hand_5_vanadiel" x="217" y="57" width="16" height="70" pivotX="0.5" pivotY="0.8000">
+            <Transform target="angle" value="(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 9.6" />
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Image resource="hand_vana_5" />
+          </PartImage>
+          <PartImage name="vana_hand_6_vanadiel" x="217" y="57" width="16" height="70" pivotX="0.5" pivotY="0.8000">
+            <Transform target="angle" value="(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 9.6" />
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Image resource="hand_vana_6" />
+          </PartImage>
+          <PartImage name="vana_hand_7_vanadiel" x="217" y="57" width="16" height="70" pivotX="0.5" pivotY="0.8000">
+            <Transform target="angle" value="(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 9.6" />
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <Image resource="hand_vana_7" />
+          </PartImage>
           <Group name="vanadiel_hands_active" x="0" y="0" width="450" height="450">
             <Variant mode="AMBIENT" target="alpha" value="0" />
-            <AnalogClock x="0" y="0" width="450" height="450">
-              <HourHand resource="hand_hour_vana" x="217" y="112" width="16" height="134" pivotX="0.5" pivotY="0.8433" />
-              <MinuteHand resource="hand_minute_vana" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
-            </AnalogClock>
+            <!-- ink hands with an inlay in today's element colour -->
+            <Group name="hands_vana_0" x="0" y="0" width="450" height="450">
+              <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+              <AnalogClock x="0" y="0" width="450" height="450">
+                <HourHand resource="hand_hour_vana_0" x="217" y="112" width="16" height="134" pivotX="0.5" pivotY="0.8433" />
+                <MinuteHand resource="hand_minute_vana_0" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
+              </AnalogClock>
+            </Group>
+            <Group name="hands_vana_1" x="0" y="0" width="450" height="450">
+              <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+              <AnalogClock x="0" y="0" width="450" height="450">
+                <HourHand resource="hand_hour_vana_1" x="217" y="112" width="16" height="134" pivotX="0.5" pivotY="0.8433" />
+                <MinuteHand resource="hand_minute_vana_1" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
+              </AnalogClock>
+            </Group>
+            <Group name="hands_vana_2" x="0" y="0" width="450" height="450">
+              <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+              <AnalogClock x="0" y="0" width="450" height="450">
+                <HourHand resource="hand_hour_vana_2" x="217" y="112" width="16" height="134" pivotX="0.5" pivotY="0.8433" />
+                <MinuteHand resource="hand_minute_vana_2" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
+              </AnalogClock>
+            </Group>
+            <Group name="hands_vana_3" x="0" y="0" width="450" height="450">
+              <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+              <AnalogClock x="0" y="0" width="450" height="450">
+                <HourHand resource="hand_hour_vana_3" x="217" y="112" width="16" height="134" pivotX="0.5" pivotY="0.8433" />
+                <MinuteHand resource="hand_minute_vana_3" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
+              </AnalogClock>
+            </Group>
+            <Group name="hands_vana_4" x="0" y="0" width="450" height="450">
+              <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+              <AnalogClock x="0" y="0" width="450" height="450">
+                <HourHand resource="hand_hour_vana_4" x="217" y="112" width="16" height="134" pivotX="0.5" pivotY="0.8433" />
+                <MinuteHand resource="hand_minute_vana_4" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
+              </AnalogClock>
+            </Group>
+            <Group name="hands_vana_5" x="0" y="0" width="450" height="450">
+              <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+              <AnalogClock x="0" y="0" width="450" height="450">
+                <HourHand resource="hand_hour_vana_5" x="217" y="112" width="16" height="134" pivotX="0.5" pivotY="0.8433" />
+                <MinuteHand resource="hand_minute_vana_5" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
+              </AnalogClock>
+            </Group>
+            <Group name="hands_vana_6" x="0" y="0" width="450" height="450">
+              <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+              <AnalogClock x="0" y="0" width="450" height="450">
+                <HourHand resource="hand_hour_vana_6" x="217" y="112" width="16" height="134" pivotX="0.5" pivotY="0.8433" />
+                <MinuteHand resource="hand_minute_vana_6" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
+              </AnalogClock>
+            </Group>
+            <Group name="hands_vana_7" x="0" y="0" width="450" height="450">
+              <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+              <AnalogClock x="0" y="0" width="450" height="450">
+                <HourHand resource="hand_hour_vana_7" x="217" y="112" width="16" height="134" pivotX="0.5" pivotY="0.8433" />
+                <MinuteHand resource="hand_minute_vana_7" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
+              </AnalogClock>
+            </Group>
             <PartImage name="cap_vana" x="217" y="217" width="16" height="16">
               <Image resource="cap_vana" />
             </PartImage>
