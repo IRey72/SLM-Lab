@@ -10,6 +10,7 @@
     light    after the real Seiko: silver-white dial, blue ring, world map
     wearevanadiel  replica of the real Seiko piece (tachymeter bezel, SEIKO, 30-min /
              24h / seconds sub-dials, gold chronograph hand at rest)
+    cyberpunk high-visibility digital: local time, JST, Vana'diel time and weekday, battery
     vanadiel parchment map with the four sub-dials in ink, Vana'diel time and weekday
              in a cartouche, ink hands inlaid with the weekday colour
   Sub-dials (Classic, Dark, Light; as on the real watch, plus Jeuno at 12):
@@ -30,6 +31,7 @@
       <ListOption id="light" displayName="@string/style_light" />
       <ListOption id="vanadiel" displayName="@string/style_vanadiel" />
       <ListOption id="wearevanadiel" displayName="@string/style_wearevanadiel" />
+      <ListOption id="cyberpunk" displayName="@string/style_cyberpunk" />
     </ListConfiguration>
   </UserConfigurations>
 
@@ -305,6 +307,258 @@
           <PartImage x="0" y="0" width="450" height="450">
             <Image resource="dial_seiko_ambient" />
           </PartImage>
+        </Group>
+      </ListOption>
+      <ListOption id="cyberpunk">
+        <!-- High-visibility digital: local time, JST and Vana'diel time (expressions: tools/wff_expr.py) -->
+        <Group name="cyberpunk_dial" x="0" y="0" width="450" height="450">
+          <Variant mode="AMBIENT" target="alpha" value="0" />
+          <PartImage x="0" y="0" width="450" height="450">
+            <Image resource="dial_cyber" />
+          </PartImage>
+          <PartText x="52" y="82" width="340" height="86">
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="80" color="#aaff2eaa"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="55" y="82" width="340" height="86">
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="80" color="#ff00eeff"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="175" y="168" width="100" height="26">
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="20" color="#ffff2eaa"><Template>:%02d<Parameter expression="[SECOND]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="80" y="198" width="182" height="22">
+            <Text align="END">
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffecf0fa"><Template>%04d.%02d.%02d<Parameter expression="[YEAR]" /><Parameter expression="[MONTH]" /><Parameter expression="[DAY]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="270" y="198" width="100" height="22">
+            <Transform target="alpha" value="[DAY_OF_WEEK] == 1 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">SUN</Font>
+            </Text>
+          </PartText>
+          <PartText x="270" y="198" width="100" height="22">
+            <Transform target="alpha" value="[DAY_OF_WEEK] == 2 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">MON</Font>
+            </Text>
+          </PartText>
+          <PartText x="270" y="198" width="100" height="22">
+            <Transform target="alpha" value="[DAY_OF_WEEK] == 3 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">TUE</Font>
+            </Text>
+          </PartText>
+          <PartText x="270" y="198" width="100" height="22">
+            <Transform target="alpha" value="[DAY_OF_WEEK] == 4 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">WED</Font>
+            </Text>
+          </PartText>
+          <PartText x="270" y="198" width="100" height="22">
+            <Transform target="alpha" value="[DAY_OF_WEEK] == 5 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">THU</Font>
+            </Text>
+          </PartText>
+          <PartText x="270" y="198" width="100" height="22">
+            <Transform target="alpha" value="[DAY_OF_WEEK] == 6 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">FRI</Font>
+            </Text>
+          </PartText>
+          <PartText x="270" y="198" width="100" height="22">
+            <Transform target="alpha" value="[DAY_OF_WEEK] == 7 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">SAT</Font>
+            </Text>
+          </PartText>
+          <PartText x="62" y="237" width="160" height="76">
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ffffe43a"><Template>%02d:%02d<Parameter expression="floor(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) / 3600)" /><Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) % 3600) / 60)" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="228" y="237" width="160" height="76">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ffe8401e"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+            </Text>
+          </PartText>
+          <Group name="cyber_element_0" x="0" y="0" width="450" height="450">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <PartImage x="150" y="313" width="15" height="26">
+              <Image resource="crystal_firesday" />
+            </PartImage>
+            <PartText x="172" y="312" width="158" height="28">
+              <Text align="START">
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ffe8401e">FIRESDAY</Font>
+              </Text>
+            </PartText>
+          </Group>
+          <PartText x="228" y="237" width="160" height="76">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ffcc9a34"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+            </Text>
+          </PartText>
+          <Group name="cyber_element_1" x="0" y="0" width="450" height="450">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <PartImage x="150" y="313" width="15" height="26">
+              <Image resource="crystal_earthsday" />
+            </PartImage>
+            <PartText x="172" y="312" width="158" height="28">
+              <Text align="START">
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ffcc9a34">EARTHSDAY</Font>
+              </Text>
+            </PartText>
+          </Group>
+          <PartText x="228" y="237" width="160" height="76">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff3470e8"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+            </Text>
+          </PartText>
+          <Group name="cyber_element_2" x="0" y="0" width="450" height="450">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <PartImage x="150" y="313" width="15" height="26">
+              <Image resource="crystal_watersday" />
+            </PartImage>
+            <PartText x="172" y="312" width="158" height="28">
+              <Text align="START">
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ff3470e8">WATERSDAY</Font>
+              </Text>
+            </PartText>
+          </Group>
+          <PartText x="228" y="237" width="160" height="76">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff3eac52"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+            </Text>
+          </PartText>
+          <Group name="cyber_element_3" x="0" y="0" width="450" height="450">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <PartImage x="150" y="313" width="15" height="26">
+              <Image resource="crystal_windsday" />
+            </PartImage>
+            <PartText x="172" y="312" width="158" height="28">
+              <Text align="START">
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ff3eac52">WINDSDAY</Font>
+              </Text>
+            </PartText>
+          </Group>
+          <PartText x="228" y="237" width="160" height="76">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff7acaee"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+            </Text>
+          </PartText>
+          <Group name="cyber_element_4" x="0" y="0" width="450" height="450">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <PartImage x="150" y="313" width="15" height="26">
+              <Image resource="crystal_iceday" />
+            </PartImage>
+            <PartText x="172" y="312" width="158" height="28">
+              <Text align="START">
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ff7acaee">ICEDAY</Font>
+              </Text>
+            </PartText>
+          </Group>
+          <PartText x="228" y="237" width="160" height="76">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff9852d6"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+            </Text>
+          </PartText>
+          <Group name="cyber_element_5" x="0" y="0" width="450" height="450">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <PartImage x="150" y="313" width="15" height="26">
+              <Image resource="crystal_lightningday" />
+            </PartImage>
+            <PartText x="172" y="312" width="158" height="28">
+              <Text align="START">
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ff9852d6">LIGHTNINGDAY</Font>
+              </Text>
+            </PartText>
+          </Group>
+          <PartText x="228" y="237" width="160" height="76">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#fff2eed8"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+            </Text>
+          </PartText>
+          <Group name="cyber_element_6" x="0" y="0" width="450" height="450">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <PartImage x="150" y="313" width="15" height="26">
+              <Image resource="crystal_lightsday" />
+            </PartImage>
+            <PartText x="172" y="312" width="158" height="28">
+              <Text align="START">
+                <Font family="jetbrains_mono_extrabold" size="16" color="#fff2eed8">LIGHTSDAY</Font>
+              </Text>
+            </PartText>
+          </Group>
+          <PartText x="228" y="237" width="160" height="76">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ffb0a4ce"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+            </Text>
+          </PartText>
+          <Group name="cyber_element_7" x="0" y="0" width="450" height="450">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <PartImage x="150" y="313" width="15" height="26">
+              <Image resource="crystal_darksday" />
+            </PartImage>
+            <PartText x="172" y="312" width="158" height="28">
+              <Text align="START">
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ffb0a4ce">DARKSDAY</Font>
+              </Text>
+            </PartText>
+          </Group>
+          <!-- battery bar -->
+          <PartDraw x="168" y="352" width="150" height="12">
+            <Rectangle x="0" y="0" width="150" height="12">
+              <Fill color="#ff00eeff" />
+              <Transform target="width" value="[BATTERY_PERCENT] * 1.5" />
+            </Rectangle>
+          </PartDraw>
+          <PartText x="322" y="348" width="50" height="20">
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="13" color="#ff00eeff"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
+            </Text>
+          </PartText>
+          <!-- seconds arc around the rim -->
+          <PartDraw x="13" y="13" width="424" height="424">
+            <Arc centerX="212" centerY="212" width="424" height="424" startAngle="0" endAngle="0">
+              <Transform target="endAngle" value="[SECOND] * 6" />
+              <Stroke color="#ffff2eaa" thickness="4" cap="ROUND" />
+            </Arc>
+          </PartDraw>
+        </Group>
+        <Group name="cyberpunk_ambient" x="0" y="0" width="450" height="450" alpha="0">
+          <Variant mode="AMBIENT" target="alpha" value="255" />
+          <PartImage x="0" y="0" width="450" height="450">
+            <Image resource="dial_cyber_ambient" />
+          </PartImage>
+          <PartText x="55" y="82" width="340" height="86">
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="80" color="#ff7f8c96"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="62" y="237" width="160" height="76">
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff8a7c30"><Template>%02d:%02d<Parameter expression="floor(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) / 3600)" /><Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) % 3600) / 60)" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="228" y="237" width="160" height="76">
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff7a5a72"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+            </Text>
+          </PartText>
         </Group>
       </ListOption>
     </ListConfiguration>
@@ -842,6 +1096,9 @@
           </PartImage>
         </Group>
       </ListOption>
+      <ListOption id="cyberpunk">
+        <Group name="no_hands_cyberpunk" x="0" y="0" width="450" height="450" />
+      </ListOption>
     </ListConfiguration>
 
     <!-- Glass reflection (Classic and Light; off in ambient) -->
@@ -875,6 +1132,9 @@
             <Image resource="glass" />
           </PartImage>
         </Group>
+      </ListOption>
+      <ListOption id="cyberpunk">
+        <Group name="no_glass_cyberpunk" x="0" y="0" width="450" height="450" />
       </ListOption>
     </ListConfiguration>
 
