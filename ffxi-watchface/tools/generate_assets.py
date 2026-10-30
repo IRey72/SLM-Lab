@@ -652,6 +652,133 @@ def star_cap(r=8, pad=None):
     return with_shadow(img, blur=0.9, alpha=0.5)
 
 
+# --------------------------------------------------------------------- vana'diel time style
+# A parchment map of Vana'diel with Earth time on ink hands, plus live Vana'diel time
+# (25x Earth time) and today's elemental weekday, computed on the watch from UTC.
+PARCHMENT = ((246, 233, 200), (206, 172, 116))
+INK = (92, 58, 26)
+ELEMENTS = [  # weekday order: (name, crystal colour)
+    ('Firesday', (226, 64, 40)), ('Earthsday', (196, 150, 52)), ('Watersday', (52, 110, 214)),
+    ('Windsday', (64, 166, 76)), ('Iceday', (120, 196, 232)), ('Lightningday', (150, 84, 206)),
+    ('Lightsday', (250, 248, 236)), ('Darksday', (44, 40, 52)),
+]
+VANA_TIME_BOX = (150, 104, 300, 160)     # cartouche for the Vana'diel time
+VANA_DAY_BOX = (140, 286, 310, 320)      # plaque for the weekday
+
+
+def parchment(size):
+    img = np.asarray(radial_gradient(size, *PARCHMENT, r=s(240)).convert('RGB'), float)
+    rng = np.random.default_rng(7)
+    grain = ndimage_blur(rng.normal(0, 1, (size[1] // 4, size[0] // 4)), 1.2)
+    grain = np.asarray(Image.fromarray(((grain - grain.min()) / np.ptp(grain) * 255).astype(np.uint8)).resize(size, Image.BICUBIC), float) / 255
+    img = img * (0.94 + 0.08 * grain[..., None])
+    return Image.fromarray(np.clip(img, 0, 255).astype(np.uint8), 'RGB').convert('RGBA')
+
+
+def ndimage_blur(a, sigma):
+    from scipy import ndimage
+    return ndimage.gaussian_filter(a, sigma)
+
+
+def compass_rose(img, cx, cy, r, color):
+    d = ImageDraw.Draw(img)
+    for i in range(8):
+        a = i * 45
+        rr = r if i % 2 == 0 else r * 0.55
+        tip = polar(rr, a, cx, cy)
+        side_l, side_r = polar(r * 0.16, a - 45, cx, cy), polar(r * 0.16, a + 45, cx, cy)
+        d.polygon([tip, side_l, (cx, cy)], fill=color + (255,))
+        d.polygon([tip, side_r, (cx, cy)], fill=tuple(int(c * 0.6 + 255 * 0.4) for c in color) + (255,))
+    d.ellipse([cx - r * 0.12, cy - r * 0.12, cx + r * 0.12, cy + r * 0.12], fill=(170, 40, 30, 255))
+    text_c(d, polar(r + s(6), 0, cx, cy), 'N', font(FONT_SERIF, 7), color)
+
+
+def cartouche(img, box, fill, line):
+    x0, y0, x1, y1 = (s(v) for v in box)
+    m = Image.new('L', img.size, 0)
+    ImageDraw.Draw(m).rounded_rectangle([x0, y0, x1, y1], radius=s(8), fill=255)
+    drop_shadow(img, m, blur=1.4, alpha=0.35)
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([x0, y0, x1, y1], radius=s(8), fill=fill + (255,), outline=line + (255,), width=round(s(1.4)))
+    d.rounded_rectangle([x0 + s(3), y0 + s(3), x1 - s(3), y1 - s(3)], radius=s(6), outline=line + (255,), width=round(s(0.6)))
+
+
+def make_vana_dial(ambient=False):
+    size = (s(N), s(N))
+    if ambient:
+        img = Image.new('RGBA', size, (0, 0, 0, 255))
+        draw_world(img, (0, 0, 0, 0), (96, 84, 62, 255), width=0.8, diameter=380)
+        ink = (130, 118, 96)
+    else:
+        img = parchment(size)
+        d = ImageDraw.Draw(img)
+        for rr in range(60, 220, 40):   # faint map graticule
+            d.ellipse([C - s(rr), C - s(rr), C + s(rr), C + s(rr)], outline=INK + (34,), width=round(s(0.6)))
+        for a in range(0, 180, 30):
+            d.line([polar(s(210), a), polar(s(210), a + 180)], fill=INK + (28,), width=round(s(0.6)))
+        draw_world(img, (214, 172, 104, 150), INK + (210,), width=0.9, diameter=380)
+        compass_rose(img, s(338), s(318), s(20), INK)
+        ink = INK
+    d = ImageDraw.Draw(img)
+    # inked chapter ring with Earth hours
+    for rr, w in ((219, 1.6), (212, 0.7)):
+        d.ellipse([C - s(rr), C - s(rr), C + s(rr), C + s(rr)], outline=ink + (255,), width=round(s(w)))
+    for i in range(60):
+        a = i * 6
+        d.line([polar(s(219), a), polar(s(215 if i % 5 else 212), a)], fill=ink + (255,), width=round(s(1.2 if i % 5 == 0 else 0.6)))
+    numerals = ['XII', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
+    for h, num in enumerate(numerals):
+        text_c(d, polar(s(196), h * 30), num, font(FONT_SERIF, 15 if h % 3 == 0 else 11), ink)
+    if not ambient:
+        cartouche(img, VANA_TIME_BOX, (250, 241, 216), INK)
+        cartouche(img, VANA_DAY_BOX, (250, 241, 216), INK)
+        d = ImageDraw.Draw(img)
+        text_c(d, (s(225), s(VANA_TIME_BOX[1] + 11)), "VANA'DIEL TIME", font(FONT_LABEL, 7), INK)
+    img.putalpha(circle_mask(size, C, C, s(225)))
+    return img
+
+
+def element_crystal(color, h=22):
+    """Small elemental crystal icon: gem outline filled with the element's colour."""
+    w = h * 0.5
+    img = Image.new('RGBA', (round(s(w + 4)), round(s(h + 4))), (0, 0, 0, 0))
+    cx, cy = img.width / 2, img.height / 2
+
+    def ring(pts, k=1.0):
+        right = [(cx + x * s(w) * k, cy + y * s(h) / 2 * k) for x, y in pts]
+        left = [(cx - x * s(w) * k, cy + y * s(h) / 2 * k) for x, y in pts[-2:0:-1]]
+        return right + left
+    outer, table = ring(GEM_OUTER), ring(GEM_TABLE)
+    d = ImageDraw.Draw(img)
+    hi = tuple(min(255, int(c * 0.55 + 255 * 0.45)) for c in color)
+    d.polygon(outer, fill=color + (255,))
+    d.polygon(table, fill=hi + (255,))
+    for i in range(len(outer)):
+        d.line([table[i], outer[i]], fill=(255, 255, 255, 110), width=round(s(0.5)))
+    d.line(outer + outer[:1], fill=(60, 38, 18, 255), width=round(s(0.9)), joint='curve')
+    return img
+
+
+def ink_hand(tip, tail, w, color=INK, pad=3):
+    """Slim solid ink hand for the parchment face."""
+    img, px, py = hand_canvas(w, tip, tail, pad)
+    half = s(w) / 2
+    pts = [(px, py - s(tip)), (px + half, py - s(tip) * 0.22), (px + half * 0.4, py + s(tail)),
+           (px - half * 0.4, py + s(tail)), (px - half, py - s(tip) * 0.22)]
+    ImageDraw.Draw(img).polygon(pts, fill=color + (255,))
+    return with_shadow(img, blur=1.0, alpha=0.35)
+
+
+def ink_cap(r=5, pad=3):
+    size = s(2 * (r + pad))
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    c = size / 2
+    d = ImageDraw.Draw(img)
+    d.ellipse([c - s(r), c - s(r), c + s(r), c + s(r)], fill=INK + (255,))
+    d.ellipse([c - s(1.8), c - s(1.8), c + s(1.8), c + s(1.8)], fill=(214, 172, 96, 255))
+    return with_shadow(img, blur=0.8, alpha=0.4)
+
+
 # --------------------------------------------------------------------- hands
 HAND_PAD = 5   # room around each hand for its soft shadow
 
@@ -803,6 +930,7 @@ CAPS = {
     'cap': (lambda: domed_cap(CAP_R), CAP_R + HAND_PAD),
     'cap_dark': (lambda: outline_cap(5), 5 + 2),
     'cap_light': (lambda: star_cap(8), 8 + HAND_PAD),
+    'cap_vana': (lambda: ink_cap(5), 5 + 3),
 }
 
 
@@ -829,6 +957,9 @@ HANDS = {
                                                        ring_fill=NATION_INK['windurst'] + (255,)), 0.8, 0.4), 8, 44, 10, 2),
     'hand_sub_blue': (lambda: with_shadow(needle_hand(44, 10, 1.5, 2.6, color=NATION_INK['bastok'] + (255,),
                                                       ring_fill=NATION_INK['bastok'] + (255,)), 0.8, 0.4), 8, 44, 10, 2),
+    # Vana'diel Time style: ink hands
+    'hand_hour_vana': (lambda: ink_hand(110, 18, 10), 10, 110, 18, 3),
+    'hand_minute_vana': (lambda: ink_hand(176, 22, 8), 8, 176, 22, 3),
 }
 LIGHT_NEEDLE = {'sandoria': 'hand_sub_red', 'windurst': 'hand_sub_green', 'bastok': 'hand_sub_blue'}
 
@@ -857,7 +988,7 @@ def patch_xml():
                 tag = re.sub(rf'\b{k}="[^"]*"', f'{k}="{v}"', tag)
             return tag
         xml, n = re.subn(pattern, sub, xml)
-        assert n == 1, pattern
+        assert n >= 1, pattern
 
     for sfx in ('', '_dark'):
         setattrs(rf'<HourHand resource="hand_hour{sfx}" [^>]*>', 225, 225, 'hand_hour' + sfx)
@@ -868,10 +999,12 @@ def patch_xml():
     setattrs(r'<MinuteHand resource="hand_minute_light" [^>]*>', 225, 225, 'hand_minute_light')
     for pos, (cx, cy) in POSITIONS.items():
         setattrs(rf'<PartImage name="sub_{pos}_light" [^>]*>', cx, cy, LIGHT_NEEDLE[LAYOUT[pos]])
+    setattrs(r'<HourHand resource="hand_hour_vana" [^>]*>', 225, 225, 'hand_hour_vana')
+    setattrs(r'<MinuteHand resource="hand_minute_vana" [^>]*>', 225, 225, 'hand_minute_vana')
     for name, (_, half) in CAPS.items():
         xml, n = re.subn(rf'(<PartImage name="{name}" )[^>]*>',
                          rf'\g<1>x="{225 - half:g}" y="{225 - half:g}" width="{2 * half:g}" height="{2 * half:g}">', xml)
-        assert n == 1, name
+        assert n >= 1, name
     open(path, 'w').write(xml)
 
 
@@ -933,6 +1066,30 @@ def preview_light(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, dow=5, day=
     return finish(img)
 
 
+def vana_now(t):
+    """Vana'diel (hour, minute, weekday index) for a UTC timestamp: same maths as watchface.xml."""
+    v = (t - 1024844400) * 25 + (898 * 360 + 30) * 86400
+    return int(v % 86400 // 3600), int(v % 3600 // 60), int(v // 86400) % 8
+
+
+def preview_vana(dial_hi, hands_hi, caps_hi, hh=10, mm=8, utc=1793270400):
+    img = dial_hi.copy()
+    vh, vm, wd = vana_now(utc)
+    d = ImageDraw.Draw(img)
+    x0, y0, x1, y1 = VANA_TIME_BOX
+    text_c(d, (s((x0 + x1) / 2), s(y1 - 19)), f'{vh:02d}:{vm:02d}', font(FONT_SERIF, 27), INK)
+    name, color = ELEMENTS[wd]
+    cr = element_crystal(color)
+    x0, y0, x1, y1 = VANA_DAY_BOX
+    img.alpha_composite(cr, (round(s(x0 + 12)), round(s((y0 + y1) / 2) - cr.height / 2)))
+    text_c(d, (s((x0 + x1) / 2 + 8), s((y0 + y1) / 2)), name.upper(), font(FONT_SERIF, 12), INK)
+    place(img, hands_hi['hand_hour_vana'], 'hand_hour_vana', 225, 225, (hh % 12 + mm / 60) * 30)
+    place(img, hands_hi['hand_minute_vana'], 'hand_minute_vana', 225, 225, mm * 6)
+    cap = caps_hi['cap_vana']
+    img.alpha_composite(cap, (round(C - cap.width / 2), round(C - cap.height / 2)))
+    return finish(img)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     dial_hi = make_dial()
@@ -943,6 +1100,11 @@ def main():
     finish(dark_hi).save(os.path.join(OUT, 'dial_dark.png'))
     light_hi = make_light_dial()
     finish(light_hi).save(os.path.join(OUT, 'dial_light.png'))
+    vana_hi = make_vana_dial()
+    finish(vana_hi).save(os.path.join(OUT, 'dial_vana.png'))
+    finish(make_vana_dial(ambient=True)).save(os.path.join(OUT, 'dial_vana_ambient.png'))
+    for name, color in ELEMENTS:
+        finish(element_crystal(color)).save(os.path.join(OUT, 'crystal_' + name.lower() + '.png'))
     hands_hi = {}
     for name, (build, *_rest) in HANDS.items():
         hands_hi[name] = build()
@@ -964,9 +1126,11 @@ def main():
     dark.save(os.path.join(docs, 'preview_dark.png'))
     light = preview_light(light_hi, hands_hi, cap_hi, glass_hi)
     light.save(os.path.join(docs, 'preview_light.png'))
-    styles = Image.new('RGB', (3 * 460 + 20, 500), (18, 18, 22))
+    vana = preview_vana(vana_hi, hands_hi, cap_hi)
+    vana.save(os.path.join(docs, 'preview_vana.png'))
+    styles = Image.new('RGB', (4 * 460 + 20, 500), (18, 18, 22))
     sd = ImageDraw.Draw(styles)
-    for i, (label, im) in enumerate((('Classic', active), ('Dark', dark), ('Light', light))):
+    for i, (label, im) in enumerate((('Classic', active), ('Dark', dark), ('Light', light), ("Vana'diel Time", vana))):
         styles.paste(im, (15 + i * 460, 40), im)
         sd.text((15 + i * 460 + 225, 20), label, font=ImageFont.truetype(FONT_LABEL, 22), fill=(230, 230, 230), anchor='mm')
     styles.save(os.path.join(docs, 'styles.png'))

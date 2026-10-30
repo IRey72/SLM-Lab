@@ -6,9 +6,15 @@ A Pixel Watch / Wear OS watch face inspired by the Seiko × FINAL FANTASY XI
 
 ![styles](docs/styles.png)
 
-Switch styles on the watch: long-press the face, tap **Customize**, then **Style** (Classic, Dark or Light).
+Switch styles on the watch: long-press the face, tap **Customize**, then **Style** (Classic, Dark, Light or Vana'diel Time).
 Light follows the real Seiko piece: silver-white dial, blue inner ring, lume batons, white sub-dials with
-nation-coloured rings and hands, and Windurst at 3 / Bastok at 6 as on the watch.
+nation-coloured rings and hands. Every style uses the real watch's sub-dial order: San d'Oria at 9
+(day of week), Bastok at 6 (24-hour), Windurst at 3 (battery).
+
+**Vana'diel Time** is a parchment map of Vana'diel with Earth time on ink hands, plus a live readout of
+Vana'diel time (25x Earth time) and today's elemental weekday with its crystal. Both are computed on the
+watch from the UTC time: one Earth day is exactly 25 Vana'diel days, so the time of day depends only on
+the UTC time of day, and the weekday counts days since 2002-06-23 15:00 UTC.
 
 All three styles carry a faint outline of Vana'diel behind the dial (not in always-on). The land shapes are
 cut from `tools/emblems/worldmap_source.png` into `tools/emblems/worldmap_land.png`.
