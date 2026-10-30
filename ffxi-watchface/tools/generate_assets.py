@@ -10,7 +10,7 @@ import math
 import os
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
 
 N = 450            # watch face canvas (matches watchface.xml)
 SS = 4             # supersampling factor
@@ -1066,86 +1066,152 @@ def chrono_hand(tip=166, tail=36, pad=3):
 
 
 # --------------------------------------------------------------------- cyberpunk
-# High-visibility digital face: local time, JST and Vana'diel time in neon on black.
-# The digits are live text (watchface.xml); this draws the panels, labels and rings.
+# High-visibility digital face: local time, JST and Vana'diel time on black, themed by the
+# Vana'diel weekday. Neon art is drawn in white on two overlays that the watch tints with the
+# day's primary / secondary colours (one image each, eight tints), over a neutral base.
 FONT_MONO = os.path.join(FONTS, 'JetBrainsMono-ExtraBold.ttf')   # bundled as res/font/jetbrains_mono_extrabold
 FONT_MONO_LABEL = os.path.join(FONTS, 'JetBrainsMono-Bold.ttf')
-NEON_CYAN, NEON_PINK, NEON_YELLOW = (0, 238, 255), (255, 46, 170), (255, 228, 58)
-CYBER_BG = (6, 6, 14)
-CYBER = {   # layout boxes (x0, y0, x1, y1) shared with watchface.xml and the preview
-    'time': (55, 82, 395, 168), 'sec': (175, 168, 275, 194), 'date': (80, 198, 262, 220), 'wday': (270, 198, 370, 220),
-    'jst': (62, 230, 222, 306), 'vana': (228, 230, 388, 306), 'element': (150, 312, 330, 340),
-    'bar': (168, 352, 318, 364), 'pct': (322, 348, 372, 368),
+CYBER_BG = (4, 4, 9)
+# per weekday (Firesday..Darksday): primary neon, secondary accent
+CYBER_PRIMARY = [(255, 66, 40), (255, 186, 48), (40, 142, 255), (40, 255, 132),
+                 (112, 228, 255), (196, 92, 255), (255, 246, 214), (150, 112, 255)]
+CYBER_SECONDARY = [(255, 216, 60), (255, 112, 40), (0, 236, 255), (212, 255, 70),
+                   (255, 255, 255), (255, 236, 70), (255, 190, 70), (255, 40, 112)]
+CYBER = {   # layout boxes (x0, y0, x1, y1), shared with watchface.xml and the preview
+    'time': (50, 74, 400, 162), 'sec': (196, 162, 254, 186), 'date': (78, 192, 262, 214), 'wday': (270, 192, 372, 214),
+    'jst': (58, 224, 220, 298), 'vana': (230, 224, 392, 298), 'element': (130, 306, 330, 334),
+    'bar': (150, 346, 318, 358), 'pct': (322, 342, 372, 362),
 }
+CYBER_SEGMENTS = 12
 
 
-def neon(img, draw_fn, color, glow=3.0, strength=0.8):
-    """Draw with draw_fn(draw, colour) on a layer, then add a blurred glow of the same colour."""
-    layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
-    draw_fn(ImageDraw.Draw(layer), color + (255,))
-    halo = layer.getchannel('A').filter(ImageFilter.GaussianBlur(s(glow))).point(lambda v: int(v * strength))
-    fill_mask(img, halo, color + (255,))
-    img.alpha_composite(layer)
+def chamfer_box(d, box, cut, col, width):
+    x0, y0, x1, y1 = box
+    pts = [(x0 + cut, y0), (x1, y0), (x1, y1 - cut), (x1 - cut, y1), (x0, y1), (x0, y0 + cut)]
+    d.line(pts + pts[:1], fill=col, width=width, joint='curve')
+    return pts
 
 
-def hud_box(img, box, color, label=None, label_color=None):
-    x0, y0, x1, y1 = (s(v) for v in box)
-    c = s(7)
-
-    def draw(d, col):
-        d.rounded_rectangle([x0, y0, x1, y1], radius=s(3), outline=col[:3] + (90,), width=round(s(1)))
-        for (ax, ay, dx, dy) in ((x0, y0, 1, 1), (x1, y0, -1, 1), (x0, y1, 1, -1), (x1, y1, -1, -1)):   # corner brackets
-            d.line([(ax, ay + dy * c), (ax, ay), (ax + dx * c, ay)], fill=col, width=round(s(1.8)))
-    neon(img, draw, color, glow=2.2, strength=0.6)
-    if label:
-        d = ImageDraw.Draw(img)
-        d.text((x0 + s(8), y0 + s(5)), label, font=font(FONT_MONO_LABEL, 9), fill=(label_color or color) + (255,), anchor='la')
+def glow_layer(draw_fn, glow=2.2, strength=0.7):
+    """White line art on a transparent layer, with a soft glow under it (for tinting)."""
+    size = (s(N), s(N))
+    layer = Image.new('RGBA', size, (255, 255, 255, 0))
+    draw_fn(ImageDraw.Draw(layer))
+    a = layer.getchannel('A')
+    halo = a.filter(ImageFilter.GaussianBlur(s(glow))).point(lambda v: int(v * strength))
+    out = Image.new('RGBA', size, (255, 255, 255, 0))
+    out.putalpha(ImageChops.lighter(a, halo))
+    return out
 
 
-def make_cyber_dial(ambient=False):
+def make_cyber_base(ambient=False):
     size = (s(N), s(N))
     img = Image.new('RGBA', size, (0, 0, 0, 255) if ambient else CYBER_BG + (255,))
     d = ImageDraw.Draw(img)
     if ambient:
-        d.ellipse([C - s(219), C - s(219), C + s(219), C + s(219)], outline=(40, 70, 80), width=round(s(1)))
-        img.putalpha(circle_mask(size, C, C, s(225)))
-        return img
-    # perspective grid along the bottom, faint scanlines
-    grid = Image.new('RGBA', size, (0, 0, 0, 0))
-    gd = ImageDraw.Draw(grid)
-    horizon = s(372)
-    for i in range(-10, 11):
-        gd.line([(C + i * s(14), horizon), (C + i * s(60), s(450))], fill=NEON_PINK + (70,), width=round(s(0.8)))
-    for k in range(7):
-        y = horizon + s(3) * (1.55 ** k) * 2
-        gd.line([(0, y), (s(450), y)], fill=NEON_PINK + (60,), width=round(s(0.8)))
-    img.alpha_composite(grid)
-    scan = Image.new('RGBA', size, (0, 0, 0, 0))
-    sd = ImageDraw.Draw(scan)
-    for y in range(0, size[1], round(s(3))):
-        sd.line([(0, y), (size[0], y)], fill=(255, 255, 255, 6), width=SS)
-    img.alpha_composite(scan)
-    # rings and ticks
-    def rings(d, col):
-        d.ellipse([C - s(220), C - s(220), C + s(220), C + s(220)], outline=col, width=round(s(1.2)))
-        d.ellipse([C - s(204), C - s(204), C + s(204), C + s(204)], outline=col[:3] + (110,), width=round(s(0.8)))
-        for i in range(60):
-            a = i * 6
-            d.line([polar(s(219), a), polar(s(206 if i % 5 == 0 else 214), a)], fill=col if i % 5 == 0 else col[:3] + (120,),
-                   width=round(s(1.6 if i % 5 == 0 else 0.7)))
-    neon(img, rings, NEON_CYAN, glow=2.0, strength=0.5)
-    # static labels and panels
-    d = ImageDraw.Draw(img)
-    text_c(d, (C, s(72)), 'LOCAL // 24H', font(FONT_MONO_LABEL, 10), NEON_CYAN)
-    hud_box(img, CYBER['jst'], NEON_YELLOW, 'JST // TOKYO')
-    hud_box(img, CYBER['vana'], NEON_PINK, "VANA'DIEL")
-    d = ImageDraw.Draw(img)
-    x0, y0, x1, y1 = (s(v) for v in CYBER['bar'])
-    text_c(d, (x0 - s(22), (y0 + y1) / 2), 'PWR', font(FONT_MONO_LABEL, 10), NEON_CYAN)
-    d.rectangle([x0 - s(2), y0 - s(2), x1 + s(2), y1 + s(2)], outline=NEON_CYAN + (160,), width=round(s(0.8)))
-    text_c(d, (C, s(398)), "// VANA'DIEL.NET //", font(FONT_MONO_LABEL, 8), NEON_PINK)
+        d.ellipse([C - s(220), C - s(220), C + s(220), C + s(220)], outline=(40, 44, 56), width=round(s(1)))
+    else:
+        rng = np.random.default_rng(3)
+        bands = Image.new('RGBA', size, (0, 0, 0, 0))
+        bd = ImageDraw.Draw(bands)
+        for _ in range(6):   # faint glitch bands
+            y = rng.integers(s(40), s(410)); h = rng.integers(s(2), s(7))
+            x = rng.integers(0, s(200)); w = rng.integers(s(80), s(260))
+            bd.rectangle([x, y, x + w, y + h], fill=(255, 255, 255, 12))
+        img.alpha_composite(bands)
+        scan = Image.new('RGBA', size, (0, 0, 0, 0))
+        sd = ImageDraw.Draw(scan)
+        for y in range(0, size[1], round(s(3))):
+            sd.line([(0, y), (size[0], y)], fill=(255, 255, 255, 6), width=SS)
+        img.alpha_composite(scan)
+        for key in ('jst', 'vana'):   # dark glass behind the panels
+            x0, y0, x1, y1 = (s(v) for v in CYBER[key])
+            d = ImageDraw.Draw(img)
+            cut = s(10)
+            d.polygon([(x0 + cut, y0), (x1, y0), (x1, y1 - cut), (x1 - cut, y1), (x0, y1), (x0, y0 + cut)], fill=(14, 14, 24, 255))
     img.putalpha(circle_mask(size, C, C, s(225)))
     return img
+
+
+def make_cyber_primary():
+    """Frames: octagon HUD, ring ticks, chamfered panels, grid, bar outline."""
+    def draw(d):
+        W = lambda v: round(s(v))
+        pts = [polar(s(208), 22.5 + 45 * k) for k in range(8)]
+        d.line(pts + pts[:1], fill=(255, 255, 255, 230), width=W(1.4), joint='curve')
+        pts = [polar(s(201), 22.5 + 45 * k) for k in range(8)]
+        d.line(pts + pts[:1], fill=(255, 255, 255, 70), width=W(0.7), joint='curve')
+        for i in range(60):
+            a = i * 6
+            d.line([polar(s(223), a), polar(s(214 if i % 5 == 0 else 219), a)],
+                   fill=(255, 255, 255, 255 if i % 5 == 0 else 110), width=W(1.6 if i % 5 == 0 else 0.7))
+        for key in ('jst', 'vana'):
+            chamfer_box(d, [s(v) for v in CYBER[key]], s(10), (255, 255, 255, 235), W(1.4))
+        x0, y0, x1, y1 = CYBER['element']
+        d.line([(s(x0), s(y1 + 1)), (s(x1), s(y1 + 1))], fill=(255, 255, 255, 120), width=W(0.8))
+        x0, y0, x1, y1 = (s(v) for v in CYBER['bar'])
+        d.rectangle([x0 - s(2), y0 - s(2), x1 + s(2), y1 + s(2)], outline=(255, 255, 255, 170), width=W(0.8))
+        horizon = s(370)   # perspective grid
+        for i in range(-10, 11):
+            d.line([(C + i * s(14), horizon), (C + i * s(60), s(450))], fill=(255, 255, 255, 60), width=W(0.8))
+        for k in range(7):
+            y = horizon + s(3) * (1.55 ** k) * 2
+            d.line([(0, y), (s(450), y)], fill=(255, 255, 255, 52), width=W(0.8))
+    img = glow_layer(draw)
+    img.putalpha(Image.fromarray(np.minimum(np.asarray(img.getchannel('A')), np.asarray(circle_mask(img.size, C, C, s(225))))))
+    return img
+
+
+def make_cyber_secondary():
+    """Accents: labels, hazard stripes, seconds tag, side text, frame markers."""
+    def draw(d):
+        W = lambda v: round(s(v))
+        lab = font(FONT_MONO_LABEL, 9.5)
+        text_c(d, (C, s(64)), 'LOCAL // 24H', lab, (255, 255, 255, 255))
+        for x0 in (128, 286):   # hazard stripes either side of the label
+            for k in range(5):
+                xx = s(x0 + k * 7)
+                d.polygon([(xx, s(68)), (xx + s(3.5), s(60)), (xx + s(6), s(60)), (xx + s(2.5), s(68))], fill=(255, 255, 255, 220))
+        for key, label in (('jst', 'JST // TOKYO'), ('vana', "VANA'DIEL")):
+            x0, y0, x1, y1 = CYBER[key]
+            d.text((s(x0 + 14), s(y0 + 6)), label, font=lab, fill=(255, 255, 255, 255), anchor='la')
+            d.rectangle([s(x1 - 22), s(y0 + 8), s(x1 - 10), s(y0 + 11)], fill=(255, 255, 255, 230))
+        x0, y0, x1, y1 = CYBER['sec']
+        for sx, dirx in ((s(x0), 1), (s(x1), -1)):   # [ ] tag round the seconds
+            d.line([(sx + dirx * s(5), s(y0 + 2)), (sx, s(y0 + 2)), (sx, s(y1 - 2)), (sx + dirx * s(5), s(y1 - 2))],
+                   fill=(255, 255, 255, 230), width=W(1.4))
+        x0, y0, x1, y1 = CYBER['bar']
+        text_c(d, (s(x0 - 20), s((y0 + y1) / 2)), 'PWR', lab, (255, 255, 255, 255))
+        text_c(d, (C, s(394)), '// SYS.ONLINE //', font(FONT_MONO_LABEL, 8), (255, 255, 255, 230))
+        for k in range(8):   # markers on the octagon's corners
+            x, y = polar(s(208), 22.5 + 45 * k)
+            d.ellipse([x - s(2.2), y - s(2.2), x + s(2.2), y + s(2.2)], fill=(255, 255, 255, 255))
+    img = glow_layer(draw, glow=1.6, strength=0.6)
+    side = font(FONT_MONO_LABEL, 8.5)   # vertical side text
+    for text, x, deg in (("VANA'DIEL.NET", 34, 90), ('SYNC // JST+09', 416, -90)):
+        tile = glyph(text, side, (255, 255, 255, 200), deg)
+        img.alpha_composite(tile, (round(s(x) - tile.width / 2), round(C - tile.height / 2)))
+    return img
+
+
+def make_cyber_barmask():
+    """Black gaps that cut the battery fill into segments (drawn over the fill)."""
+    x0, y0, x1, y1 = CYBER['bar']
+    w, h = x1 - x0, y1 - y0
+    img = Image.new('RGBA', (s(w), s(h)), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    seg = w / CYBER_SEGMENTS
+    for k in range(1, CYBER_SEGMENTS):
+        x = s(k * seg)
+        d.rectangle([x - s(1.2), 0, x + s(1.2), s(h)], fill=CYBER_BG + (255,))
+    return img
+
+
+def tint(white, color):
+    """What the watch's tintColor does: colour the white art, keep its alpha."""
+    out = Image.new('RGBA', white.size, color + (0,))
+    out.putalpha(white.getchannel('A'))
+    return out
 
 
 # --------------------------------------------------------------------- hands
@@ -1552,33 +1618,39 @@ def preview_seiko(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, day=
     return finish(img)
 
 
-def preview_cyber(dial_hi, hh=21, mm=47, ss=32, utc=PREVIEW_UTC, batt=78):
-    img = dial_hi.copy()
+def preview_cyber(base, prim, sec, barmask, hh=21, mm=47, ss=32, utc=PREVIEW_UTC, batt=78):
+    wd = vana_now(utc)[2]
+    P, S2 = CYBER_PRIMARY[wd], CYBER_SECONDARY[wd]
+    img = base.copy()
+    img.alpha_composite(tint(prim, P))
+    img.alpha_composite(tint(sec, S2))
     d = ImageDraw.Draw(img)
 
-    def box_text(key, text, size, color, align='mm', dx=0, dy=0, label_gap=0):
+    def box_text(key, text, size, color, align='mm', dx=0, dy=0):
         x0, y0, x1, y1 = CYBER[key]
         cx = {'mm': (x0 + x1) / 2, 'rm': x1, 'lm': x0}[align]
-        d.text((s(cx + dx), s((y0 + y1) / 2 + dy + label_gap)), text, font=font(FONT_MONO, size), fill=color, anchor=align)
-    box_text('time', f'{hh:02d}:{mm:02d}', 80, NEON_PINK + (170,), dx=-2.5)
-    box_text('time', f'{hh:02d}:{mm:02d}', 80, NEON_CYAN)
-    box_text('sec', f':{ss:02d}', 20, NEON_PINK)
+        d.text((s(cx + dx), s((y0 + y1) / 2 + dy)), text, font=font(FONT_MONO, size), fill=color, anchor=align)
+    hm = f'{hh:02d}:{mm:02d}'
+    box_text('time', hm, 82, S2 + (210,), dx=-3)
+    box_text('time', hm, 82, (255, 255, 255, 60), dx=2)
+    box_text('time', hm, 82, P)
+    box_text('sec', f'{ss:02d}', 18, S2)
     box_text('date', '2026.10.30', 17, (236, 240, 250), 'rm')
-    box_text('wday', 'THU', 17, NEON_PINK, 'lm')
+    box_text('wday', 'THU', 17, (200, 204, 216), 'lm')
     jh, jm = (utc + 9 * 3600) % 86400 // 3600, (utc + 9 * 3600) % 3600 // 60
-    box_text('jst', f'{jh:02d}:{jm:02d}', 34, NEON_YELLOW, label_gap=7)
-    vh, vm, wd = vana_now(utc)
-    box_text('vana', f'{vh:02d}:{vm:02d}', 34, ELEMENT_LINE[wd], label_gap=7)
+    box_text('jst', f'{jh:02d}:{jm:02d}', 34, (240, 242, 248), dy=7)
+    vh, vm, _ = vana_now(utc)
+    box_text('vana', f'{vh:02d}:{vm:02d}', 34, P, dy=7)
     x0, y0, x1, y1 = CYBER['element']
     cr = element_crystal(ELEMENTS[wd][1])
     img.alpha_composite(cr, (round(s(x0)), round(s((y0 + y1) / 2) - cr.height / 2)))
-    d.text((s(x0 + 22), s((y0 + y1) / 2)), ELEMENTS[wd][0].upper(), font=font(FONT_MONO, 16), fill=ELEMENT_LINE[wd], anchor='lm')
+    d.text((s(x0 + 22), s((y0 + y1) / 2)), ELEMENTS[wd][0].upper(), font=font(FONT_MONO, 16), fill=P, anchor='lm')
     x0, y0, x1, y1 = CYBER['bar']
-    d.rectangle([s(x0), s(y0), s(x0 + (x1 - x0) * batt / 100), s(y1)], fill=NEON_CYAN)
-    box_text('pct', f'{batt}%', 13, NEON_CYAN, 'lm')
-    # seconds arc
-    a = ss * 6
-    d.arc([C - s(212), C - s(212), C + s(212), C + s(212)], -90, -90 + a, fill=NEON_PINK, width=round(s(4)))
+    d.rectangle([s(x0), s(y0), s(x0 + (x1 - x0) * batt / 100), s(y1)], fill=P)
+    img.alpha_composite(barmask, (s(x0), s(y0)))
+    d = ImageDraw.Draw(img)
+    box_text('pct', f'{batt}%', 13, P, 'lm')
+    d.arc([C - s(222), C - s(222), C + s(222), C + s(222)], -90, -90 + ss * 6, fill=S2, width=round(s(3)))
     return finish(img)
 
 
@@ -1592,9 +1664,10 @@ def main():
     finish(dark_hi).save(os.path.join(OUT, 'dial_dark.png'))
     light_hi = make_light_dial()
     finish(light_hi).save(os.path.join(OUT, 'dial_light.png'))
-    cyber_hi = make_cyber_dial()
-    finish(cyber_hi).save(os.path.join(OUT, 'dial_cyber.png'))
-    finish(make_cyber_dial(ambient=True)).save(os.path.join(OUT, 'dial_cyber_ambient.png'))
+    cyber_base, cyber_prim, cyber_sec, cyber_mask = make_cyber_base(), make_cyber_primary(), make_cyber_secondary(), make_cyber_barmask()
+    for name, im in (('dial_cyber', cyber_base), ('cyber_primary', cyber_prim), ('cyber_secondary', cyber_sec),
+                     ('cyber_barmask', cyber_mask), ('dial_cyber_ambient', make_cyber_base(ambient=True))):
+        finish(im).save(os.path.join(OUT, name + '.png'))
     seiko_hi = make_seiko_dial()
     finish(seiko_hi).save(os.path.join(OUT, 'dial_seiko.png'))
     finish(make_seiko_dial(ambient=True)).save(os.path.join(OUT, 'dial_seiko_ambient.png'))
@@ -1637,8 +1710,15 @@ def main():
     vana.save(os.path.join(docs, 'preview_vana.png'))
     seiko = preview_seiko(seiko_hi, hands_hi, cap_hi, glass_hi)
     seiko.save(os.path.join(docs, 'preview_wearevanadiel.png'))
-    cyber = preview_cyber(cyber_hi)
+    cyber = preview_cyber(cyber_base, cyber_prim, cyber_sec, cyber_mask)
     cyber.save(os.path.join(docs, 'preview_cyberpunk.png'))
+    cy = Image.new('RGB', (4 * 300 + 20, 340), (18, 18, 22))
+    cd = ImageDraw.Draw(cy)
+    for col, n in enumerate((1, 3, 4, 6)):
+        utc = PREVIEW_UTC + n * 3456
+        cd.text((10 + col * 300 + 150, 20), ELEMENTS[vana_now(utc)[2]][0], font=ImageFont.truetype(FONT_LABEL, 20), fill=(230, 230, 230), anchor='mm')
+        cy.paste(preview_cyber(cyber_base, cyber_prim, cyber_sec, cyber_mask, utc=utc).resize((290, 290), Image.LANCZOS), (15 + col * 300, 42))
+    cy.save(os.path.join(docs, 'cyberpunk_weekdays.png'))
     # weekday showcase: the same faces on four Vana'diel days
     days = [(1, 'Firesday'), (3, 'Watersday'), (4, 'Windsday'), (6, 'Lightningday')]
     show = Image.new('RGB', (4 * 300 + 20, 3 * 300 + 50), (18, 18, 22))
@@ -1653,7 +1733,7 @@ def main():
             show.paste(face.resize((290, 290), Image.LANCZOS), (15 + col * 300, 45 + row * 300))
     show.save(os.path.join(docs, 'weekday_colors.png'))
     faces = (('Classic', active), ('Dark', dark), ('Light', light),
-             ("Vana'diel Time", vana), ("We Are Vana'diel", seiko), ('Cyberpunk', cyber))
+             ('Canvas', vana), ("We Are Vana'diel", seiko), ('Cyberpunk', cyber))
     styles = Image.new('RGB', (3 * 460 + 20, 2 * 490 + 10), (18, 18, 22))
     sd = ImageDraw.Draw(styles)
     for i, (label, im) in enumerate(faces):

@@ -7,7 +7,7 @@ A Pixel Watch / Wear OS watch face inspired by the Seiko × FINAL FANTASY XI
 ![styles](docs/styles.png)
 
 Switch styles on the watch: long-press the face, tap **Customize**, then **Style**: Classic, Dark, Light,
-Vana'diel Time, We Are Vana'diel or Cyberpunk.
+Canvas, We Are Vana'diel or Cyberpunk.
 Light follows the real Seiko piece: silver-white dial, blue inner ring, lume batons, white sub-dials with
 nation-coloured rings and hands. Every style uses the real watch's sub-dial order: San d'Oria at 9
 (day of week), Bastok at 6 (24-hour), Windurst at 3 (battery).
@@ -25,16 +25,19 @@ coloured edge and glow (Classic, Light) or coloured outlines (Dark):
 
 ![weekday colours](docs/weekday_colors.png)
 
-**Vana'diel Time** is a parchment map of Vana'diel with the same four dials in a tan, inked look, Earth time
-on ink hands inlaid with the weekday colour, and a cartouche with Vana'diel time (25x Earth time) and the
-elemental weekday.
+**Canvas** is a parchment map of Vana'diel with the same four dials in a tan, inked look, Earth time on ink
+hands inlaid with the weekday colour, and round medallions with Vana'diel time (25x Earth time) and the
+elemental weekday at 7:30 and the date at 4:30.
 
 **We Are Vana'diel** is a replica of the real Seiko piece (for personal use): tachymeter bezel, blue inner
 ring, SEIKO, crystal-shaped lume markers, and the watch's own sub-dials (San d'Oria 30-minute counter at 9,
 Windurst 24-hour at 3, Bastok running seconds at 6), with the gold chronograph hand resting at 12.
 
-**Cyberpunk** is a high-visibility digital face: large local time with seconds and date, JST (Tokyo) time,
-Vana'diel time in the weekday colour, the elemental weekday, a battery bar and a seconds arc around the rim.
+**Cyberpunk** is a high-visibility digital face: large local time with a glitch offset, seconds and date,
+JST (Tokyo) time, Vana'diel time, the elemental weekday, a segmented battery bar and a seconds arc round
+the rim, inside an octagon HUD. Its neon colours follow the Vana'diel weekday:
+
+![cyberpunk weekdays](docs/cyberpunk_weekdays.png)
 
 The live Vana'diel and JST maths is in `tools/wff_expr.py`. Both are computed on the
 watch from the UTC time: one Earth day is exactly 25 Vana'diel days, so the time of day depends only on

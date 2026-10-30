@@ -10,8 +10,9 @@
     light    after the real Seiko: silver-white dial, blue ring, world map
     wearevanadiel  replica of the real Seiko piece (tachymeter bezel, SEIKO, 30-min /
              24h / seconds sub-dials, gold chronograph hand at rest)
-    cyberpunk high-visibility digital: local time, JST, Vana'diel time and weekday, battery
-    vanadiel parchment map with the four sub-dials in ink, Vana'diel time and weekday
+    cyberpunk high-visibility digital: local time, JST, Vana'diel time and weekday, battery;
+             neon colours follow the Vana'diel weekday
+    vanadiel (shown as "Canvas") parchment map with the four sub-dials in ink, Vana'diel time and weekday
              in a cartouche, ink hands inlaid with the weekday colour
   Sub-dials (Classic, Dark, Light; as on the real watch, plus Jeuno at 12):
               12 o'clock Jeuno     = Vana'diel time, 24h, crystal tip = today's element
@@ -310,232 +311,578 @@
         </Group>
       </ListOption>
       <ListOption id="cyberpunk">
-        <!-- High-visibility digital: local time, JST and Vana'diel time (expressions: tools/wff_expr.py) -->
+        <!-- High-visibility digital, themed by the Vana'diel weekday (expressions: tools/wff_expr.py) -->
         <Group name="cyberpunk_dial" x="0" y="0" width="450" height="450">
           <Variant mode="AMBIENT" target="alpha" value="0" />
           <PartImage x="0" y="0" width="450" height="450">
             <Image resource="dial_cyber" />
           </PartImage>
-          <PartText x="52" y="82" width="340" height="86">
+          <!-- neon art in white, tinted with today's primary / secondary colours -->
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffff4228">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <Image resource="cyber_primary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffffba30">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <Image resource="cyber_primary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ff288eff">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <Image resource="cyber_primary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ff28ff84">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Image resource="cyber_primary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ff70e4ff">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Image resource="cyber_primary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffc45cff">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Image resource="cyber_primary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#fffff6d6">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Image resource="cyber_primary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ff9670ff">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <Image resource="cyber_primary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffffd83c">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <Image resource="cyber_secondary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffff7028">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <Image resource="cyber_secondary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ff00ecff">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <Image resource="cyber_secondary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffd4ff46">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Image resource="cyber_secondary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffffffff">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Image resource="cyber_secondary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffffec46">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Image resource="cyber_secondary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffffbe46">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Image resource="cyber_secondary" />
+          </PartImage>
+          <PartImage x="0" y="0" width="450" height="450" tintColor="#ffff2870">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <Image resource="cyber_secondary" />
+          </PartImage>
+          <!-- segmented battery bar -->
+          <PartDraw x="150" y="346" width="168" height="12">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <Rectangle x="0" y="0" width="168" height="12">
+              <Fill color="#ffff4228" />
+              <Transform target="width" value="[BATTERY_PERCENT] * 1.68" />
+            </Rectangle>
+          </PartDraw>
+          <PartDraw x="150" y="346" width="168" height="12">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <Rectangle x="0" y="0" width="168" height="12">
+              <Fill color="#ffffba30" />
+              <Transform target="width" value="[BATTERY_PERCENT] * 1.68" />
+            </Rectangle>
+          </PartDraw>
+          <PartDraw x="150" y="346" width="168" height="12">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <Rectangle x="0" y="0" width="168" height="12">
+              <Fill color="#ff288eff" />
+              <Transform target="width" value="[BATTERY_PERCENT] * 1.68" />
+            </Rectangle>
+          </PartDraw>
+          <PartDraw x="150" y="346" width="168" height="12">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Rectangle x="0" y="0" width="168" height="12">
+              <Fill color="#ff28ff84" />
+              <Transform target="width" value="[BATTERY_PERCENT] * 1.68" />
+            </Rectangle>
+          </PartDraw>
+          <PartDraw x="150" y="346" width="168" height="12">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Rectangle x="0" y="0" width="168" height="12">
+              <Fill color="#ff70e4ff" />
+              <Transform target="width" value="[BATTERY_PERCENT] * 1.68" />
+            </Rectangle>
+          </PartDraw>
+          <PartDraw x="150" y="346" width="168" height="12">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Rectangle x="0" y="0" width="168" height="12">
+              <Fill color="#ffc45cff" />
+              <Transform target="width" value="[BATTERY_PERCENT] * 1.68" />
+            </Rectangle>
+          </PartDraw>
+          <PartDraw x="150" y="346" width="168" height="12">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Rectangle x="0" y="0" width="168" height="12">
+              <Fill color="#fffff6d6" />
+              <Transform target="width" value="[BATTERY_PERCENT] * 1.68" />
+            </Rectangle>
+          </PartDraw>
+          <PartDraw x="150" y="346" width="168" height="12">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <Rectangle x="0" y="0" width="168" height="12">
+              <Fill color="#ff9670ff" />
+              <Transform target="width" value="[BATTERY_PERCENT] * 1.68" />
+            </Rectangle>
+          </PartDraw>
+          <PartImage x="150" y="346" width="168" height="12">
+            <Image resource="cyber_barmask" />
+          </PartImage>
+          <!-- local time with a two-colour glitch offset -->
+          <PartText x="47" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="80" color="#aaff2eaa"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="82" color="#d2ffd83c"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
             </Text>
           </PartText>
-          <PartText x="55" y="82" width="340" height="86">
+          <PartText x="47" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="80" color="#ff00eeff"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="82" color="#d2ff7028"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
             </Text>
           </PartText>
-          <PartText x="175" y="168" width="100" height="26">
+          <PartText x="47" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="20" color="#ffff2eaa"><Template>:%02d<Parameter expression="[SECOND]" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="82" color="#d200ecff"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
             </Text>
           </PartText>
-          <PartText x="80" y="198" width="182" height="22">
+          <PartText x="47" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#d2d4ff46"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="47" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#d2ffffff"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="47" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#d2ffec46"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="47" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#d2ffbe46"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="47" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#d2ff2870"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="52" y="74" width="350" height="88">
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#3cffffff"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="50" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#ffff4228"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="50" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#ffffba30"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="50" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#ff288eff"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="50" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#ff28ff84"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="50" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#ff70e4ff"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="50" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#ffc45cff"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="50" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#fffff6d6"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="50" y="74" width="350" height="88">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="82" color="#ff9670ff"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="196" y="162" width="58" height="24">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="18" color="#ffffd83c"><Template>%02d<Parameter expression="[SECOND]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="196" y="162" width="58" height="24">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="18" color="#ffff7028"><Template>%02d<Parameter expression="[SECOND]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="196" y="162" width="58" height="24">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="18" color="#ff00ecff"><Template>%02d<Parameter expression="[SECOND]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="196" y="162" width="58" height="24">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="18" color="#ffd4ff46"><Template>%02d<Parameter expression="[SECOND]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="196" y="162" width="58" height="24">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="18" color="#ffffffff"><Template>%02d<Parameter expression="[SECOND]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="196" y="162" width="58" height="24">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="18" color="#ffffec46"><Template>%02d<Parameter expression="[SECOND]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="196" y="162" width="58" height="24">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="18" color="#ffffbe46"><Template>%02d<Parameter expression="[SECOND]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="196" y="162" width="58" height="24">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <Text align="CENTER">
+              <Font family="jetbrains_mono_extrabold" size="18" color="#ffff2870"><Template>%02d<Parameter expression="[SECOND]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="78" y="192" width="184" height="22">
             <Text align="END">
               <Font family="jetbrains_mono_extrabold" size="17" color="#ffecf0fa"><Template>%04d.%02d.%02d<Parameter expression="[YEAR]" /><Parameter expression="[MONTH]" /><Parameter expression="[DAY]" /></Template></Font>
             </Text>
           </PartText>
-          <PartText x="270" y="198" width="100" height="22">
+          <PartText x="270" y="192" width="102" height="22">
             <Transform target="alpha" value="[DAY_OF_WEEK] == 1 ? 255 : 0" />
             <Text align="START">
-              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">SUN</Font>
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffc8ccd8">SUN</Font>
             </Text>
           </PartText>
-          <PartText x="270" y="198" width="100" height="22">
+          <PartText x="270" y="192" width="102" height="22">
             <Transform target="alpha" value="[DAY_OF_WEEK] == 2 ? 255 : 0" />
             <Text align="START">
-              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">MON</Font>
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffc8ccd8">MON</Font>
             </Text>
           </PartText>
-          <PartText x="270" y="198" width="100" height="22">
+          <PartText x="270" y="192" width="102" height="22">
             <Transform target="alpha" value="[DAY_OF_WEEK] == 3 ? 255 : 0" />
             <Text align="START">
-              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">TUE</Font>
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffc8ccd8">TUE</Font>
             </Text>
           </PartText>
-          <PartText x="270" y="198" width="100" height="22">
+          <PartText x="270" y="192" width="102" height="22">
             <Transform target="alpha" value="[DAY_OF_WEEK] == 4 ? 255 : 0" />
             <Text align="START">
-              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">WED</Font>
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffc8ccd8">WED</Font>
             </Text>
           </PartText>
-          <PartText x="270" y="198" width="100" height="22">
+          <PartText x="270" y="192" width="102" height="22">
             <Transform target="alpha" value="[DAY_OF_WEEK] == 5 ? 255 : 0" />
             <Text align="START">
-              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">THU</Font>
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffc8ccd8">THU</Font>
             </Text>
           </PartText>
-          <PartText x="270" y="198" width="100" height="22">
+          <PartText x="270" y="192" width="102" height="22">
             <Transform target="alpha" value="[DAY_OF_WEEK] == 6 ? 255 : 0" />
             <Text align="START">
-              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">FRI</Font>
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffc8ccd8">FRI</Font>
             </Text>
           </PartText>
-          <PartText x="270" y="198" width="100" height="22">
+          <PartText x="270" y="192" width="102" height="22">
             <Transform target="alpha" value="[DAY_OF_WEEK] == 7 ? 255 : 0" />
             <Text align="START">
-              <Font family="jetbrains_mono_extrabold" size="17" color="#ffff2eaa">SAT</Font>
+              <Font family="jetbrains_mono_extrabold" size="17" color="#ffc8ccd8">SAT</Font>
             </Text>
           </PartText>
-          <PartText x="62" y="237" width="160" height="76">
+          <PartText x="58" y="231" width="162" height="74">
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ffffe43a"><Template>%02d:%02d<Parameter expression="floor(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) / 3600)" /><Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) % 3600) / 60)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#fff0f2f8"><Template>%02d:%02d<Parameter expression="floor(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) / 3600)" /><Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) % 3600) / 60)" /></Template></Font>
             </Text>
           </PartText>
-          <PartText x="228" y="237" width="160" height="76">
+          <PartText x="230" y="231" width="162" height="74">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ffe8401e"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ffff4228"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
             </Text>
           </PartText>
           <Group name="cyber_element_0" x="0" y="0" width="450" height="450">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
-            <PartImage x="150" y="313" width="15" height="26">
+            <PartImage x="130" y="307" width="15" height="26">
               <Image resource="crystal_firesday" />
             </PartImage>
-            <PartText x="172" y="312" width="158" height="28">
+            <PartText x="152" y="306" width="178" height="28">
               <Text align="START">
-                <Font family="jetbrains_mono_extrabold" size="16" color="#ffe8401e">FIRESDAY</Font>
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ffff4228">FIRESDAY</Font>
               </Text>
             </PartText>
           </Group>
-          <PartText x="228" y="237" width="160" height="76">
+          <PartText x="322" y="342" width="50" height="20">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="13" color="#ffff4228"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="230" y="231" width="162" height="74">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ffcc9a34"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ffffba30"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
             </Text>
           </PartText>
           <Group name="cyber_element_1" x="0" y="0" width="450" height="450">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
-            <PartImage x="150" y="313" width="15" height="26">
+            <PartImage x="130" y="307" width="15" height="26">
               <Image resource="crystal_earthsday" />
             </PartImage>
-            <PartText x="172" y="312" width="158" height="28">
+            <PartText x="152" y="306" width="178" height="28">
               <Text align="START">
-                <Font family="jetbrains_mono_extrabold" size="16" color="#ffcc9a34">EARTHSDAY</Font>
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ffffba30">EARTHSDAY</Font>
               </Text>
             </PartText>
           </Group>
-          <PartText x="228" y="237" width="160" height="76">
+          <PartText x="322" y="342" width="50" height="20">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="13" color="#ffffba30"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="230" y="231" width="162" height="74">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ff3470e8"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff288eff"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
             </Text>
           </PartText>
           <Group name="cyber_element_2" x="0" y="0" width="450" height="450">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
-            <PartImage x="150" y="313" width="15" height="26">
+            <PartImage x="130" y="307" width="15" height="26">
               <Image resource="crystal_watersday" />
             </PartImage>
-            <PartText x="172" y="312" width="158" height="28">
+            <PartText x="152" y="306" width="178" height="28">
               <Text align="START">
-                <Font family="jetbrains_mono_extrabold" size="16" color="#ff3470e8">WATERSDAY</Font>
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ff288eff">WATERSDAY</Font>
               </Text>
             </PartText>
           </Group>
-          <PartText x="228" y="237" width="160" height="76">
+          <PartText x="322" y="342" width="50" height="20">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="13" color="#ff288eff"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="230" y="231" width="162" height="74">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ff3eac52"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff28ff84"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
             </Text>
           </PartText>
           <Group name="cyber_element_3" x="0" y="0" width="450" height="450">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
-            <PartImage x="150" y="313" width="15" height="26">
+            <PartImage x="130" y="307" width="15" height="26">
               <Image resource="crystal_windsday" />
             </PartImage>
-            <PartText x="172" y="312" width="158" height="28">
+            <PartText x="152" y="306" width="178" height="28">
               <Text align="START">
-                <Font family="jetbrains_mono_extrabold" size="16" color="#ff3eac52">WINDSDAY</Font>
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ff28ff84">WINDSDAY</Font>
               </Text>
             </PartText>
           </Group>
-          <PartText x="228" y="237" width="160" height="76">
+          <PartText x="322" y="342" width="50" height="20">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="13" color="#ff28ff84"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="230" y="231" width="162" height="74">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ff7acaee"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff70e4ff"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
             </Text>
           </PartText>
           <Group name="cyber_element_4" x="0" y="0" width="450" height="450">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
-            <PartImage x="150" y="313" width="15" height="26">
+            <PartImage x="130" y="307" width="15" height="26">
               <Image resource="crystal_iceday" />
             </PartImage>
-            <PartText x="172" y="312" width="158" height="28">
+            <PartText x="152" y="306" width="178" height="28">
               <Text align="START">
-                <Font family="jetbrains_mono_extrabold" size="16" color="#ff7acaee">ICEDAY</Font>
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ff70e4ff">ICEDAY</Font>
               </Text>
             </PartText>
           </Group>
-          <PartText x="228" y="237" width="160" height="76">
+          <PartText x="322" y="342" width="50" height="20">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="13" color="#ff70e4ff"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="230" y="231" width="162" height="74">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ff9852d6"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ffc45cff"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
             </Text>
           </PartText>
           <Group name="cyber_element_5" x="0" y="0" width="450" height="450">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
-            <PartImage x="150" y="313" width="15" height="26">
+            <PartImage x="130" y="307" width="15" height="26">
               <Image resource="crystal_lightningday" />
             </PartImage>
-            <PartText x="172" y="312" width="158" height="28">
+            <PartText x="152" y="306" width="178" height="28">
               <Text align="START">
-                <Font family="jetbrains_mono_extrabold" size="16" color="#ff9852d6">LIGHTNINGDAY</Font>
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ffc45cff">LIGHTNINGDAY</Font>
               </Text>
             </PartText>
           </Group>
-          <PartText x="228" y="237" width="160" height="76">
+          <PartText x="322" y="342" width="50" height="20">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="13" color="#ffc45cff"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="230" y="231" width="162" height="74">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#fff2eed8"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#fffff6d6"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
             </Text>
           </PartText>
           <Group name="cyber_element_6" x="0" y="0" width="450" height="450">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
-            <PartImage x="150" y="313" width="15" height="26">
+            <PartImage x="130" y="307" width="15" height="26">
               <Image resource="crystal_lightsday" />
             </PartImage>
-            <PartText x="172" y="312" width="158" height="28">
+            <PartText x="152" y="306" width="178" height="28">
               <Text align="START">
-                <Font family="jetbrains_mono_extrabold" size="16" color="#fff2eed8">LIGHTSDAY</Font>
+                <Font family="jetbrains_mono_extrabold" size="16" color="#fffff6d6">LIGHTSDAY</Font>
               </Text>
             </PartText>
           </Group>
-          <PartText x="228" y="237" width="160" height="76">
+          <PartText x="322" y="342" width="50" height="20">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="13" color="#fffff6d6"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="230" y="231" width="162" height="74">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ffb0a4ce"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff9670ff"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
             </Text>
           </PartText>
           <Group name="cyber_element_7" x="0" y="0" width="450" height="450">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
-            <PartImage x="150" y="313" width="15" height="26">
+            <PartImage x="130" y="307" width="15" height="26">
               <Image resource="crystal_darksday" />
             </PartImage>
-            <PartText x="172" y="312" width="158" height="28">
+            <PartText x="152" y="306" width="178" height="28">
               <Text align="START">
-                <Font family="jetbrains_mono_extrabold" size="16" color="#ffb0a4ce">DARKSDAY</Font>
+                <Font family="jetbrains_mono_extrabold" size="16" color="#ff9670ff">DARKSDAY</Font>
               </Text>
             </PartText>
           </Group>
-          <!-- battery bar -->
-          <PartDraw x="168" y="352" width="150" height="12">
-            <Rectangle x="0" y="0" width="150" height="12">
-              <Fill color="#ff00eeff" />
-              <Transform target="width" value="[BATTERY_PERCENT] * 1.5" />
-            </Rectangle>
-          </PartDraw>
-          <PartText x="322" y="348" width="50" height="20">
+          <PartText x="322" y="342" width="50" height="20">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
             <Text align="START">
-              <Font family="jetbrains_mono_extrabold" size="13" color="#ff00eeff"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="13" color="#ff9670ff"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
             </Text>
           </PartText>
-          <!-- seconds arc around the rim -->
-          <PartDraw x="13" y="13" width="424" height="424">
-            <Arc centerX="212" centerY="212" width="424" height="424" startAngle="0" endAngle="0">
+          <!-- seconds arc round the rim -->
+          <PartDraw x="3" y="3" width="444" height="444">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
+            <Arc centerX="222" centerY="222" width="444" height="444" startAngle="0" endAngle="0">
               <Transform target="endAngle" value="[SECOND] * 6" />
-              <Stroke color="#ffff2eaa" thickness="4" cap="ROUND" />
+              <Stroke color="#ffffd83c" thickness="3" cap="ROUND" />
+            </Arc>
+          </PartDraw>
+          <PartDraw x="3" y="3" width="444" height="444">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 1 ? 255 : 0" />
+            <Arc centerX="222" centerY="222" width="444" height="444" startAngle="0" endAngle="0">
+              <Transform target="endAngle" value="[SECOND] * 6" />
+              <Stroke color="#ffff7028" thickness="3" cap="ROUND" />
+            </Arc>
+          </PartDraw>
+          <PartDraw x="3" y="3" width="444" height="444">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 2 ? 255 : 0" />
+            <Arc centerX="222" centerY="222" width="444" height="444" startAngle="0" endAngle="0">
+              <Transform target="endAngle" value="[SECOND] * 6" />
+              <Stroke color="#ff00ecff" thickness="3" cap="ROUND" />
+            </Arc>
+          </PartDraw>
+          <PartDraw x="3" y="3" width="444" height="444">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 3 ? 255 : 0" />
+            <Arc centerX="222" centerY="222" width="444" height="444" startAngle="0" endAngle="0">
+              <Transform target="endAngle" value="[SECOND] * 6" />
+              <Stroke color="#ffd4ff46" thickness="3" cap="ROUND" />
+            </Arc>
+          </PartDraw>
+          <PartDraw x="3" y="3" width="444" height="444">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 4 ? 255 : 0" />
+            <Arc centerX="222" centerY="222" width="444" height="444" startAngle="0" endAngle="0">
+              <Transform target="endAngle" value="[SECOND] * 6" />
+              <Stroke color="#ffffffff" thickness="3" cap="ROUND" />
+            </Arc>
+          </PartDraw>
+          <PartDraw x="3" y="3" width="444" height="444">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 5 ? 255 : 0" />
+            <Arc centerX="222" centerY="222" width="444" height="444" startAngle="0" endAngle="0">
+              <Transform target="endAngle" value="[SECOND] * 6" />
+              <Stroke color="#ffffec46" thickness="3" cap="ROUND" />
+            </Arc>
+          </PartDraw>
+          <PartDraw x="3" y="3" width="444" height="444">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 6 ? 255 : 0" />
+            <Arc centerX="222" centerY="222" width="444" height="444" startAngle="0" endAngle="0">
+              <Transform target="endAngle" value="[SECOND] * 6" />
+              <Stroke color="#ffffbe46" thickness="3" cap="ROUND" />
+            </Arc>
+          </PartDraw>
+          <PartDraw x="3" y="3" width="444" height="444">
+            <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 7 ? 255 : 0" />
+            <Arc centerX="222" centerY="222" width="444" height="444" startAngle="0" endAngle="0">
+              <Transform target="endAngle" value="[SECOND] * 6" />
+              <Stroke color="#ffff2870" thickness="3" cap="ROUND" />
             </Arc>
           </PartDraw>
         </Group>
@@ -544,19 +891,19 @@
           <PartImage x="0" y="0" width="450" height="450">
             <Image resource="dial_cyber_ambient" />
           </PartImage>
-          <PartText x="55" y="82" width="340" height="86">
+          <PartText x="50" y="74" width="350" height="88">
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="80" color="#ff7f8c96"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="82" color="#ff7f8c96"><Template>%02d:%02d<Parameter expression="[HOUR_0_23]" /><Parameter expression="[MINUTE]" /></Template></Font>
             </Text>
           </PartText>
-          <PartText x="62" y="237" width="160" height="76">
+          <PartText x="58" y="231" width="162" height="74">
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ff8a7c30"><Template>%02d:%02d<Parameter expression="floor(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) / 3600)" /><Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) % 3600) / 60)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff8a8e98"><Template>%02d:%02d<Parameter expression="floor(((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) / 3600)" /><Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) + 32400) % 86400) % 3600) / 60)" /></Template></Font>
             </Text>
           </PartText>
-          <PartText x="228" y="237" width="160" height="76">
+          <PartText x="230" y="231" width="162" height="74">
             <Text align="CENTER">
-              <Font family="jetbrains_mono_extrabold" size="34" color="#ff7a5a72"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
+              <Font family="jetbrains_mono_extrabold" size="34" color="#ff7a6a92"><Template>%02d:%02d<Parameter expression="floor((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) / 144)" /><Parameter expression="floor(((((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456) % 144) / 2.4)" /></Template></Font>
             </Text>
           </PartText>
         </Group>
