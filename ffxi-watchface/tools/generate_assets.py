@@ -880,16 +880,6 @@ def ink_hand(tip, tail, w, color=INK, pad=3, inlay=None):
     return with_shadow(img, blur=1.0, alpha=0.35)
 
 
-def ink_cap(r=5, pad=3):
-    size = s(2 * (r + pad))
-    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    c = size / 2
-    d = ImageDraw.Draw(img)
-    d.ellipse([c - s(r), c - s(r), c + s(r), c + s(r)], fill=INK + (255,))
-    d.ellipse([c - s(1.8), c - s(1.8), c + s(1.8), c + s(1.8)], fill=(214, 172, 96, 255))
-    return with_shadow(img, blur=0.8, alpha=0.4)
-
-
 # --------------------------------------------------------------------- we are vana'diel
 # A replica of the Seiko x FFXI "WE ARE VANA'DIEL" chronograph: steel tachymeter bezel,
 # blue inner ring, silver-white dial with the world map, crystal-shaped lume markers,
@@ -1086,7 +1076,7 @@ CYBER_SECONDARY = [(255, 216, 60), (255, 112, 40), (0, 236, 255), (212, 255, 70)
 CYBER = {   # layout boxes (x0, y0, x1, y1), shared with watchface.xml and the preview
     'time': (50, 74, 400, 162), 'sec': (196, 162, 254, 186), 'date': (78, 192, 262, 214), 'wday': (270, 192, 372, 214),
     'jst': (58, 224, 220, 298), 'vana': (230, 224, 392, 298), 'element': (130, 306, 330, 334),
-    'bar': (150, 346, 318, 358), 'pct': (322, 342, 372, 362),
+    'bar': (150, 346, 318, 358), 'pct': (322, 342, 372, 362), 'moon': (150, 372, 330, 392),
 }
 CYBER_SEGMENTS = 12
 
@@ -1188,7 +1178,6 @@ def make_cyber_secondary():
                    fill=(255, 255, 255, 230), width=W(1.4))
         x0, y0, x1, y1 = CYBER['bar']
         text_c(d, (s(x0 - 20), s((y0 + y1) / 2)), 'PWR', lab, (255, 255, 255, 255))
-        text_c(d, (C, s(394)), '// SYS.ONLINE //', font(FONT_MONO_LABEL, 8), (255, 255, 255, 230))
         for k in range(8):   # markers on the octagon's corners
             x, y = polar(s(208), 22.5 + 45 * k)
             d.ellipse([x - s(2.2), y - s(2.2), x + s(2.2), y + s(2.2)], fill=(255, 255, 255, 255))
@@ -1218,6 +1207,83 @@ def tint(white, color):
     out = Image.new('RGBA', white.size, color + (0,))
     out.putalpha(white.getchannel('A'))
     return out
+
+
+# --------------------------------------------------------------------- moon
+# Vana'diel moon as HorizonXI (LandSandBoat) computes it: see tools/wff_expr.py. The face picks
+# one of MOON_STEPS phase images: step = round(((moon day + 42) % 84) / 84 * MOON_STEPS),
+# where 0 is new, MOON_STEPS / 2 full, waxing lit from the right and waning from the left.
+MOON_STEPS = 16
+
+
+def moon_step(utc):
+    days = int((utc - 1009810800) * 25 // 86400)
+    daysmod = (days + 886 * 360 + 26) % 84
+    return round(((daysmod + 42) % 84) / 84 * MOON_STEPS) % MOON_STEPS
+
+
+def moon_mask(size, step):
+    """L mask of the lit part of a moon disc filling `size` (square), for phase step."""
+    f = step / MOON_STEPS
+    n = size
+    y, x = np.mgrid[0:n, 0:n]
+    u, v = (x + 0.5) / n * 2 - 1, (y + 0.5) / n * 2 - 1
+    inside = u * u + v * v <= 1
+    edge = np.sqrt(np.clip(1 - v * v, 0, 1)) * math.cos(2 * math.pi * f)
+    lit = (u > edge) if f <= 0.5 else (u < -edge)
+    return Image.fromarray(((inside & lit) * 255).astype(np.uint8))
+
+
+def moon_cap(style, step):
+    """Centre cap as a tiny moon showing the phase, finished per style."""
+    r = {'classic': 9, 'dark': 7, 'light': 8, 'vana': 8}[style]
+    pad = 3
+    size = s(2 * (r + pad))
+    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    c = size / 2
+    R = s(r)
+    disc = Image.new('L', (size, size), 0)
+    ImageDraw.Draw(disc).ellipse([c - R, c - R, c + R, c + R], fill=255)
+    lit = Image.new('L', (size, size), 0)
+    lit.paste(moon_mask(2 * R, step), (round(c - R), round(c - R)))
+    lit = lit.filter(ImageFilter.GaussianBlur(SS * 0.35))
+    dark_side, lit_side, rim = {
+        'classic': ((34, 40, 62), radial_gradient((size, size), (255, 252, 240), (196, 192, 178), cx=c - R * 0.3, cy=c - R * 0.3, r=R * 1.4), (150, 156, 170)),
+        'dark': ((0, 0, 0), (232, 234, 242), (225, 225, 225)),
+        'light': ((150, 156, 172), radial_gradient((size, size), (255, 255, 255), (214, 222, 236), cx=c - R * 0.3, cy=c - R * 0.3, r=R * 1.4), (196, 160, 80)),
+        'vana': ((120, 84, 44), radial_gradient((size, size), (252, 244, 222), (226, 204, 160), cx=c - R * 0.3, cy=c - R * 0.3, r=R * 1.4), INK),
+    }[style]
+    fill_mask(img, disc, dark_side + (255,))
+    fill_mask(img, Image.fromarray(np.minimum(np.asarray(lit), np.asarray(disc))), lit_side if isinstance(lit_side, Image.Image) else lit_side + (255,))
+    if style == 'light':   # faint mother-of-pearl sheen
+        sheen = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+        ImageDraw.Draw(sheen).ellipse([c - R * 0.7, c - R * 0.9, c + R * 0.1, c - R * 0.1], fill=(200, 230, 255, 60))
+        img.alpha_composite(sheen.filter(ImageFilter.GaussianBlur(SS)))
+    if style in ('classic', 'vana'):   # a couple of soft craters on the lit side
+        cr = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+        cd = ImageDraw.Draw(cr)
+        for dx, dy, rr in ((0.25, -0.2, 0.18), (-0.3, 0.3, 0.13), (0.1, 0.45, 0.1)):
+            cd.ellipse([c + dx * R - rr * R, c + dy * R - rr * R, c + dx * R + rr * R, c + dy * R + rr * R], fill=(0, 0, 0, 26))
+        cr.putalpha(Image.fromarray(np.minimum(np.asarray(cr.getchannel('A')), np.asarray(lit))))
+        img.alpha_composite(cr)
+    ImageDraw.Draw(img).ellipse([c - R, c - R, c + R, c + R], outline=rim + (255,), width=round(s(0.9 if style != 'dark' else 1.1)))
+    return with_shadow(img, blur=0.8, alpha=0.5) if style != 'dark' else img
+
+
+def pixel_moon(step, cells=9, cell=2):
+    """Pixel-art moon for Cyberpunk: crisp cells, lit white, dark side dim."""
+    n = cells
+    m = np.asarray(moon_mask(n * 8, step).resize((n, n), Image.BOX)) > 110
+    y, x = np.mgrid[0:n, 0:n]
+    inside = ((x + 0.5 - n / 2) ** 2 + (y + 0.5 - n / 2) ** 2) <= (n / 2) ** 2
+    img = Image.new('RGBA', (n * cell, n * cell), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    for yy in range(n):
+        for xx in range(n):
+            if inside[yy, xx]:
+                col = (240, 242, 255, 255) if m[yy, xx] else (70, 74, 96, 255)
+                d.rectangle([xx * cell, yy * cell, xx * cell + cell - 1, yy * cell + cell - 1], fill=col)
+    return img
 
 
 # --------------------------------------------------------------------- hands
@@ -1320,22 +1386,6 @@ def photo_geom(name, tip, thin=1.0):
     return w, tail
 
 
-def domed_cap(r, pad=HAND_PAD):
-    """Static polished centre cap with a blued pin, drawn above the hands."""
-    size = s(2 * (r + pad))
-    img = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    c = size / 2
-    # polished steel: soft highlight towards the light, crisp darker rim
-    hl = radial_gradient(img.size, (250, 252, 255), (150, 158, 172), cx=c - s(r * 0.3), cy=c - s(r * 0.35), r=s(r * 1.4))
-    fill_mask(img, circle_mask(img.size, c, c, s(r)), hl)
-    d = ImageDraw.Draw(img)
-    d.ellipse([c - s(r), c - s(r), c + s(r), c + s(r)], outline=(70, 76, 90), width=round(s(0.8)))
-    pin = s(r * 0.38)
-    fill_mask(img, circle_mask(img.size, c, c, pin),
-              radial_gradient(img.size, (120, 170, 255), (20, 50, 130), cx=c - pin * 0.3, cy=c - pin * 0.3, r=pin * 1.3))
-    return with_shadow(img, blur=0.9, alpha=0.5)
-
-
 def outline_hand(tip, tail, w, stroke=1.4, pad=2, color=(225, 225, 225)):
     """Minimal Dark-style hand: a slim lance drawn as an outline, hollow (black) inside."""
     img, px, py = hand_canvas(w, tip, tail, pad)
@@ -1369,15 +1419,15 @@ def outline_cap(r, pad=2, color=(225, 225, 225)):
     return img
 
 
-CAP_R = 6
 CAPS = {
     # name: (builder, canvas half-size in 450px units)
-    'cap': (lambda: domed_cap(CAP_R), CAP_R + HAND_PAD),
     'cap_dark': (lambda: outline_cap(5), 5 + 2),
-    'cap_light': (lambda: star_cap(8), 8 + HAND_PAD),
-    'cap_vana': (lambda: ink_cap(5), 5 + 3),
     'cap_seiko': (lambda: star_cap(7), 7 + HAND_PAD),
 }
+for _style in ('classic', 'dark', 'light', 'vana'):
+    for _i in range(MOON_STEPS):
+        _r = {'classic': 9, 'dark': 7, 'light': 8, 'vana': 8}[_style]
+        CAPS[f'moon_{_style}_{_i}'] = ((lambda st=_style, i=_i: moon_cap(st, i)), _r + 3)
 
 
 def _photo(name, tip, thin=1.0, pad=HAND_PAD, **kw):
@@ -1552,7 +1602,6 @@ def preview(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day
     style = 'dark' if dark else 'classic'
     if crystals and not (ambient and not dark):
         img.alpha_composite(crystals[(style, wd)])
-    cap_hi = caps_hi['cap' + sfx]
     sub = hands_hi['hand_sub' + sfx]
     angle = {'left': (dow - 1) * 360 / 7, 'right': -150 + batt * 3, 'bottom': (hh + mm / 60) * 15}
     for pos, (cx, cy) in POSITIONS.items():
@@ -1568,6 +1617,7 @@ def preview(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, dow=5, day
         hour, minute = f'hand_hour_classic_{wd}', f'hand_minute_classic_{wd}'
     place(img, hands_hi[hour], hour, 225, 225, (hh % 12 + mm / 60) * 30)
     place(img, hands_hi[minute], minute, 225, 225, mm * 6 + ss / 10)
+    cap_hi = caps_hi[f'moon_{style}_{moon_step(utc)}']   # the moon cap shows in always-on too
     img.alpha_composite(cap_hi, (round(C - cap_hi.width / 2), round(C - cap_hi.height / 2)))
     if not ambient and not dark:
         img.alpha_composite(glass_hi)
@@ -1586,7 +1636,7 @@ def preview_light(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, dow=5, day=
     text_c(ImageDraw.Draw(img), (s(DATE_POS[0]), s(DATE_POS[1])), str(day), font(FONT_SERIF, 15), (20, 20, 20))
     place(img, hands_hi[f'hand_hour_light_{wd}'], f'hand_hour_light_{wd}', 225, 225, (hh % 12 + mm / 60) * 30)
     place(img, hands_hi[f'hand_minute_light_{wd}'], f'hand_minute_light_{wd}', 225, 225, mm * 6)
-    cap = caps_hi['cap_light']
+    cap = caps_hi[f'moon_light_{moon_step(utc)}']
     img.alpha_composite(cap, (round(C - cap.width / 2), round(C - cap.height / 2)))
     img.alpha_composite(glass_hi)
     return finish(img)
@@ -1612,7 +1662,7 @@ def preview_vana(dial_hi, hands_hi, caps_hi, hh=10, mm=8, dow=5, day=29, batt=78
     text_c(d, (s(x), s(y + 16)), ELEMENTS[wd][0].upper(), font(FONT_SERIF, 6), ELEMENT_TONES[wd][0] if wd != 6 else INK)
     place(img, hands_hi[f'hand_hour_vana_{wd}'], f'hand_hour_vana_{wd}', 225, 225, (hh % 12 + mm / 60) * 30)
     place(img, hands_hi[f'hand_minute_vana_{wd}'], f'hand_minute_vana_{wd}', 225, 225, mm * 6)
-    cap = caps_hi['cap_vana']
+    cap = caps_hi[f'moon_vana_{moon_step(utc)}']
     img.alpha_composite(cap, (round(C - cap.width / 2), round(C - cap.height / 2)))
     return finish(img)
 
@@ -1666,6 +1716,13 @@ def preview_cyber(base, prim, sec, barmask, hh=21, mm=47, ss=32, utc=PREVIEW_UTC
     d = ImageDraw.Draw(img)
     box_text('pct', f'{batt}%', 13, P, 'lm')
     d.arc([C - s(222), C - s(222), C + s(222), C + s(222)], -90, -90 + ss * 6, fill=S2, width=round(s(3)))
+    from wff_expr import lsb_moon
+    pct, direction = lsb_moon(utc)
+    word = 'FULL' if pct == 100 else ('NEW' if pct == 0 else ('▲ WAXING' if direction == 2 else '▼ WANING'))
+    x0, y0, x1, y1 = CYBER['moon']
+    pm = pixel_moon(moon_step(utc)).resize((s(18), s(18)), Image.NEAREST)
+    img.alpha_composite(pm, (s(x0), round(s((y0 + y1) / 2) - pm.height / 2)))
+    d.text((s(x0 + 24), s((y0 + y1) / 2)), f'LUNA {pct}% {word}', font=font(FONT_MONO, 12), fill=(216, 220, 232), anchor='lm')
     return finish(img)
 
 
@@ -1701,6 +1758,8 @@ def main():
         finish(cap_hi[name]).save(os.path.join(OUT, name + '.png'))
     glass_hi = make_glass()
     finish(glass_hi).save(os.path.join(OUT, 'glass.png'))
+    for i in range(MOON_STEPS):
+        pixel_moon(i).save(os.path.join(OUT, f'moon_pixel_{i}.png'))
     # transparent second hand: makes the watch redraw every second where only [SECOND] expressions move
     Image.new('RGBA', (2, 2), (0, 0, 0, 0)).save(os.path.join(OUT, 'blank.png'))
     crystals, overlays = {}, {}

@@ -828,6 +828,95 @@
               <Font family="jetbrains_mono_extrabold" size="13" color="#ff9670ff"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
             </Text>
           </PartText>
+          <!-- Vana'diel moon (HorizonXI / LandSandBoat) -->
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 0 ? 255 : 0" />
+            <Image resource="moon_pixel_0" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 1 ? 255 : 0" />
+            <Image resource="moon_pixel_1" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 2 ? 255 : 0" />
+            <Image resource="moon_pixel_2" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 3 ? 255 : 0" />
+            <Image resource="moon_pixel_3" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 4 ? 255 : 0" />
+            <Image resource="moon_pixel_4" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 5 ? 255 : 0" />
+            <Image resource="moon_pixel_5" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 6 ? 255 : 0" />
+            <Image resource="moon_pixel_6" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 7 ? 255 : 0" />
+            <Image resource="moon_pixel_7" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 8 ? 255 : 0" />
+            <Image resource="moon_pixel_8" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 9 ? 255 : 0" />
+            <Image resource="moon_pixel_9" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 10 ? 255 : 0" />
+            <Image resource="moon_pixel_10" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 11 ? 255 : 0" />
+            <Image resource="moon_pixel_11" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 12 ? 255 : 0" />
+            <Image resource="moon_pixel_12" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 13 ? 255 : 0" />
+            <Image resource="moon_pixel_13" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 14 ? 255 : 0" />
+            <Image resource="moon_pixel_14" />
+          </PartImage>
+          <PartImage x="150" y="373" width="18" height="18">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 15 ? 255 : 0" />
+            <Image resource="moon_pixel_15" />
+          </PartImage>
+          <PartText x="174" y="372" width="156" height="20">
+            <Transform target="alpha" value="((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42))) == 100) ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="12" color="#ffd8dce8"><Template>LUNA %d%% FULL<Parameter expression="(((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42)))" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="174" y="372" width="156" height="20">
+            <Transform target="alpha" value="((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42))) == 0) ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="12" color="#ffd8dce8"><Template>LUNA %d%% NEW<Parameter expression="(((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42)))" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="174" y="372" width="156" height="20">
+            <Transform target="alpha" value="((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42))) &gt; 0 &amp;&amp; 100 &gt; (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42))) &amp;&amp; (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt; 42) == 1) ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="12" color="#ffd8dce8"><Template>LUNA %d%% ▲ WAXING<Parameter expression="(((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42)))" /></Template></Font>
+            </Text>
+          </PartText>
+          <PartText x="174" y="372" width="156" height="20">
+            <Transform target="alpha" value="((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42))) &gt; 0 &amp;&amp; 100 &gt; (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42))) &amp;&amp; (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt; 42) == 0) ? 255 : 0" />
+            <Text align="START">
+              <Font family="jetbrains_mono_extrabold" size="12" color="#ffd8dce8"><Template>LUNA %d%% ▼ WANING<Parameter expression="(((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) &gt;= 42 ? round(100 * (((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) - 42) / 42) : round(100 * (1 - ((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) / 42)))" /></Template></Font>
+            </Text>
+          </PartText>
           <!-- invisible second hand: forces a redraw every second for the seconds text and arc -->
           <AnalogClock x="0" y="0" width="450" height="450">
             <SecondHand resource="blank" x="224" y="224" width="2" height="2" pivotX="0.5" pivotY="0.5" />
@@ -1033,9 +1122,70 @@
               <MinuteHand resource="hand_minute_classic_7" x="212" y="38" width="26" height="228" pivotX="0.5" pivotY="0.8202" />
             </AnalogClock>
           </Group>
-          <!-- Centre cap: static, above the hands -->
-          <PartImage name="cap" x="214" y="214" width="22" height="22">
-            <Image resource="cap" />
+          <!-- centre cap: the Vana'diel moon (HorizonXI / LandSandBoat phase, 16 steps) -->
+          <PartImage name="moon_classic_0" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 0 ? 255 : 0" />
+            <Image resource="moon_classic_0" />
+          </PartImage>
+          <PartImage name="moon_classic_1" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 1 ? 255 : 0" />
+            <Image resource="moon_classic_1" />
+          </PartImage>
+          <PartImage name="moon_classic_2" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 2 ? 255 : 0" />
+            <Image resource="moon_classic_2" />
+          </PartImage>
+          <PartImage name="moon_classic_3" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 3 ? 255 : 0" />
+            <Image resource="moon_classic_3" />
+          </PartImage>
+          <PartImage name="moon_classic_4" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 4 ? 255 : 0" />
+            <Image resource="moon_classic_4" />
+          </PartImage>
+          <PartImage name="moon_classic_5" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 5 ? 255 : 0" />
+            <Image resource="moon_classic_5" />
+          </PartImage>
+          <PartImage name="moon_classic_6" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 6 ? 255 : 0" />
+            <Image resource="moon_classic_6" />
+          </PartImage>
+          <PartImage name="moon_classic_7" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 7 ? 255 : 0" />
+            <Image resource="moon_classic_7" />
+          </PartImage>
+          <PartImage name="moon_classic_8" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 8 ? 255 : 0" />
+            <Image resource="moon_classic_8" />
+          </PartImage>
+          <PartImage name="moon_classic_9" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 9 ? 255 : 0" />
+            <Image resource="moon_classic_9" />
+          </PartImage>
+          <PartImage name="moon_classic_10" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 10 ? 255 : 0" />
+            <Image resource="moon_classic_10" />
+          </PartImage>
+          <PartImage name="moon_classic_11" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 11 ? 255 : 0" />
+            <Image resource="moon_classic_11" />
+          </PartImage>
+          <PartImage name="moon_classic_12" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 12 ? 255 : 0" />
+            <Image resource="moon_classic_12" />
+          </PartImage>
+          <PartImage name="moon_classic_13" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 13 ? 255 : 0" />
+            <Image resource="moon_classic_13" />
+          </PartImage>
+          <PartImage name="moon_classic_14" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 14 ? 255 : 0" />
+            <Image resource="moon_classic_14" />
+          </PartImage>
+          <PartImage name="moon_classic_15" x="213" y="213" width="24" height="24">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 15 ? 255 : 0" />
+            <Image resource="moon_classic_15" />
           </PartImage>
         </Group>
       </ListOption>
@@ -1155,9 +1305,70 @@
               <MinuteHand resource="hand_minute_dark_7" x="219" y="43" width="12" height="204" pivotX="0.5" pivotY="0.8922" />
             </AnalogClock>
           </Group>
-          <!-- Centre cap: static, above the hands -->
-          <PartImage name="cap_dark" x="218" y="218" width="14" height="14">
-            <Image resource="cap_dark" />
+          <!-- centre cap: the Vana'diel moon (HorizonXI / LandSandBoat phase, 16 steps) -->
+          <PartImage name="moon_dark_0" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 0 ? 255 : 0" />
+            <Image resource="moon_dark_0" />
+          </PartImage>
+          <PartImage name="moon_dark_1" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 1 ? 255 : 0" />
+            <Image resource="moon_dark_1" />
+          </PartImage>
+          <PartImage name="moon_dark_2" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 2 ? 255 : 0" />
+            <Image resource="moon_dark_2" />
+          </PartImage>
+          <PartImage name="moon_dark_3" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 3 ? 255 : 0" />
+            <Image resource="moon_dark_3" />
+          </PartImage>
+          <PartImage name="moon_dark_4" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 4 ? 255 : 0" />
+            <Image resource="moon_dark_4" />
+          </PartImage>
+          <PartImage name="moon_dark_5" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 5 ? 255 : 0" />
+            <Image resource="moon_dark_5" />
+          </PartImage>
+          <PartImage name="moon_dark_6" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 6 ? 255 : 0" />
+            <Image resource="moon_dark_6" />
+          </PartImage>
+          <PartImage name="moon_dark_7" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 7 ? 255 : 0" />
+            <Image resource="moon_dark_7" />
+          </PartImage>
+          <PartImage name="moon_dark_8" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 8 ? 255 : 0" />
+            <Image resource="moon_dark_8" />
+          </PartImage>
+          <PartImage name="moon_dark_9" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 9 ? 255 : 0" />
+            <Image resource="moon_dark_9" />
+          </PartImage>
+          <PartImage name="moon_dark_10" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 10 ? 255 : 0" />
+            <Image resource="moon_dark_10" />
+          </PartImage>
+          <PartImage name="moon_dark_11" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 11 ? 255 : 0" />
+            <Image resource="moon_dark_11" />
+          </PartImage>
+          <PartImage name="moon_dark_12" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 12 ? 255 : 0" />
+            <Image resource="moon_dark_12" />
+          </PartImage>
+          <PartImage name="moon_dark_13" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 13 ? 255 : 0" />
+            <Image resource="moon_dark_13" />
+          </PartImage>
+          <PartImage name="moon_dark_14" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 14 ? 255 : 0" />
+            <Image resource="moon_dark_14" />
+          </PartImage>
+          <PartImage name="moon_dark_15" x="215" y="215" width="20" height="20">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 15 ? 255 : 0" />
+            <Image resource="moon_dark_15" />
           </PartImage>
         </Group>
       </ListOption>
@@ -1277,9 +1488,70 @@
               <MinuteHand resource="hand_minute_light_7" x="212" y="38" width="26" height="228" pivotX="0.5" pivotY="0.8202" />
             </AnalogClock>
           </Group>
-          <!-- Bronze star hub -->
-          <PartImage name="cap_light" x="212" y="212" width="26" height="26">
-            <Image resource="cap_light" />
+          <!-- centre cap: the Vana'diel moon (HorizonXI / LandSandBoat phase, 16 steps) -->
+          <PartImage name="moon_light_0" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 0 ? 255 : 0" />
+            <Image resource="moon_light_0" />
+          </PartImage>
+          <PartImage name="moon_light_1" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 1 ? 255 : 0" />
+            <Image resource="moon_light_1" />
+          </PartImage>
+          <PartImage name="moon_light_2" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 2 ? 255 : 0" />
+            <Image resource="moon_light_2" />
+          </PartImage>
+          <PartImage name="moon_light_3" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 3 ? 255 : 0" />
+            <Image resource="moon_light_3" />
+          </PartImage>
+          <PartImage name="moon_light_4" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 4 ? 255 : 0" />
+            <Image resource="moon_light_4" />
+          </PartImage>
+          <PartImage name="moon_light_5" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 5 ? 255 : 0" />
+            <Image resource="moon_light_5" />
+          </PartImage>
+          <PartImage name="moon_light_6" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 6 ? 255 : 0" />
+            <Image resource="moon_light_6" />
+          </PartImage>
+          <PartImage name="moon_light_7" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 7 ? 255 : 0" />
+            <Image resource="moon_light_7" />
+          </PartImage>
+          <PartImage name="moon_light_8" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 8 ? 255 : 0" />
+            <Image resource="moon_light_8" />
+          </PartImage>
+          <PartImage name="moon_light_9" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 9 ? 255 : 0" />
+            <Image resource="moon_light_9" />
+          </PartImage>
+          <PartImage name="moon_light_10" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 10 ? 255 : 0" />
+            <Image resource="moon_light_10" />
+          </PartImage>
+          <PartImage name="moon_light_11" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 11 ? 255 : 0" />
+            <Image resource="moon_light_11" />
+          </PartImage>
+          <PartImage name="moon_light_12" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 12 ? 255 : 0" />
+            <Image resource="moon_light_12" />
+          </PartImage>
+          <PartImage name="moon_light_13" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 13 ? 255 : 0" />
+            <Image resource="moon_light_13" />
+          </PartImage>
+          <PartImage name="moon_light_14" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 14 ? 255 : 0" />
+            <Image resource="moon_light_14" />
+          </PartImage>
+          <PartImage name="moon_light_15" x="214" y="214" width="22" height="22">
+            <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 15 ? 255 : 0" />
+            <Image resource="moon_light_15" />
           </PartImage>
         </Group>
       </ListOption>
@@ -1400,8 +1672,70 @@
                 <MinuteHand resource="hand_minute_vana_7" x="218" y="46" width="14" height="204" pivotX="0.5" pivotY="0.8775" />
               </AnalogClock>
             </Group>
-            <PartImage name="cap_vana" x="217" y="217" width="16" height="16">
-              <Image resource="cap_vana" />
+            <!-- centre cap: the Vana'diel moon (HorizonXI / LandSandBoat phase, 16 steps) -->
+            <PartImage name="moon_vana_0" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 0 ? 255 : 0" />
+              <Image resource="moon_vana_0" />
+            </PartImage>
+            <PartImage name="moon_vana_1" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 1 ? 255 : 0" />
+              <Image resource="moon_vana_1" />
+            </PartImage>
+            <PartImage name="moon_vana_2" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 2 ? 255 : 0" />
+              <Image resource="moon_vana_2" />
+            </PartImage>
+            <PartImage name="moon_vana_3" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 3 ? 255 : 0" />
+              <Image resource="moon_vana_3" />
+            </PartImage>
+            <PartImage name="moon_vana_4" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 4 ? 255 : 0" />
+              <Image resource="moon_vana_4" />
+            </PartImage>
+            <PartImage name="moon_vana_5" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 5 ? 255 : 0" />
+              <Image resource="moon_vana_5" />
+            </PartImage>
+            <PartImage name="moon_vana_6" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 6 ? 255 : 0" />
+              <Image resource="moon_vana_6" />
+            </PartImage>
+            <PartImage name="moon_vana_7" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 7 ? 255 : 0" />
+              <Image resource="moon_vana_7" />
+            </PartImage>
+            <PartImage name="moon_vana_8" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 8 ? 255 : 0" />
+              <Image resource="moon_vana_8" />
+            </PartImage>
+            <PartImage name="moon_vana_9" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 9 ? 255 : 0" />
+              <Image resource="moon_vana_9" />
+            </PartImage>
+            <PartImage name="moon_vana_10" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 10 ? 255 : 0" />
+              <Image resource="moon_vana_10" />
+            </PartImage>
+            <PartImage name="moon_vana_11" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 11 ? 255 : 0" />
+              <Image resource="moon_vana_11" />
+            </PartImage>
+            <PartImage name="moon_vana_12" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 12 ? 255 : 0" />
+              <Image resource="moon_vana_12" />
+            </PartImage>
+            <PartImage name="moon_vana_13" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 13 ? 255 : 0" />
+              <Image resource="moon_vana_13" />
+            </PartImage>
+            <PartImage name="moon_vana_14" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 14 ? 255 : 0" />
+              <Image resource="moon_vana_14" />
+            </PartImage>
+            <PartImage name="moon_vana_15" x="214" y="214" width="22" height="22">
+              <Transform target="alpha" value="(round(((((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1009810800) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 38) % 84) + 42) % 84) / 84 * 16) % 16) == 15 ? 255 : 0" />
+              <Image resource="moon_vana_15" />
             </PartImage>
           </Group>
           <Group name="vanadiel_hands_ambient" x="0" y="0" width="450" height="450" alpha="0">

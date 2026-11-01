@@ -39,7 +39,13 @@ the rim, inside an octagon HUD. Its neon colours follow the Vana'diel weekday:
 
 ![cyberpunk weekdays](docs/cyberpunk_weekdays.png)
 
-The live Vana'diel and JST maths is in `tools/wff_expr.py`. Both are computed on the
+**Moon:** the centre cap of Classic, Dark, Light and Canvas is a tiny Vana'diel moon showing the current
+phase (waxing lit from the right, waning from the left, 16 steps), and Cyberpunk shows
+`LUNA 64% ▼ WANING` with a pixel moon. The phase is computed exactly as HorizonXI / LandSandBoat does
+(`moon::get_phase` / `get_direction` in LSB's `src/common/vana_time.h`).
+
+The live Vana'diel, moon and JST maths is in `tools/wff_expr.py`, with a direct Python port of LSB's
+moon functions to test against. Both are computed on the
 watch from the UTC time: one Earth day is exactly 25 Vana'diel days, so the time of day depends only on
 the UTC time of day, and the weekday counts days since 2002-06-23 15:00 UTC.
 
