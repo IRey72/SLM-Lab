@@ -9,7 +9,7 @@
     dark     the outline "dark chronograph" look with line-art crests
     light    after the real Seiko: silver-white dial, blue ring, world map
     wearevanadiel  replica of the real Seiko piece (tachymeter bezel, SEIKO, 30-min /
-             24h / seconds sub-dials, gold chronograph hand at rest)
+             24h / seconds sub-dials, gold seconds hand)
     cyberpunk high-visibility digital: local time, JST, Vana'diel time and weekday, battery;
              neon colours follow the Vana'diel weekday
     vanadiel (shown as "Canvas") parchment map with the four sub-dials in ink, Vana'diel time and weekday
@@ -1777,10 +1777,15 @@
             <HourHand resource="hand_hour_seiko" x="214" y="122" width="22" height="126" pivotX="0.5" pivotY="0.8175" />
             <MinuteHand resource="hand_minute_seiko" x="215" y="68" width="20" height="184" pivotX="0.5" pivotY="0.8533" />
           </AnalogClock>
-          <!-- gold chronograph seconds hand, at rest at 12 -->
-          <PartImage name="chrono_seiko" x="217" y="56" width="16" height="208">
-            <Image resource="hand_chrono_seiko" />
-          </PartImage>
+          <!-- gold sweep seconds hand (the chronograph hand on the real watch); hidden in always-on -->
+          <Group name="chrono_seiko" x="0" y="0" width="450" height="450">
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <AnalogClock x="0" y="0" width="450" height="450">
+              <SecondHand resource="hand_chrono_seiko" x="217" y="56" width="16" height="208" pivotX="0.5" pivotY="0.8125">
+                <Tick duration="0.2" strength="0.5" />
+              </SecondHand>
+            </AnalogClock>
+          </Group>
           <PartImage name="cap_seiko" x="213" y="213" width="24" height="24">
             <Image resource="cap_seiko" />
           </PartImage>

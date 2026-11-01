@@ -884,7 +884,7 @@ def ink_hand(tip, tail, w, color=INK, pad=3, inlay=None):
 # A replica of the Seiko x FFXI "WE ARE VANA'DIEL" chronograph: steel tachymeter bezel,
 # blue inner ring, silver-white dial with the world map, crystal-shaped lume markers,
 # SEIKO, gold XI, three white sub-dials (San d'Oria 30-min counter at 9, Windurst 24h at 3,
-# Bastok running seconds at 6), lume hands and a gold chronograph hand resting at 12.
+# Bastok running seconds at 6), lume hands and a gold sweep seconds hand.
 SEIKO_SUB_R = 50
 SEIKO_EMBLEM_R = 30
 SEIKO_POS = {'left': (225 - 92, 225), 'right': (225 + 92, 225), 'bottom': (225, 225 + 92)}
@@ -1051,7 +1051,7 @@ def lume_hand(tip, tail, w, pad=None):
 
 
 def chrono_hand(tip=166, tail=36, pad=3):
-    """Gold chronograph seconds hand with a round counterweight (rests at 12)."""
+    """Gold seconds hand with a round counterweight (the real watch's chronograph hand)."""
     img, px, py = hand_canvas(10, tip, tail, pad)
     d = ImageDraw.Draw(img)
     gold = (206, 160, 76, 255)
@@ -1548,7 +1548,7 @@ def patch_xml(overlays=None):
         setattrs(rf'<PartImage name="sub_{pos}_seiko" [^>]*>', cx, cy, f'hand_sub_{ink}_seiko')
     # running seconds: a SecondHand in a full-size AnalogClock, positioned over the Bastok dial
     setattrs(r'<SecondHand resource="hand_sub_blue_seiko" [^>]*>', *SEIKO_POS['bottom'], 'hand_sub_blue_seiko')
-    setattrs(r'<PartImage name="chrono_seiko" [^>]*>', 225, 225, 'hand_chrono_seiko')
+    setattrs(r'<SecondHand resource="hand_chrono_seiko" [^>]*>', 225, 225, 'hand_chrono_seiko')
     setattrs(r'<HourHand resource="hand_hour_seiko" [^>]*>', 225, 225, 'hand_hour_seiko')
     setattrs(r'<MinuteHand resource="hand_minute_seiko" [^>]*>', 225, 225, 'hand_minute_seiko')
     for name, (_, half) in CAPS.items():
@@ -1671,7 +1671,7 @@ def preview_seiko(dial_hi, hands_hi, caps_hi, glass_hi, hh=10, mm=8, ss=32, day=
     text_c(ImageDraw.Draw(img), (s(SEIKO_DATE[0]), s(SEIKO_DATE[1])), str(day), font(FONT_SANS_BOLD, 12.5), (16, 16, 16))
     place(img, hands_hi['hand_hour_seiko'], 'hand_hour_seiko', 225, 225, (hh % 12 + mm / 60) * 30)
     place(img, hands_hi['hand_minute_seiko'], 'hand_minute_seiko', 225, 225, mm * 6)
-    place(img, hands_hi['hand_chrono_seiko'], 'hand_chrono_seiko', 225, 225, 0)
+    place(img, hands_hi['hand_chrono_seiko'], 'hand_chrono_seiko', 225, 225, ss * 6)
     cap = caps_hi['cap_seiko']
     img.alpha_composite(cap, (round(C - cap.width / 2), round(C - cap.height / 2)))
     img.alpha_composite(glass_hi)
