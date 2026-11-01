@@ -1546,13 +1546,8 @@ def patch_xml(overlays=None):
             continue   # running seconds: a SecondHand in its own small AnalogClock, below
         ink = {'sandoria': 'red', 'windurst': 'green', 'bastok': 'blue'}[SEIKO_LAYOUT[pos][0]]
         setattrs(rf'<PartImage name="sub_{pos}_seiko" [^>]*>', cx, cy, f'hand_sub_{ink}_seiko')
-    # the seconds clock: a box centred on the Bastok dial; hand coordinates are relative to it
-    cx, cy = SEIKO_POS['bottom']
-    box = 2 * SEIKO_SUB_R
-    xml, n = re.subn(r'<AnalogClock [^>]*>(\s*<SecondHand resource="hand_sub_blue_seiko")',
-                     rf'<AnalogClock x="{cx - box // 2}" y="{cy - box // 2}" width="{box}" height="{box}">\1', xml)
-    assert n == 1, 'seconds clock'
-    setattrs(r'<SecondHand resource="hand_sub_blue_seiko" [^>]*>', box // 2, box // 2, 'hand_sub_blue_seiko')
+    # running seconds: a SecondHand in a full-size AnalogClock, positioned over the Bastok dial
+    setattrs(r'<SecondHand resource="hand_sub_blue_seiko" [^>]*>', *SEIKO_POS['bottom'], 'hand_sub_blue_seiko')
     setattrs(r'<PartImage name="chrono_seiko" [^>]*>', 225, 225, 'hand_chrono_seiko')
     setattrs(r'<HourHand resource="hand_hour_seiko" [^>]*>', 225, 225, 'hand_hour_seiko')
     setattrs(r'<MinuteHand resource="hand_minute_seiko" [^>]*>', 225, 225, 'hand_minute_seiko')

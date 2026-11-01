@@ -1762,12 +1762,15 @@
             <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
             <Image resource="hand_sub_green_seiko" />
           </PartImage>
-          <!-- 6 o'clock (Bastok): running seconds, a real SecondHand so the watch redraws every
-               second (a Transform on [SECOND] alone only updated once a minute); hidden in always-on -->
+          <!-- 6 o'clock (Bastok): running seconds. A real SecondHand (a Transform on [SECOND] alone
+               only redrew once a minute) in a full-size AnalogClock, like the main hands, positioned
+               over the Bastok dial; hands rotate about their own pivot. Hidden in always-on. -->
           <Group name="seconds_seiko" x="0" y="0" width="450" height="450">
             <Variant mode="AMBIENT" target="alpha" value="0" />
-            <AnalogClock x="175" y="267" width="100" height="100">
-              <SecondHand resource="hand_sub_blue_seiko" x="44" y="8" width="12" height="54" pivotX="0.5" pivotY="0.7778" />
+            <AnalogClock x="0" y="0" width="450" height="450">
+              <SecondHand resource="hand_sub_blue_seiko" x="219" y="275" width="12" height="54" pivotX="0.5" pivotY="0.7778" >
+                <Tick duration="0.2" strength="0.5" />
+              </SecondHand>
             </AnalogClock>
           </Group>
           <AnalogClock x="0" y="0" width="450" height="450">
