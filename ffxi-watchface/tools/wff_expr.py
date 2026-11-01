@@ -21,8 +21,25 @@ VM = f"floor(({V} % 144) / 2.4)"                                   # Vana'diel m
 WD = f"((round((({T} - 1024844400) - {V}) / 3456) + 6) % 8)"       # weekday 0-7, Firesday = 0
 VANA_ANGLE = f"{V} / 9.6"                                          # 24h dial: one turn per Vana'diel day
 JST = f"(({UTC} + 32400) % 86400)"                                 # Japan (UTC+9, no DST)
+# Moon, exactly as LandSandBoat (HorizonXI) computes it (src/common/vana_time.h, moon::):
+#   daysmod = (vanadiel days since epoch + 886 years * 360 + 26) % 84 = (days + 38) % 84
+#   percent = daysmod >= 42 ? round(100 * (daysmod - 42) / 42) : round(100 * (1 - daysmod / 42))
+#   direction: daysmod 0 or 42 = neither, < 42 waning, > 42 waxing
+VDAYS = f"round((({T} - 1009810800) - {V}) / 3456)"                # Vana'diel days since LSB's epoch
+MOON_DAY = f"(({VDAYS} + 38) % 84)"
+MOON_PCT = f"({MOON_DAY} &gt;= 42 ? round(100 * ({MOON_DAY} - 42) / 42) : round(100 * (1 - {MOON_DAY} / 42)))"
+MOON_WAXING = f"({MOON_DAY} &gt; 42)"                              # 1 waxing, 0 waning / turning
 JST_H = f"floor({JST} / 3600)"
 JST_M = f"floor(({JST} % 3600) / 60)"
+
+
+def lsb_moon(t):
+    """(percent, direction) exactly as LandSandBoat's moon::get_phase / get_direction."""
+    days = int((t - 1009810800) * 25 // 86400)             # floor<vanadiel days>(since epoch)
+    daysmod = float(int((days + 886 * 360 + 26) % 84))
+    pct = int(round(100 * ((daysmod - 42) / 42))) if daysmod >= 42 else int(round(100 * (1 - (daysmod / 42))))
+    direction = 0 if daysmod in (0, 42) else (1 if daysmod < 42 else 2)   # 1 waning, 2 waxing
+    return pct, direction
 
 
 def reference(t):
