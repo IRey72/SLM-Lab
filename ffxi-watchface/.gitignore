@@ -1,0 +1,7 @@
+.gradle/
+build/
+app/build/
+local.properties
+.idea/
+# The repo root ignores all src/ dirs; the watch face needs its own.
+!src/
