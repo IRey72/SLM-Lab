@@ -828,6 +828,10 @@
               <Font family="jetbrains_mono_extrabold" size="13" color="#ff9670ff"><Template>%d%%<Parameter expression="[BATTERY_PERCENT]" /></Template></Font>
             </Text>
           </PartText>
+          <!-- invisible second hand: forces a redraw every second for the seconds text and arc -->
+          <AnalogClock x="0" y="0" width="450" height="450">
+            <SecondHand resource="blank" x="224" y="224" width="2" height="2" pivotX="0.5" pivotY="0.5" />
+          </AnalogClock>
           <!-- seconds arc round the rim -->
           <PartDraw x="3" y="3" width="444" height="444">
             <Transform target="alpha" value="((round(((([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) - 1024844400) - (((((([SECONDS_IN_DAY] - (round(([SECONDS_IN_DAY] - (([UTC_TIMESTAMP] &gt; 100000000000 ? [UTC_TIMESTAMP] / 1000 : [UTC_TIMESTAMP]) % 86400)) / 900) * 900)) % 86400 + 86400) % 86400) - 2160) % 3456 + 3456) % 3456)) / 3456) + 6) % 8) == 0 ? 255 : 0" />
@@ -1424,12 +1428,14 @@
             <Transform target="angle" value="([HOUR_0_23] + [MINUTE] / 60) * 15" />
             <Image resource="hand_sub_green_seiko" />
           </PartImage>
-          <!-- 6 o'clock (Bastok): running seconds (hidden in always-on) -->
-          <PartImage name="sub_bottom_seiko" x="219" y="275" width="12" height="54" pivotX="0.5" pivotY="0.7778">
+          <!-- 6 o'clock (Bastok): running seconds, a real SecondHand so the watch redraws every
+               second (a Transform on [SECOND] alone only updated once a minute); hidden in always-on -->
+          <Group name="seconds_seiko" x="0" y="0" width="450" height="450">
             <Variant mode="AMBIENT" target="alpha" value="0" />
-            <Transform target="angle" value="[SECOND] * 6" />
-            <Image resource="hand_sub_blue_seiko" />
-          </PartImage>
+            <AnalogClock x="175" y="267" width="100" height="100">
+              <SecondHand resource="hand_sub_blue_seiko" x="44" y="8" width="12" height="54" pivotX="0.5" pivotY="0.7778" />
+            </AnalogClock>
+          </Group>
           <AnalogClock x="0" y="0" width="450" height="450">
             <HourHand resource="hand_hour_seiko" x="214" y="122" width="22" height="126" pivotX="0.5" pivotY="0.8175" />
             <MinuteHand resource="hand_minute_seiko" x="215" y="68" width="20" height="184" pivotX="0.5" pivotY="0.8533" />
